@@ -58,9 +58,12 @@ Archivos capturados:
 ## Swagger UI
 
 Se abrió Swagger en el navegador y se verificaron los grupos Productos y Favoritos,
-las siete operaciones del TP, los esquemas y el formulario Try it out.
+las siete operaciones del TP y los esquemas. Se ejecutó GET /api/productos/1 con
+Try it out y se obtuvo 200 con el DTO propio.
 
 ![Swagger con productos y favoritos](evidencia/swagger.png)
+
+![Las siete operaciones del TP1](evidencia/swagger-operaciones.png)
 
 Para repetir los casos manuales, ejecutar [tp1.http](tp1.http) en orden.
 La caída/timeout del proveedor se reproduce automáticamente con el servidor HTTP local
