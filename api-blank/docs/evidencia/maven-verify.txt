@@ -1,0 +1,13 @@
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.979 s -- in ar.edu.unvime.apiblank.ApiBlankApplicationTests
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.455 s -- in ar.edu.unvime.apiblank.ApiIntegrationTests
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.517 s -- in ar.edu.unvime.apiblank.favorito.FavoritoControllerTests
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.128 s -- in ar.edu.unvime.apiblank.favorito.FavoritoRepositoryMemoriaTests
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.134 s -- in ar.edu.unvime.apiblank.favorito.FavoritoServiceTests
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.206 s -- in ar.edu.unvime.apiblank.producto.DummyJsonProductoClientTests
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.225 s -- in ar.edu.unvime.apiblank.producto.ProductoControllerTests
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in ar.edu.unvime.apiblank.producto.ProductoServiceTests
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in ar.edu.unvime.apiblank.web.HealthControllerTests
+[INFO] Tests run: 46, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  43.184 s
+[INFO] Finished at: 2026-09-06T01:45:25-03:00

@@ -2,7 +2,7 @@ name: Java CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, TP1]
   pull_request:
     branches: [main]
 

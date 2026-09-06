@@ -1,0 +1,1 @@
+{"status":400,"mensaje":"Hay datos inválidos","campos":{"productoId":"debe ser mayor que 0"}}

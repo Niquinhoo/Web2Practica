@@ -1,0 +1,65 @@
+@baseUrl = http://localhost:8080
+
+### Salud — 200
+GET {{baseUrl}}/health
+
+### Productos: catálogo completo real — 200
+GET {{baseUrl}}/api/productos
+
+### Producto existente — 200
+GET {{baseUrl}}/api/productos/1
+
+### Producto inexistente — 404
+GET {{baseUrl}}/api/productos/999999999
+
+### ID de tipo incorrecto — 400
+GET {{baseUrl}}/api/productos/abc
+
+### Crear favorito — 201 y Location
+# @name crearFavorito
+POST {{baseUrl}}/api/favoritos
+Content-Type: application/json
+
+{"productoId": 1, "nota": "Comprar para regalar"}
+
+### Listar — 200
+GET {{baseUrl}}/api/favoritos
+
+### Obtener creado — 200
+GET {{baseUrl}}/api/favoritos/{{crearFavorito.response.body.$.id}}
+
+### Reemplazar — 200; misma fecha, nota null
+PUT {{baseUrl}}/api/favoritos/{{crearFavorito.response.body.$.id}}
+Content-Type: application/json
+
+{"productoId": 2}
+
+### Validación — 400 con campos.productoId
+POST {{baseUrl}}/api/favoritos
+Content-Type: application/json
+
+{"productoId": 0, "nota": "No debe guardarse"}
+
+### JSON mal formado — 400
+POST {{baseUrl}}/api/favoritos
+Content-Type: application/json
+
+{"productoId":
+
+### Eliminar — 204 sin cuerpo
+DELETE {{baseUrl}}/api/favoritos/{{crearFavorito.response.body.$.id}}
+
+### Obtener eliminado — 404
+GET {{baseUrl}}/api/favoritos/{{crearFavorito.response.body.$.id}}
+
+### PUT no recrea — 404
+PUT {{baseUrl}}/api/favoritos/{{crearFavorito.response.body.$.id}}
+Content-Type: application/json
+
+{"productoId": 1}
+
+### Eliminar de nuevo — 404
+DELETE {{baseUrl}}/api/favoritos/{{crearFavorito.response.body.$.id}}
+
+### OpenAPI — 200
+GET {{baseUrl}}/v3/api-docs

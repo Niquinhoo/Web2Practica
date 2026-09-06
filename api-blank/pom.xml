@@ -12,7 +12,7 @@
 	<artifactId>api-blank</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>api-blank</name>
-	<description>Servicio base para Web II</description>
+	<description>TP1: API REST de productos y favoritos para Web II</description>
 	<url>https://github.com/Niquinhoo/Web2Practica/tree/main/api-blank</url>
 	<licenses>
 		<license/>
@@ -30,6 +30,15 @@
 		<java.version>25</java.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>

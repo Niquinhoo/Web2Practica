@@ -6,7 +6,7 @@ Repositorio para almacenar los proyectos prácticos Maven de la materia **Web II
 
 | Proyecto | Descripción |
 |---|---|
-| [`api-blank`](./api-blank) | Proyecto base con Java 25, Spring Boot 4.1.1, Maven Wrapper y Spring Web. |
+| [`api-blank`](./api-blank) | TP1: API REST de productos y favoritos, Java 25 y Spring Boot 4.1.1. Implementación en la rama `TP1`. |
 
 Cada proyecto Maven se guarda en su propia carpeta para mantener separada la práctica del repositorio de teoría.
 

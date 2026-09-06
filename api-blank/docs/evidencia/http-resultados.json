@@ -1,0 +1,11 @@
+{
+  "producto": 200,
+  "productoInexistente": 404,
+  "cantidadProductos": 194,
+  "crearFavorito": 201,
+  "location": [
+    "http://127.0.0.1:8080/api/favoritos/1"
+  ],
+  "validacion": 400,
+  "eliminar": 204
+}
