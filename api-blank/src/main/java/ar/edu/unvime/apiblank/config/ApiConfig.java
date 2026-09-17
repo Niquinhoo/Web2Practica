@@ -15,7 +15,7 @@ public class ApiConfig {
         return api -> api.getPaths().values().forEach(path -> path.readOperations().forEach(operation ->
                 operation.getResponses().forEach((codigo, response) -> {
                     if (response.getContent() != null && (codigo.equals("400")
-                            || codigo.equals("404") || codigo.equals("502"))) {
+                            || codigo.equals("404") || codigo.equals("409") || codigo.equals("502"))) {
                         response.getContent().values().forEach(media -> media.setExample(Map.of(
                                 "status", Integer.parseInt(codigo),
                                 "mensaje", response.getDescription(),
@@ -31,8 +31,8 @@ public class ApiConfig {
 
     @Bean
     OpenAPI openAPI() {
-        return new OpenAPI().info(new Info().title("TP1 · Productos y favoritos").version("1.0.0")
-                .description("Catálogo de DummyJSON de solo lectura y CRUD de favoritos en memoria. "
-                        + "Los favoritos se pierden al reiniciar la aplicación."));
+        return new OpenAPI().info(new Info().title("TP2 · Productos, favoritos y listas").version("2.0.0")
+                .description("Catálogo de DummyJSON de solo lectura y favoritos y listas en PostgreSQL. "
+                        + "Migraciones Flyway y movimiento transaccional entre listas."));
     }
 }

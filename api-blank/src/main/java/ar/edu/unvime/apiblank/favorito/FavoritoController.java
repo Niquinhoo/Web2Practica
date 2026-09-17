@@ -14,7 +14,7 @@ import ar.edu.unvime.apiblank.error.ApiError;
 
 @RestController
 @RequestMapping("/api/favoritos")
-@Tag(name = "Favoritos", description = "CRUD en memoria; admite varias notas para el mismo producto")
+@Tag(name = "Favoritos", description = "CRUD persistente en PostgreSQL; admite varias notas para el mismo producto")
 @ApiResponse(responseCode = "400", description = "Datos o ID inválidos",
         content = @Content(schema = @Schema(implementation = ApiError.class)))
 public class FavoritoController {
@@ -52,7 +52,7 @@ public class FavoritoController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Reemplazar los datos de un favorito",
-            description = "Reemplaza productoId y nota; conserva ID y fecha. No crea si el ID no existe.")
+            description = "Reemplaza productoId, nota y listaId; conserva ID y fecha. No crea si el ID no existe.")
     @ApiResponse(responseCode = "200", description = "Favorito actualizado")
     @ApiResponse(responseCode = "404", description = "Favorito inexistente",
             content = @Content(schema = @Schema(implementation = ApiError.class)))

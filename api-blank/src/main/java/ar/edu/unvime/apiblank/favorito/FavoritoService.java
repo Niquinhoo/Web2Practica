@@ -5,15 +5,18 @@ import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import ar.edu.unvime.apiblank.error.RecursoNoEncontradoException;
+import ar.edu.unvime.apiblank.lista.ListaRepository;
 
 @Service
 public class FavoritoService {
     private final FavoritoRepository repository;
     private final Clock clock;
+    private final ListaRepository listas;
 
-    public FavoritoService(FavoritoRepository repository, Clock clock) {
+    public FavoritoService(FavoritoRepository repository, Clock clock, ListaRepository listas) {
         this.repository = repository;
         this.clock = clock;
+        this.listas = listas;
     }
 
     public List<FavoritoResponse> listar() {
@@ -25,11 +28,13 @@ public class FavoritoService {
     }
 
     public FavoritoResponse crear(FavoritoRequest request) {
-        return respuesta(repository.crear(request.productoId(), request.nota(), Instant.now(clock)));
+        validarLista(request.listaId());
+        return respuesta(repository.crear(request.productoId(), request.nota(), Instant.now(clock), request.listaId()));
     }
 
     public FavoritoResponse actualizar(Long id, FavoritoRequest request) {
-        return respuesta(repository.actualizar(id, request.productoId(), request.nota())
+        validarLista(request.listaId());
+        return respuesta(repository.actualizar(id, request.productoId(), request.nota(), request.listaId())
                 .orElseThrow(() -> noEncontrado(id)));
     }
 
@@ -45,6 +50,11 @@ public class FavoritoService {
 
     private FavoritoResponse respuesta(Favorito favorito) {
         return new FavoritoResponse(favorito.id(), favorito.productoId(),
-                favorito.nota(), favorito.fechaAgregado());
+                favorito.nota(), favorito.fechaAgregado(), favorito.listaId());
+    }
+
+    private void validarLista(Long listaId) {
+        listas.buscarPorId(listaId).orElseThrow(() ->
+                new RecursoNoEncontradoException("No existe la lista " + listaId));
     }
 }

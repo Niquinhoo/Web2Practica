@@ -1,0 +1,19 @@
+{
+  "pidDespues": 25712,
+  "pidAntes": 10120,
+  "despues": {
+    "id": 1,
+    "productoId": 1,
+    "nota": "Persistencia real",
+    "fechaAgregado": "2026-09-17T00:27:46.675513Z",
+    "listaId": 2
+  },
+  "iguales": true,
+  "antes": {
+    "id": 1,
+    "productoId": 1,
+    "nota": "Persistencia real",
+    "fechaAgregado": "2026-09-17T00:27:46.675513Z",
+    "listaId": 2
+  }
+}

@@ -1,187 +1,176 @@
-# TP1 · API REST de productos y favoritos
+# TP2 · Persistencia, migraciones y arquitectura hexagonal
 
-Implementado en la rama `TP1` a partir del proyecto virgen `api-blank`.
-Java 25, Spring Boot 4.1.1, Maven, Spring WebMVC, Bean Validation y springdoc 3.1.0.
+Continuación del TP1 en la rama `TP2`: Java 25, Spring Boot 4.1.1, PostgreSQL,
+Spring Data JPA y Flyway. El catálogo sigue consultando DummyJSON, sin persistir productos.
 
 ## Ejecutar
 
-Desde esta carpeta, en PowerShell:
+Desde `api-blank`, con JDK 25 y Docker apuntando a un motor local:
 
 ```powershell
-.\mvnw.cmd --version
-.\mvnw.cmd test
-.\mvnw.cmd spring-boot:run
-```
-
-En Linux/macOS: `./mvnw test` y `./mvnw spring-boot:run`.
-La primera ejecución necesita Internet para descargar dependencias.
-Maven debe informar **Java 25**. Puede usar otro JDK aunque `java -version` muestre 25.
-En este equipo se puede seleccionar así:
-
-```powershell
-$env:JAVA_HOME = 'C:\Program Files\Java\jdk-25.0.4'
-```
-
-Si Windows muestra `Unable to establish loopback connection` / `Invalid argument: connect`
-y la carpeta temporal del usuario tiene acentos, usar una carpeta ASCII para los sockets
-internos del JDK. Este ajuste afecta solamente esta terminal y sus procesos hijos:
-
-```powershell
-$tp1Temp = Join-Path $env:PUBLIC 'codex-tp1-temp'
-New-Item -ItemType Directory -Force -Path $tp1Temp | Out-Null
-$env:JAVA_TOOL_OPTIONS = "$env:JAVA_TOOL_OPTIONS -Djdk.net.unixdomain.tmpdir=$tp1Temp".Trim()
-.\mvnw.cmd test
-.\mvnw.cmd spring-boot:run
-```
-
-Para empaquetar y ejecutar:
-
-```powershell
+docker compose up -d --wait
 .\mvnw.cmd --batch-mode verify
-java -jar target/api-blank-0.0.1-SNAPSHOT.jar
+.\mvnw.cmd spring-boot:run
 ```
 
-API: <http://localhost:8080>. Detener con Ctrl+C.
+En Linux/macOS usar `./mvnw`. La API queda en [localhost:8080](http://localhost:8080).
+También se puede ejecutar con `java -jar target/api-blank-0.0.1-SNAPSHOT.jar`.
+Maven Wrapper descarga las dependencias; no hace falta instalar Maven.
+
+El contenedor publica `127.0.0.1:55432`, evitando los PostgreSQL locales en 5432.
+Comprobá el motor con `docker context show`: si apunta a otra máquina, su loopback
+no es el de tu PC. Usá un motor local o PostgreSQL local con la misma conexión.
+
+| Variable | Predeterminado | Uso |
+|---|---|---|
+| `DB_URL` | `jdbc:postgresql://127.0.0.1:55432/web2` | Conexión de Spring |
+| `DB_USER` | `web2` | Usuario de Spring y Compose |
+| `DB_PASSWORD` | `web2` | Contraseña de desarrollo de Spring y Compose |
+| `DB_NAME` | `web2` | Base creada por Compose |
+| `DB_PORT` | `55432` | Puerto publicado por Compose |
+
+Si cambiás nombre o puerto, ajustá también `DB_URL`. PostgreSQL aplica las variables
+de inicialización solo con un volumen vacío. `docker compose stop` conserva los datos;
+`docker compose down -v` elimina el volumen, por lo que no debe usarse para conservarlos.
+
+Maven debe informar Java 25 con `.\mvnw.cmd --version`. En este equipo:
+
+```powershell
+$env:JAVA_HOME = 'C:\Program Files\Java\jdk-25.0.2'
+```
+
+Si aparece `Unable to establish loopback connection` con una ruta temporal con
+acentos, usar una ruta ASCII para los sockets del JDK:
+
+```powershell
+$env:JAVA_TOOL_OPTIONS = '-Djdk.net.unixdomain.tmpdir=C:\Users\Public'
+```
+
+### PostgreSQL local
+
+Alternativamente, creá una base `web2` y un usuario `web2` con contraseña `web2`,
+o configurá las variables para una base propia. El usuario necesita permisos para
+crear tablas y esquemas. En este equipo se verificó con PostgreSQL 17 y un clúster
+independiente `.local-postgres` (ignorado por Git), en 127.0.0.1:55432.
+Para volver a levantar ese clúster o detenerlo, desde esta carpeta:
+
+```powershell
+& 'C:\Program Files\PostgreSQL\17\bin\pg_ctl.exe' -D .local-postgres -l target/postgres.log -o '-p 55432 -h 127.0.0.1' -w start
+& 'C:\Program Files\PostgreSQL\17\bin\pg_ctl.exe' -D .local-postgres -m fast -w stop
+```
+
+Elegí Docker o PostgreSQL local: no pueden ocupar el mismo puerto a la vez.
+
+## Migraciones
+
+Flyway corre automáticamente antes de Hibernate; `ddl-auto=validate` comprueba
+el mapeo y `open-in-view=false` cierra la sesión antes de responder por HTTP.
+Spring Boot 4 requiere `spring-boot-starter-flyway` (incluye `flyway-core` y su
+autoconfiguración), más `flyway-database-postgresql`, según la
+[documentación oficial](https://docs.spring.io/spring-boot/how-to/data-initialization.html).
+
+| Migración en `src/main/resources/db/migration` | Efecto |
+|---|---|
+| `V1__create_favoritos.sql` | ID, producto, nota y fecha |
+| `V2__create_listas.sql` | ID y nombre de listas |
+| `V3__add_lista_id_a_favoritos.sql` | Relación nullable, FK e índice |
+| `V4__lista_id_obligatorio.sql` | Crea/localiza “Sin clasificar”, asigna filas antiguas y aplica NOT NULL |
+
+La convención es `V{versión}__{descripción}.sql`, con doble guion bajo.
+Una migración aplicada no se edita: Flyway guarda su checksum y rechaza cambios.
+V4 conserva el historial y adapta los datos existentes antes de agregar NOT NULL.
+
+```powershell
+docker compose exec postgres psql -U web2 -d web2 -c "SELECT version, description, success FROM public.flyway_schema_history ORDER BY installed_rank;"
+```
+
+En PostgreSQL local ejecutar la misma consulta desde psql/pgAdmin.
+La prueba de migraciones aplica V1, inserta un favorito antiguo, aplica V2/V3,
+inserta otro ya clasificado y verifica que V4 conserve ambos correctamente.
 
 ## Endpoints
 
-| Método | Ruta | Éxito | Descripción |
-|---|---|---|---|
-| GET | `/health` | 200 | Comprobación de arranque |
-| GET | `/api/productos` | 200 | Catálogo completo con DTO propio |
-| GET | `/api/productos/{id}` | 200 | Producto por ID |
-| POST | `/api/favoritos` | 201 | Crear; header Location con URL del favorito |
-| GET | `/api/favoritos` | 200 | Listar ordenados por ID |
-| GET | `/api/favoritos/{id}` | 200 | Obtener favorito |
-| PUT | `/api/favoritos/{id}` | 200 | Reemplazar producto y nota |
-| DELETE | `/api/favoritos/{id}` | 204 | Eliminar; sin cuerpo |
+[Swagger UI](http://localhost:8080/swagger-ui.html) ·
+[OpenAPI JSON](http://localhost:8080/v3/api-docs) ·
+[Colección HTTP](docs/tp2.http) · [Evidencia TP2](docs/EVIDENCIA-TP2.md)
 
-## Productos
+| Método | Ruta | Éxito |
+|---|---|---|
+| GET | `/health` | 200 |
+| GET | `/api/productos` y `/api/productos/{id}` | 200 |
+| POST | `/api/favoritos` | 201 + Location |
+| GET | `/api/favoritos` y `/api/favoritos/{id}` | 200 |
+| PUT | `/api/favoritos/{id}` | 200 |
+| DELETE | `/api/favoritos/{id}` | 204 |
+| POST | `/api/listas` | 201 + Location |
+| GET | `/api/listas` y `/api/listas/{id}` | 200 |
+| GET | `/api/listas/{id}/favoritos` | 200 |
+| DELETE | `/api/listas/{id}` | 204 |
+| POST | `/api/listas/{origenId}/mover-favoritos` | 204 |
 
-El backend consume DummyJSON con RestClient. Solicita `/products?limit=0` para obtener
-todo el catálogo; la API propia no implementa paginación. El listado es un array de DTOs:
+Lista: `{"nombre":"Regalos"}`; nombre obligatorio, no blanco, hasta 255 caracteres.
+Favorito (POST/PUT): `{"productoId":1,"nota":"Para regalar","listaId":2}`.
+Producto y lista deben ser positivos; la lista debe existir. Nota opcional, hasta 500
+caracteres. PUT reemplaza producto, nota y lista, conservando ID y fecha UTC.
+La respuesta agrega `id` y `fechaAgregado`. La fecha se normaliza a microsegundos,
+precisión de PostgreSQL. Listados ordenados por ID, sin paginación. Se permiten
+favoritos repetidos y no se consulta DummyJSON al guardarlos.
 
-```json
-{
-  "id": 1,
-  "nombre": "Essence Mascara Lash Princess",
-  "descripcion": "Descripción provista por DummyJSON",
-  "precio": 9.99,
-  "categoria": "beauty"
-}
-```
+Movimiento: `{"destinoId":3}`. Mueve todos los favoritos y elimina el origen, incluso
+si estaba vacío. Conserva ID, nota y fecha de los favoritos y los favoritos previos
+del destino. Origen igual a destino devuelve 400 sin modificar nada.
 
-Los valores dependen del proveedor. No hay operaciones de escritura sobre productos.
+Formato de error: `{"status":400,"mensaje":"...","campos":{}}`.
+400 para validaciones/JSON/IDs inválidos; 404 para recursos inexistentes; 409 para
+conflictos de integridad (incluye borrar una lista con favoritos); 502 para errores
+del catálogo. La FK protege también ante concurrencia: borrar una lista entre su
+validación y la escritura provoca 409, sin referencias huérfanas.
 
-## Favoritos
-
-POST y PUT aceptan:
-
-```json
-{"productoId": 1, "nota": "Comprar para regalar"}
-```
-
-`productoId` es obligatorio y positivo. `nota` es opcional, admite null o cadena vacía
-y tiene un máximo de 500 caracteres. Respuesta de ejemplo:
-
-```json
-{
-  "id": 1,
-  "productoId": 1,
-  "nota": "Comprar para regalar",
-  "fechaAgregado": "2026-09-06T12:00:00Z"
-}
-```
-
-- El backend genera ID y fecha UTC; no forman parte del DTO de entrada.
-- PUT reemplaza producto y nota. Omitir la nota la deja en null. Conserva ID y fecha.
-- Obtener, actualizar o eliminar un ID inexistente devuelve 404. PUT nunca lo crea.
-- Se guarda una referencia positiva al producto sin verificarla contra DummyJSON.
-- Se permiten varios favoritos sobre el mismo producto.
-- Los datos están en memoria y **se pierden al reiniciar**. No hay JPA ni base de datos.
-- Las modificaciones son atómicas. La lista es una copia inmutable ordenada; no se
-  promete una instantánea transaccional de escrituras concurrentes.
-
-Ejemplo PowerShell:
-
-```powershell
-$nuevo = Invoke-RestMethod http://localhost:8080/api/favoritos -Method Post -ContentType 'application/json' -Body '{"productoId":1,"nota":"Comprar para regalar"}'
-Invoke-RestMethod "http://localhost:8080/api/favoritos/$($nuevo.id)"
-Invoke-RestMethod "http://localhost:8080/api/favoritos/$($nuevo.id)" -Method Put -ContentType 'application/json' -Body '{"productoId":2}'
-Invoke-RestMethod "http://localhost:8080/api/favoritos/$($nuevo.id)" -Method Delete
-```
-
-## Errores
-
-El manejador central devuelve siempre status, mensaje y campos:
-
-```json
-{
-  "status": 400,
-  "mensaje": "Hay datos inválidos",
-  "campos": {"productoId": "debe ser mayor que 0"}
-}
-```
-
-| Estado | Situación |
-|---|---|
-| 400 | Validación, JSON mal formado o ID de tipo incorrecto |
-| 404 | Favorito/producto inexistente o ruta inexistente |
-| 405 | Método HTTP no permitido |
-| 415 | Content-Type no soportado |
-| 500 | Error inesperado, sin detalles internos |
-| 502 | Timeout, falla HTTP o contenido inválido de DummyJSON |
-
-campos es un objeto vacío si el error no corresponde a validación de campos.
-Los detalles técnicos del proveedor se registran en el servidor, sin reenviarlos al cliente.
-
-## Configuración
-
-En `src/main/resources/application.properties`:
-
-| Propiedad | Predeterminado |
-|---|---|
-| `dummyjson.base-url` | https://dummyjson.com o variable DUMMYJSON_BASE_URL |
-| `dummyjson.connect-timeout` | 3s |
-| `dummyjson.read-timeout` | 5s |
-
-Los timeouts se pueden reemplazar con propiedades de Spring.
-Los endpoints de productos necesitan Internet durante el uso normal; favoritos funciona
-independientemente del proveedor.
-
-## Arquitectura
+## Puertos y adaptadores: comparación con TP1
 
 ```text
-producto/  Controller → Service → ProductoClient → DummyJsonProductoClient → DummyJSON
-favorito/  Controller → Service → FavoritoRepository → FavoritoRepositoryMemoria
-error/     ApiError, excepciones propias y ApiExceptionHandler
-config/    OpenAPI, reloj UTC y RestClient con timeouts
+producto: Controller → Service → ProductoClient → DummyJsonProductoClient → DummyJSON
+favorito: Controller → Service → FavoritoRepository → FavoritoRepositoryAdapter → JPA → PostgreSQL
+lista:    Controller → Service → ListaRepository → ListaRepositoryAdapter → JPA → PostgreSQL
 ```
 
-Inyección por constructor y tipos separados para DTOs públicos, dominio y DTOs externos.
-El repositorio usa ConcurrentHashMap y AtomicLong. Clock permite probar la fecha generada.
+`FavoritoRepository` es el puerto: expresa operaciones sin tipos JPA. Se eliminó
+`FavoritoRepositoryMemoria` y se agregaron `FavoritoEntity`, `FavoritoJpaRepository`
+y `FavoritoRepositoryAdapter`. Spring Data implementa su interfaz; el adapter traduce
+entidades a records. Las entidades JPA son clases mutables con constructor vacío.
+La relación es `@ManyToOne` unidireccional; sin `@OneToMany` ni cascada de borrado.
 
-## Swagger, pruebas y evidencia
+Cambiar solamente el almacenamiento no exige tocar Service, Controller ni DTOs,
+porque dependen del puerto. En la entrega final sí cambian `Favorito`, Request,
+Response y el puerto para incorporar `listaId`, y `FavoritoService` para validarlo.
+Los métodos y rutas de `FavoritoController` quedan iguales; solo cambia su documentación.
+`ApiExceptionHandler` suma 400 para origen=destino y 409 de integridad; `ApiConfig`
+actualiza Swagger. Todo `producto/`, `RestClientConfig`, `HealthController`, `ApiError`
+y las excepciones de TP1 quedan exactamente iguales.
 
-- [Swagger UI](http://localhost:8080/swagger-ui.html)
-- [OpenAPI JSON](http://localhost:8080/v3/api-docs)
-- [OpenAPI YAML](http://localhost:8080/v3/api-docs.yaml)
-- [Requests manuales](docs/tp1.http): ejecutar en orden con REST Client de VS Code;
-  reutiliza el ID obtenido mediante una solicitud nombrada.
-- [Evidencia de verificación](docs/EVIDENCIA-TP1.md)
-- [Informe previo](docs/INFORME-PLAN-TP1.md)
+## Transacción y ACID
 
-Swagger permite ejecutar la API con Try it out. Las operaciones modifican los favoritos reales.
-La suite prueba servicios con Mockito, controladores con MockMvc, repositorio real, cliente
-HTTP con servidor local del JDK (incluido timeout), integración de Spring, CRUD y OpenAPI.
-Los tests no realizan consultas a Internet.
+`ListaService.moverFavoritos` valida ambas listas y, dentro de `@Transactional`,
+reasigna favoritos con una sola sentencia y borra el origen. Los adapters participan
+de la misma transacción. Si falla el DELETE, PostgreSQL revierte también el UPDATE.
+Sin la transacción, el UPDATE podría confirmarse y luego fallar el DELETE: quedarían
+favoritos movidos y el origen aún presente. La atomicidad evita ese resultado parcial;
+FK y NOT NULL mantienen la consistencia. La FK por sí sola impide referencias huérfanas,
+pero no garantiza la atomicidad de ambas escrituras. El aislamiento es el predeterminado
+de PostgreSQL (READ COMMITTED); la durabilidad conserva lo confirmado al reiniciar.
 
-Mockito usa mock-maker-subclass: se simulan interfaces y servicios no finales, sin
-instrumentar DTOs ni auto-adjuntar un agente a Java 25.
-GitHub Actions ejecuta verify en pushes a main y TP1, y en PRs a main.
+## Pruebas
 
-## Referencias
+Con PostgreSQL disponible: `.\mvnw.cmd --batch-mode verify`.
+Los tests de Spring usan exclusivamente `tp2_test`, sin borrar tablas de `public`.
+La prueba de migraciones crea y elimina un esquema aleatorio. El usuario de pruebas
+necesita permisos para crear esquemas y funciones. No ejecutar suites simultáneas
+sobre el mismo `tp2_test`. No se usa H2 ni se consulta Internet durante las pruebas.
 
-- [RestClient de Spring](https://docs.spring.io/spring-framework/reference/7.1/integration/rest-clients.html)
-- [DummyJSON Products](https://dummyjson.com/docs/products)
-- [springdoc: instalación](https://springdoc.org/getting-started.html)
+Se conservan las pruebas de TP1 y se reemplazan las específicas del Map por pruebas
+contra PostgreSQL: CRUD, validaciones, listas, conflicto 409, movimiento y migraciones.
+La prueba de rollback instala temporalmente un trigger que hace fallar el DELETE
+después del UPDATE real, y comprueba que el favorito siga en origen.
+GitHub Actions levanta PostgreSQL y ejecuta `verify` en pushes a `main`, `TP1`, `TP2`
+y PRs a `main`. Los documentos de TP1 quedan como registro histórico; para la API
+actual usar `tp2.http`, que incluye el campo obligatorio `listaId`.

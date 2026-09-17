@@ -8,4 +8,5 @@ public record FavoritoResponse(
         @Schema(example = "1") Long productoId,
         @Schema(example = "Comprar para regalar") String nota,
         @Schema(description = "Fecha UTC generada al crear; se conserva al actualizar",
-                example = "2026-09-06T12:00:00Z") Instant fechaAgregado) {}
+                example = "2026-09-06T12:00:00Z") Instant fechaAgregado,
+        @Schema(example = "1") Long listaId) {}

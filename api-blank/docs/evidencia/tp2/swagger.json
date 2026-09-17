@@ -1,0 +1,19 @@
+{
+  "paths": [
+    "/api/favoritos/{id}",
+    "/api/listas",
+    "/api/listas/{origenId}/mover-favoritos",
+    "/api/favoritos",
+    "/health",
+    "/api/productos",
+    "/api/productos/{id}",
+    "/api/listas/{id}",
+    "/api/listas/{id}/favoritos"
+  ],
+  "swaggerStatus": 200,
+  "tags": [
+    "Productos",
+    "Favoritos",
+    "Listas"
+  ]
+}

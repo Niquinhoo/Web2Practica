@@ -13,3 +13,6 @@
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# PostgreSQL local de desarrollo
+**/.local-postgres/

@@ -1,0 +1,62 @@
+[
+  {
+    "method": "DELETE",
+    "path": "/api/listas/2",
+    "status": 409,
+    "body": "{\"status\":409,\"mensaje\":\"Conflicto de integridad: no se puede borrar una lista con favoritos ni referenciar una lista eliminada\",\"campos\":{}}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/listas",
+    "status": 400,
+    "body": "{\"status\":400,\"mensaje\":\"Hay datos inválidos\",\"campos\":{\"nombre\":\"es obligatorio\"}}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/favoritos",
+    "status": 400,
+    "body": "{\"status\":400,\"mensaje\":\"Hay datos inválidos\",\"campos\":{\"listaId\":\"es obligatorio\"}}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/listas/2/mover-favoritos",
+    "status": 404,
+    "body": "{\"status\":404,\"mensaje\":\"No existe la lista 9223372036854775807\",\"campos\":{}}"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/favoritos/1",
+    "status": 200,
+    "body": "{\"id\":1,\"productoId\":2,\"nota\":\"Actualizado\",\"fechaAgregado\":\"2026-09-17T00:27:46.675513Z\",\"listaId\":2}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/listas/2/mover-favoritos",
+    "status": 204,
+    "body": []
+  },
+  {
+    "method": "GET",
+    "path": "/api/listas/2",
+    "status": 404,
+    "body": "{\"status\":404,\"mensaje\":\"No existe la lista 2\",\"campos\":{}}"
+  },
+  {
+    "method": "GET",
+    "path": "/api/listas/3/favoritos",
+    "status": 200,
+    "body": "[{\"id\":1,\"productoId\":2,\"nota\":\"Actualizado\",\"fechaAgregado\":\"2026-09-17T00:27:46.675513Z\",\"listaId\":3}]"
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/favoritos/1",
+    "status": 204,
+    "body": []
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/listas/3",
+    "status": 204,
+    "body": []
+  }
+]

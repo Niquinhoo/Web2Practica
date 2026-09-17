@@ -18,6 +18,18 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> conflicto(org.springframework.dao.DataIntegrityViolationException ex) {
+        return ResponseEntity.status(409).body(new ApiError(409,
+                "Conflicto de integridad: no se puede borrar una lista con favoritos ni referenciar una lista eliminada",
+                Map.of()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> solicitudInvalida(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(new ApiError(400, ex.getMessage(), Map.of()));
+    }
+
     @ExceptionHandler(RecursoNoEncontradoException.class)
     public ResponseEntity<ApiError> noEncontrado(RecursoNoEncontradoException ex) {
         return ResponseEntity.status(404).body(new ApiError(404, ex.getMessage(), Map.of()));

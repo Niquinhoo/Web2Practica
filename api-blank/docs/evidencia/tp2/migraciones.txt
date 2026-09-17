@@ -1,0 +1,7 @@
+ version | description | success
+---------+-------------+---------
+ 1       | create favoritos         | t
+ 2       | create listas            | t
+ 3       | add lista id a favoritos | t
+ 4       | lista id obligatorio     | t
+(4 rows)
