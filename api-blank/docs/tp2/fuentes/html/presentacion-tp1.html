@@ -1,0 +1,626 @@
+<!DOCTYPE html><html lang="es" dir="ltr" data-theme="dark" class="astro-vdxcvpsm"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Favoritos: cerrar la arquitectura en capas | Web II</title><link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml"/><meta name="generator" content="Astro v7.1.3"/><meta name="generator" content="Starlight v0.41.4"/><meta property="og:title" content="Favoritos: cerrar la arquitectura en capas"/><meta property="og:type" content="article"/><meta property="og:locale" content="es"/><meta property="og:description" content="Presentación de la resolución de Favoritos en TP1 — arquitectura en capas, DTOs, validación, manejo de errores y documentación con Swagger."/><meta property="og:site_name" content="Web II"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="Presentación de la resolución de Favoritos en TP1 — arquitectura en capas, DTOs, validación, manejo de errores y documentación con Swagger."/><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/_astro/print.ehPL0gv-.css" media="print"><link rel="stylesheet" href="/_astro/common.CZ0EvY4u.css"><style>@layer starlight.components{.card:where(.astro-zts4jgjd){--sl-card-border:var(--sl-color-purple);--sl-card-bg:var(--sl-color-purple-low);border:1px solid var(--sl-color-gray-5);background-color:var(--sl-color-black);flex-direction:column;gap:clamp(.5rem,.125rem + 1vw,1rem);padding:clamp(1rem,.125rem + 3vw,2.5rem)}.card:where(.astro-zts4jgjd):nth-child(4n+1){--sl-card-border:var(--sl-color-orange);--sl-card-bg:var(--sl-color-orange-low)}.card:where(.astro-zts4jgjd):nth-child(4n+3){--sl-card-border:var(--sl-color-green);--sl-card-bg:var(--sl-color-green-low)}.card:where(.astro-zts4jgjd):nth-child(4n+4){--sl-card-border:var(--sl-color-red);--sl-card-bg:var(--sl-color-red-low)}.card:where(.astro-zts4jgjd):nth-child(4n+5){--sl-card-border:var(--sl-color-blue);--sl-card-bg:var(--sl-color-blue-low)}.title:where(.astro-zts4jgjd){font-weight:600;font-size:var(--sl-text-h4);color:var(--sl-color-white);line-height:var(--sl-line-height-headings);align-items:center;gap:1rem}.card:where(.astro-zts4jgjd) .icon:where(.astro-zts4jgjd){border:1px solid var(--sl-card-border);background-color:var(--sl-card-bg);border-radius:.25rem;flex-shrink:0;padding:.2em}.card:where(.astro-zts4jgjd) .body:where(.astro-zts4jgjd){font-size:clamp(var(--sl-text-sm), calc(.5rem + 1vw), var(--sl-text-body));margin:0}.card-grid:where(.astro-lmor3ela){grid-template-columns:100%;gap:1rem;display:grid}.card-grid:where(.astro-lmor3ela)>*{margin-top:0!important}@media (width>=50rem){.card-grid:where(.astro-lmor3ela){grid-template-columns:1fr 1fr;gap:1.5rem}.stagger:where(.astro-lmor3ela){--stagger-height:5rem;padding-bottom:var(--stagger-height)}.stagger:where(.astro-lmor3ela)>:nth-child(2n){transform:translateY(var(--stagger-height))}}}
+@layer starlight.components{:root{--sl-badge-default-border:var(--sl-color-accent);--sl-badge-default-bg:var(--sl-color-accent-low);--sl-badge-default-text:#fff;--sl-badge-note-border:var(--sl-color-blue);--sl-badge-note-bg:var(--sl-color-blue-low);--sl-badge-note-text:#fff;--sl-badge-danger-border:var(--sl-color-red);--sl-badge-danger-bg:var(--sl-color-red-low);--sl-badge-danger-text:#fff;--sl-badge-success-border:var(--sl-color-green);--sl-badge-success-bg:var(--sl-color-green-low);--sl-badge-success-text:#fff;--sl-badge-caution-border:var(--sl-color-orange);--sl-badge-caution-bg:var(--sl-color-orange-low);--sl-badge-caution-text:#fff;--sl-badge-tip-border:var(--sl-color-purple);--sl-badge-tip-bg:var(--sl-color-purple-low);--sl-badge-tip-text:#fff}[data-theme=light]:root{--sl-badge-default-bg:var(--sl-color-accent-high);--sl-badge-note-bg:var(--sl-color-blue-high);--sl-badge-danger-bg:var(--sl-color-red-high);--sl-badge-success-bg:var(--sl-color-green-high);--sl-badge-caution-bg:var(--sl-color-orange-high);--sl-badge-tip-bg:var(--sl-color-purple-high)}.sl-badge:where(.astro-7hkzaclv){border:1px solid var(--sl-color-border-badge);font-family:var(--sl-font-system-mono);color:var(--sl-color-text-badge);background-color:var(--sl-color-bg-badge);overflow-wrap:anywhere;border-radius:.25rem;line-height:normal;display:inline-block}.sidebar-content .sl-badge:where(.astro-7hkzaclv){line-height:1;font-size:var(--sl-text-xs);padding:.125rem .375rem}.sidebar-content a[aria-current=page]>.sl-badge:where(.astro-7hkzaclv){--sl-color-bg-badge:transparent;--sl-color-border-badge:currentColor;color:inherit}.default:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-default-bg);--sl-color-border-badge:var(--sl-badge-default-border);--sl-color-text-badge:var(--sl-badge-default-text)}.note:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-note-bg);--sl-color-border-badge:var(--sl-badge-note-border);--sl-color-text-badge:var(--sl-badge-note-text)}.danger:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-danger-bg);--sl-color-border-badge:var(--sl-badge-danger-border);--sl-color-text-badge:var(--sl-badge-danger-text)}.success:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-success-bg);--sl-color-border-badge:var(--sl-badge-success-border);--sl-color-text-badge:var(--sl-badge-success-text)}.tip:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-tip-bg);--sl-color-border-badge:var(--sl-badge-tip-border);--sl-color-text-badge:var(--sl-badge-tip-text)}.caution:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-caution-bg);--sl-color-border-badge:var(--sl-badge-caution-border);--sl-color-text-badge:var(--sl-badge-caution-text)}.small:where(.astro-7hkzaclv){font-size:var(--sl-text-xs);padding:.125rem .25rem}.medium:where(.astro-7hkzaclv){font-size:var(--sl-text-sm);padding:.175rem .35rem}.large:where(.astro-7hkzaclv){font-size:var(--sl-text-base);padding:.225rem .45rem}.sl-markdown-content :is(h1,h2,h3,h4,h5,h6) .sl-badge:where(.astro-7hkzaclv){vertical-align:middle}.sl-link-button:where(.astro-hlbqph7b){font-size:var(--sl-text-sm);outline-offset:.25rem;border:1px solid #0000;border-radius:999rem;align-items:center;gap:.5em;padding:.4375rem 1.125rem;line-height:1.1875;text-decoration:none;display:inline-flex}.sl-link-button:where(.astro-hlbqph7b).primary{background:var(--sl-color-text-accent);border-color:var(--sl-color-text-accent);color:var(--sl-color-black)}.sl-link-button:where(.astro-hlbqph7b).primary:hover{color:var(--sl-color-black)}.sl-link-button:where(.astro-hlbqph7b).secondary{border-color:inherit;color:var(--sl-color-white)}.sl-link-button:where(.astro-hlbqph7b).minimal{color:var(--sl-color-white);padding-inline:0}.sl-link-button:where(.astro-hlbqph7b) svg{flex-shrink:0}@media (width>=50rem){.sl-link-button:where(.astro-hlbqph7b){font-size:var(--sl-text-base);padding:.9375rem 1.25rem}}.sl-markdown-content .sl-link-button:where(.astro-hlbqph7b){margin-inline-end:1rem}.sl-markdown-content .sl-link-button:where(.astro-hlbqph7b):not(:where(p *)){margin-block:1rem}}
+@layer starlight.components{svg:where(.astro-n5k4ipy7){color:var(--sl-icon-color);font-size:var(--sl-icon-size,1em);width:1em;height:1em}}
+@layer starlight.components{starlight-tabs:where(.astro-hbt4ddzs){display:block}.tablist-wrapper:where(.astro-hbt4ddzs){overflow-x:auto}:where(.astro-hbt4ddzs)[role=tablist]{border-bottom:2px solid var(--sl-color-gray-5);padding:0;list-style:none;display:flex}.tab:where(.astro-hbt4ddzs){display:flex}.tab:where(.astro-hbt4ddzs)>:where(.astro-hbt4ddzs)[role=tab]{--sl-tab-color-border:var(--sl-color-gray-5);line-height:var(--sl-line-height-headings);box-shadow:0 2px 0 var(--sl-tab-color-border);color:var(--sl-color-gray-3);outline-offset:var(--sl-outline-offset-inside);overflow-wrap:initial;align-items:center;gap:.5rem;padding:.275rem 1.25rem;text-decoration:none;display:flex}.tab:where(.astro-hbt4ddzs) :where(.astro-hbt4ddzs)[role=tab][aria-selected=true]{--sl-tab-color-border:var(--sl-color-text-accent);color:var(--sl-color-white);font-weight:600}.tablist-wrapper:where(.astro-hbt4ddzs)~[role=tabpanel]{margin-top:1rem}.sl-steps{--bullet-size:calc(var(--sl-line-height) * 1rem);--bullet-margin:.375rem;counter-reset:steps-counter var(--sl-steps-start,0);padding-inline-start:0;list-style:none}.sl-steps>li{counter-increment:steps-counter;padding-inline-start:calc(var(--bullet-size) + 1rem);min-height:calc(var(--bullet-size) + var(--bullet-margin));padding-bottom:1px;position:relative}.sl-steps>li+li{margin-top:0}.sl-steps>li:before{content:counter(steps-counter);top:0;width:var(--bullet-size);height:var(--bullet-size);line-height:var(--bullet-size);font-size:var(--sl-text-xs);text-align:center;color:var(--sl-color-white);background-color:var(--sl-color-gray-6);box-shadow:inset 0 0 0 1px var(--sl-color-gray-5);border-radius:99rem;font-weight:600;position:absolute;inset-inline-start:0}.sl-steps>li:after{--guide-width:1px;content:"";top:calc(var(--bullet-size) + var(--bullet-margin));bottom:var(--bullet-margin);width:var(--guide-width);background-color:var(--sl-color-hairline-light);position:absolute;inset-inline-start:calc((var(--bullet-size) - var(--guide-width)) / 2)}}@layer starlight.content{.sl-steps>li>:first-child{--lh:calc(1em * var(--sl-line-height));--shift-y:calc(.5 * (var(--bullet-size) - var(--lh)));transform:translateY(var(--shift-y));margin-bottom:var(--shift-y)}.sl-steps>li>:first-child:where(h1,h2,h3,h4,h5,h6){--lh:calc(1em * var(--sl-line-height-headings))}@supports (--prop:1lh){.sl-steps>li>:first-child{--lh:1lh}}}
+@layer starlight.components{.sl-link-card:where(.astro-vodiqeol){border:1px solid var(--sl-color-gray-5);box-shadow:var(--sl-shadow-sm);border-radius:.5rem;grid-template-columns:1fr auto;gap:.5rem;padding:1rem;display:grid;position:relative}a:where(.astro-vodiqeol){line-height:var(--sl-line-height-headings);text-decoration:none}a:where(.astro-vodiqeol):before{content:"";position:absolute;inset:0}.stack:where(.astro-vodiqeol){flex-direction:column;gap:.5rem}.title:where(.astro-vodiqeol){color:var(--sl-color-white);font-weight:600;font-size:var(--sl-text-lg)}.description:where(.astro-vodiqeol){color:var(--sl-color-gray-3);line-height:1.5}.icon:where(.astro-vodiqeol){color:var(--sl-color-gray-3)}.sl-link-card:where(.astro-vodiqeol):hover{background:var(--sl-color-gray-7,var(--sl-color-gray-6));border-color:var(--sl-color-gray-2)}.sl-link-card:where(.astro-vodiqeol):hover .icon:where(.astro-vodiqeol){color:var(--sl-color-white)}}
+</style><script type="module" src="/_astro/page.LAbJoB63.js"></script><link rel="stylesheet" href="/_astro/tp1-favoritos-presentacion.CCojSo7Q.css"></head><body class="astro-vdxcvpsm"><a class="sl-skip-link astro-vxeigawq" href="#_top">Ir al contenido</a><div class="page sl-flex astro-gqpr5s5a"><header class="header astro-gqpr5s5a"><div class="header astro-nczgtkxc"><div class="title-wrapper sl-flex astro-nczgtkxc"><a href="/" class="site-title sl-flex astro-clw6ags5"><img class="light:sl-hidden print:hidden astro-clw6ags5" alt="Web II — Universidad Nacional de Villa Mercedes" src="/_astro/web-ii-logo-dark.DZkE8zqB.svg" width="256" height="48"><img class="dark:sl-hidden print:block astro-clw6ags5" alt="Web II — Universidad Nacional de Villa Mercedes" src="/_astro/web-ii-logo-light.BlJd4hlf.svg" width="256" height="48"><span class="sr-only astro-clw6ags5" translate="no">Web II</span></a></div><div class="sl-flex print:hidden astro-nczgtkxc"><site-search class="astro-nczgtkxc astro-r5ar4xm7" data-translations="{&quot;placeholder&quot;:&quot;Buscar&quot;,&quot;clear_search&quot;:&quot;Limpiar&quot;,&quot;load_more&quot;:&quot;Cargar más resultados&quot;,&quot;search_label&quot;:&quot;Buscar página&quot;,&quot;filters_label&quot;:&quot;Filtros&quot;,&quot;zero_results&quot;:&quot;Ningún resultado para: [SEARCH_TERM]&quot;,&quot;many_results&quot;:&quot;[COUNT] resultados para: [SEARCH_TERM]&quot;,&quot;one_result&quot;:&quot;[COUNT] resultado para: [SEARCH_TERM]&quot;,&quot;alt_search&quot;:&quot;Ningún resultado para [SEARCH_TERM]. Mostrando resultados para: [DIFFERENT_TERM]&quot;,&quot;search_suggestion&quot;:&quot;Ningún resultado para [SEARCH_TERM]. Prueba alguna de estas búsquedas:&quot;,&quot;searching&quot;:&quot;Buscando [SEARCH_TERM]...&quot;}"><button data-open-modal disabled aria-label="Buscar" aria-keyshortcuts="Control+K" class="astro-r5ar4xm7"><svg aria-hidden="true" class="astro-r5ar4xm7 astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg><span class="sl-hidden md:sl-block astro-r5ar4xm7" aria-hidden="true">Buscar</span><kbd class="sl-hidden md:sl-flex astro-r5ar4xm7" style="display: none;"><kbd class="astro-r5ar4xm7">Ctrl</kbd><kbd class="astro-r5ar4xm7">K</kbd></kbd></button><dialog style="padding:0" aria-label="Buscar" class="astro-r5ar4xm7"><div class="dialog-frame sl-flex astro-r5ar4xm7"><button data-close-modal class="sl-flex md:sl-hidden astro-r5ar4xm7">Cancelar</button><div class="search-container astro-r5ar4xm7"><div id="starlight__search" class="astro-r5ar4xm7"></div></div></div></dialog></site-search><script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script><script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.CM1HKbUQ.js"></script></div><div class="sl-hidden md:sl-flex print:hidden right-group astro-nczgtkxc"><div class="sl-flex social-icons astro-nczgtkxc"></div><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-r2p65idu"><span class="sr-only astro-r2p65idu">Seleccionar tema</span><svg aria-hidden="true" class="icon label-icon astro-r2p65idu astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-r2p65idu"><option value="dark" class="astro-r2p65idu">Oscuro</option><option value="light" class="astro-r2p65idu">Claro</option><option value="auto" selected class="astro-r2p65idu">Automático</option></select><svg aria-hidden="true" class="icon caret astro-r2p65idu astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script><script type="module">var e=`starlight-theme`,t=e=>e===`auto`||e===`dark`||e===`light`?e:`auto`,n=()=>t(typeof localStorage<`u`&&localStorage.getItem(e));function r(t){typeof localStorage<`u`&&localStorage.setItem(e,t===`light`||t===`dark`?t:``)}var i=()=>matchMedia(`(prefers-color-scheme: light)`).matches?`light`:`dark`;function a(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e===`auto`?i():e,r(e)}matchMedia(`(prefers-color-scheme: light)`).addEventListener(`change`,()=>{n()===`auto`&&a(`auto`)});var o=class extends HTMLElement{constructor(){super(),a(n()),this.querySelector(`select`)?.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&a(t(e.currentTarget.value))})}};customElements.define(`starlight-theme-select`,o);</script><script type="module">var e=class extends HTMLElement{constructor(){super();let e=this.querySelector(`select`);e&&(e.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=e.currentTarget.value)}),window.addEventListener(`pageshow`,t=>{if(!t.persisted)return;let n=e.querySelector(`option[selected]`)?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}};customElements.define(`starlight-lang-select`,e);</script></div></div></header><div class="main-frame astro-gqpr5s5a"><script type="module">var e=document.getElementById(`starlight__sidebar`),t=e?.querySelector(`sl-sidebar-state-persist`),n=`sl-sidebar-state`,r=()=>{let r=[],i=t?.dataset.hash||``;try{let e=sessionStorage.getItem(n),t=JSON.parse(e||`{}`);Array.isArray(t.open)&&t.hash===i&&(r=t.open)}catch{}return{hash:i,open:r,scroll:e?.scrollTop||0}},i=e=>{try{sessionStorage.setItem(n,JSON.stringify(e))}catch{}},a=()=>i(r()),o=(e,t)=>{let n=r();n.open[t]=e,i(n)};t?.addEventListener(`click`,e=>{if(!(e.target instanceof Element))return;let t=e.target.closest(`summary`)?.closest(`details`);if(!t)return;let n=t.querySelector(`sl-sidebar-restore`),r=parseInt(n?.dataset.index||``);isNaN(r)||o(!t.open,r)}),addEventListener(`visibilitychange`,()=>{document.visibilityState===`hidden`&&a()});</script><div class="lg:sl-flex astro-abfeecmu"><div class="main-pane astro-abfeecmu"><main data-pagefind-body class="astro-vdxcvpsm" lang="es" dir="ltr"><div class="content-panel astro-oil7k7jf"><div class="sl-container astro-oil7k7jf"><h1 id="_top" class="astro-2sm4b3ln">Favoritos: cerrar la arquitectura en capas</h1></div></div><div class="content-panel astro-oil7k7jf"><div class="sl-container astro-oil7k7jf"><div class="sl-markdown-content"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"><div>
+<div class="tp1-deck" id="tp1-deck" tabindex="0">
+  <div class="progress" id="tp1-progress"></div>
+  <div class="chrome-top">
+    <span><span class="brand">TP1</span> · Favoritos — arquitectura en capas</span>
+    <span>rama develop</span>
+  </div>
+
+  <main class="stage">
+
+    <section class="slide active">
+      <div class="cover">
+        <div class="cover-eyebrow">TP1 · Spring Boot — rama develop</div>
+        <h1>Favoritos: cerrar la<br>arquitectura en capas</h1>
+        <p class="cover-sub">De un catálogo de solo lectura a un CRUD propio en memoria — con el porqué de cada decisión, hasta llegar a Swagger.</p>
+        <div class="cover-meta">
+          <span>Silva Rodrigo Nahuel</span><span class="dot">•</span><span>demo · localhost:8080</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Agenda</span><span class="objpill">7 objetivos del TP1</span></div>
+      <h2>¿Qué pide el TP1, y quién lo resuelve?</h2>
+      <div class="legend">
+        <span><i style="background:var(--tp1-success)"></i>Resuelto antes de hoy</span>
+        <span><i style="background:var(--tp1-accent)"></i>Se completa hoy (Favoritos)</span>
+        <span><i style="background:var(--tp1-warn)"></i>Ya armado — hoy se pone a prueba</span>
+      </div>
+      <table>
+        <tr><th>#</th><th>Objetivo</th><th>Estado</th></tr>
+        <tr><td>1</td><td>Configurar un proyecto Spring Boot con Maven</td><td><span class="status status--done">Setup</span></td></tr>
+        <tr><td>2</td><td>Arquitectura en capas (Controller → Service → Repository)</td><td><span class="status status--today">Hoy</span></td></tr>
+        <tr><td>3</td><td>Consumir un servicio web externo desde el backend</td><td><span class="status status--done">Productos</span></td></tr>
+        <tr><td>4</td><td>API RESTful propia, con DTOs desacoplados del modelo interno</td><td><span class="status status--today">Hoy</span></td></tr>
+        <tr><td>5</td><td>Aplicar validación de datos de entrada</td><td><span class="status status--today">Hoy</span></td></tr>
+        <tr><td>6</td><td>Implementar manejo uniforme de errores</td><td><span class="status status--reuse">Se activa</span></td></tr>
+        <tr><td>7</td><td>Documentar la API con Swagger/OpenAPI</td><td><span class="status status--reuse">Se amplía</span></td></tr>
+      </table>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Teoría · antes de tipear</span><span class="objpill">Objetivo 2</span></div>
+      <h2>Controller → Service → Repository</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es la inversión de dependencias?</span>
+              <span class="v">Que una capa dependa de una <strong>interfaz</strong> (el "qué") y no de una clase concreta (el "cómo") de la capa de abajo. Así se puede cambiar la implementación sin tocar quien la usa.</span>
+            </div>
+          </div>
+          <ul>
+            <li>Se puede testear cada capa aislada, mockeando la interfaz de la que depende.</li>
+            <li>Cambiar el proveedor de datos no debería obligar a tocar las capas de arriba.</li>
+            <li><strong>Cómo lo implementamos:</strong> las mismas 3 capas para <code>productos</code> y <code>favoritos</code> — solo cambia qué hay debajo del Service (un cliente HTTP o un repository en memoria).</li>
+          </ul>
+        </div>
+        <div class="diagram-wrap">
+          <svg class="diagram" viewBox="0 0 640 300" role="img" aria-label="Diagrama de capas: Productos y Favoritos comparten Controller, Service, Repository y la infraestructura transversal">
+            <defs>
+              <marker id="tp1-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--tp1-ink-muted)"></path>
+              </marker>
+            </defs>
+            <text x="170" y="14" class="dtext-lane" text-anchor="middle">Productos</text>
+            <text x="470" y="14" class="dtext-lane" text-anchor="middle">Favoritos</text>
+
+            <rect class="dbox" x="60" y="26" width="220" height="42" rx="7"></rect>
+            <text x="170" y="52" class="dtext" text-anchor="middle">ProductoController</text>
+            <rect class="dbox-fav" x="360" y="26" width="220" height="42" rx="7"></rect>
+            <text x="470" y="52" class="dtext" text-anchor="middle">FavoritoController</text>
+
+            <line x1="170" y1="68" x2="170" y2="100" class="dline" marker-end="url(#tp1-arrow)"></line>
+            <line x1="470" y1="68" x2="470" y2="100" class="dline" marker-end="url(#tp1-arrow)"></line>
+
+            <rect class="dbox" x="60" y="100" width="220" height="42" rx="7"></rect>
+            <text x="170" y="126" class="dtext" text-anchor="middle">ProductoService</text>
+            <rect class="dbox-fav" x="360" y="100" width="220" height="42" rx="7"></rect>
+            <text x="470" y="126" class="dtext" text-anchor="middle">FavoritoService</text>
+
+            <line x1="170" y1="142" x2="170" y2="174" class="dline" marker-end="url(#tp1-arrow)"></line>
+            <line x1="470" y1="142" x2="470" y2="174" class="dline" marker-end="url(#tp1-arrow)"></line>
+
+            <rect class="dbox" x="60" y="174" width="220" height="42" rx="7"></rect>
+            <text x="170" y="200" class="dtext" text-anchor="middle">DummyJsonClient</text>
+            <rect class="dbox-fav" x="360" y="174" width="220" height="42" rx="7"></rect>
+            <text x="470" y="200" class="dtext" text-anchor="middle">FavoritoRepository</text>
+
+            <line x1="170" y1="216" x2="170" y2="246" class="dline"></line>
+            <line x1="470" y1="216" x2="470" y2="246" class="dline"></line>
+            <line x1="170" y1="246" x2="470" y2="246" class="dline"></line>
+            <line x1="320" y1="246" x2="320" y2="256" class="dline" marker-end="url(#tp1-arrow)"></line>
+
+            <rect class="dbox-shared" x="60" y="258" width="520" height="36" rx="7"></rect>
+            <text x="320" y="280" class="dtext-shared" text-anchor="middle">GlobalExceptionHandler + OpenAPI/Swagger — transversal, no se toca</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">De dónde arrancamos</span><span class="objpill">Estado real en main</span></div>
+      <h2>Las 8 consignas del TP1, evaluadas contra el código</h2>
+      <p class="lead">El enunciado plantea <strong>7 objetivos</strong> generales (slide anterior) y los baja a estas <strong>8 consignas</strong> concretas — por eso cambia el número de una lista a la otra.</p>
+      <div class="legend">
+        <span><i style="background:var(--tp1-success)"></i>Resuelto</span>
+        <span><i style="background:var(--tp1-warn)"></i>Infraestructura lista, sin lógica</span>
+        <span><i style="background:var(--tp1-danger)"></i>Sin empezar</span>
+      </div>
+      <table>
+        <tr><th>#</th><th>Consigna</th><th>Estado</th></tr>
+        <tr><td>1</td><td>Setup del proyecto</td><td><span class="status status--done">Completo</span></td></tr>
+        <tr><td>2</td><td>Catálogo de productos (API externa)</td><td><span class="status status--none">Solo andamiaje</span></td></tr>
+        <tr><td>3</td><td>Dominio Favorito + repository en memoria</td><td><span class="status status--none">Nada</span></td></tr>
+        <tr><td>4</td><td>DTOs de favoritos</td><td><span class="status status--none">Nada</span></td></tr>
+        <tr><td>5</td><td>Controller de favoritos (CRUD)</td><td><span class="status status--none">Nada</span></td></tr>
+        <tr><td>6</td><td>Validación</td><td><span class="status status--reuse">Infra lista</span></td></tr>
+        <tr><td>7</td><td>Manejo uniforme de errores</td><td><span class="status status--done">Casi completo</span></td></tr>
+        <tr><td>8</td><td>Documentación (Swagger)</td><td><span class="status status--reuse">Parcial</span></td></tr>
+      </table>
+      <p class="lead">Esto es lo que muestra <code>main</code> — lo único que ven los alumnos. <code>develop</code> (esta rama) ya venía adelantada: el punto 2 se había resuelto <strong>antes</strong> de esta clase.</p>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Productos · RestClient</span><span class="objpill">Objetivo 3</span></div>
+      <h2>El primer contacto con una API externa</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// RestClientConfig</span>
+<span class="tok-m">@Configuration</span>
+<span class="tok-k">public class</span> <span class="tok-t">RestClientConfig</span> {
+
+    <span class="tok-m">@Bean</span>
+    <span class="tok-k">public</span> RestClient dummyJsonRestClient(
+            <span class="tok-m">@Value</span>(<span class="tok-s">"${app.dummyjson.base-url}"</span>) String baseUrl) {
+        <span class="tok-k">return</span> RestClient.builder()
+                .baseUrl(baseUrl)
+                .build();
+    }
+}</code></pre>
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es RestClient?</span>
+              <span class="v">El cliente HTTP declarativo de Spring para consumir APIs REST — la forma moderna de reemplazar a <code>RestTemplate</code>.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> un único <code>@Bean</code> centraliza la URL base (leída de <code>application.properties</code>) — evita repetirla en cada llamada y permite apuntar a otra URL en tests sin tocar código.</li>
+            <li>El JSON externo se modela aparte, en <code>DummyJsonProducto</code>/<code>DummyJsonProductosResponse</code> — dos records que calcan exactamente los campos de DummyJSON, solo para que Jackson los deserialice.</li>
+            <li>Separar la <em>configuración</em> (URL, timeouts) de la <em>lógica de las llamadas</em>: si cambia la URL, se toca un solo lugar.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Productos · Cliente HTTP</span><span class="objpill">Objetivo 3</span></div>
+      <h2>Traducir cualquier falla externa a una excepción propia</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-k">public</span> DummyJsonProducto obtenerPorId(Long id) {
+    <span class="tok-k">try</span> {
+        <span class="tok-k">return</span> restClient.get()
+            .uri(<span class="tok-s">"/products/{id}"</span>, id)
+            .retrieve()
+            .body(DummyJsonProducto.class);
+    } <span class="tok-k">catch</span> (HttpClientErrorException.NotFound e) {
+        <span class="tok-k">throw new</span> RecursoNoEncontradoException(
+            <span class="tok-s">"No existe el producto con id "</span> + id);
+    } <span class="tok-k">catch</span> (ResourceAccessException e) {
+        <span class="tok-k">throw new</span> ServicioExternoException(
+            <span class="tok-s">"No se pudo contactar a DummyJSON"</span>, e);
+    }
+    <span class="tok-m">// + HttpServerErrorException, RestClientException...</span>
+}</code></pre>
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es DDD?</span>
+              <span class="v"><strong>Domain-Driven Design</strong>: un enfoque de diseño que organiza el código alrededor del vocabulario y las reglas del negocio (el "dominio"), en vez de alrededor de la tecnología. No lo seguimos completo acá — solo tomamos prestado uno de sus patrones.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">¿Qué es un anti-corruption layer?</span>
+              <span class="v">Ese patrón de DDD: una capa fina que aísla el "vocabulario" de un sistema externo para que no se filtre al resto de la app — acá, la única clase que conoce los nombres de campo de DummyJSON.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> 4 <code>catch</code>, de más específico a más general (<code>NotFound</code> es un caso particular de <code>HttpClientErrorException</code>); <code>ResourceAccessException</code> es la falla de red pura — timeout, DNS, conexión rechazada, sin código HTTP.</li>
+            <li>El service y el controller nunca ven una excepción de <code>RestClient</code> — mismo <code>GlobalExceptionHandler</code> que ya conocemos de favoritos traduce el resto.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Productos · Contrato propio</span><span class="objpill">Objetivo 4</span></div>
+      <h2>De DummyJsonProducto a ProductoDTO</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-k">public record</span> <span class="tok-t">ProductoDTO</span>(
+    Long id, String nombre, String descripcion,
+    String categoria, String marca, <span class="tok-k">double</span> precio,
+    <span class="tok-k">double</span> descuentoPorcentaje, <span class="tok-k">int</span> stock,
+    <span class="tok-k">double</span> calificacion, String imagenUrl
+) {}
+
+<span class="tok-m">// ProductoServiceImpl — único lugar del proyecto</span>
+<span class="tok-m">// donde conviven los dos vocabularios</span>
+<span class="tok-k">private</span> ProductoDTO aProductoDTO(DummyJsonProducto e) {
+    <span class="tok-k">return new</span> ProductoDTO(
+        e.id(), e.title(), e.description(), ...);
+}</code></pre>
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es un record?</span>
+              <span class="v">Un tipo de Java pensado para <strong>solo transportar datos, de forma inmutable</strong>: con una firma, genera constructor, accesores (<code>id()</code>, <code>nombre()</code>...), <code>equals()</code>, <code>hashCode()</code> y <code>toString()</code> — sin escribirlos a mano. Lo vamos a usar en todos los DTOs y entidades del proyecto.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> <code>aProductoDTO</code> es <code>private</code> a propósito — nadie fuera del service necesita conocer los nombres de campo de DummyJSON (<code>title</code> → <code>nombre</code>, <code>thumbnail</code> → <code>imagenUrl</code>...).</li>
+            <li><code>ProductoPageResponse</code> es un contrato de paginación propio: reusa <code>limit</code>/<code>skip</code> como parámetros de entrada, pero la forma de la respuesta es nuestra.</li>
+            <li>Es de <strong>solo lectura</strong> (<code>GET</code>): no hay <code>@RequestBody</code>, así que no dispara validación — por eso el primer <code>@Valid</code> del proyecto recién aparece en favoritos.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Punto de partida de hoy</span><span class="objpill">develop, antes de esta clase</span></div>
+      <h2>8 archivos de diferencia</h2>
+      <p class="lead">Con productos ya resuelto en <code>develop</code> (recién visto), esto es lo que faltaba para cerrar los puntos 3, 4, 5, y activar el 6 y el 8:</p>
+      <div class="twocol-cards">
+        <div class="card existing">
+          <h3>Ya estaba</h3>
+          <ul>
+            <li><code>pom.xml</code>: webmvc, validation, springdoc</li>
+            <li>Setup + <code>/health</code>, <code>/ping</code></li>
+            <li><code>RestClientConfig</code>, <code>OpenApiConfig</code></li>
+            <li>Módulo <code>productos</code> completo (client, DTOs, service, controller)</li>
+            <li><code>GlobalExceptionHandler</code> + 2 excepciones propias</li>
+          </ul>
+        </div>
+        <div class="card missing">
+          <h3>Faltaba (hoy)</h3>
+          <ul>
+            <li><code>domain/Favorito</code></li>
+            <li><code>repository/FavoritoRepository</code> + impl en memoria</li>
+            <li><code>dto/favorito/</code>: Request y Response</li>
+            <li><code>service/FavoritoService</code> + impl</li>
+            <li><code>controller/FavoritoController</code> — CRUD completo</li>
+          </ul>
+        </div>
+      </div>
+      <p class="lead">Ni una línea de <code>GlobalExceptionHandler</code> cambió: se reusa tal cual.</p>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">01 · Dominio</span><span class="objpill">Objetivo 2</span></div>
+      <h2>domain/Favorito</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-k">public record</span> <span class="tok-t">Favorito</span>(
+        <span class="tok-t">Long</span> id,
+        <span class="tok-t">Long</span> productoId,
+        <span class="tok-t">String</span> nota,
+        <span class="tok-t">LocalDateTime</span> fechaAgregado
+) {}</code></pre>
+        <div class="col theory">
+          <ul>
+            <li><code>Favorito</code> es otro <code>record</code> — mismo mecanismo que ya vimos en <code>ProductoDTO</code>: constructor, accesores y <code>equals</code>/<code>hashCode</code>/<code>toString</code> generados solos.</li>
+            <li><strong>Cómo lo implementamos:</strong> todos los campos quedan <code>final</code> — no hay setters. "Cambiar" un favorito es crear uno nuevo, nunca mutar el existente — clave cuando el repository comparte esa instancia entre threads (siguiente slide).</li>
+            <li>Solo se guarda <code>productoId</code>, <strong>no</strong> nombre/precio/imagen: esos datos viven en <code>ProductoService</code> y duplicarlos los deja desactualizados si el producto cambia.</li>
+            <li>Un favorito es una <strong>referencia</strong> a un producto externo + una nota — no una copia.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">02 · Repository en memoria</span><span class="objpill">Objetivo 2</span></div>
+      <h2>Interfaz primero, después el Map</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// FavoritoRepository — el contrato</span>
+<span class="tok-k">public interface</span> <span class="tok-t">FavoritoRepository</span> {
+    List&lt;Favorito&gt; findAll();
+    Optional&lt;Favorito&gt; findById(Long id);
+    Favorito save(Favorito favorito);
+    <span class="tok-k">void</span> deleteById(Long id);
+}
+
+<span class="tok-m">// InMemoryFavoritoRepository — la implementación</span>
+<span class="tok-k">private final</span> Map&lt;Long, Favorito&gt; datos
+    = <span class="tok-k">new</span> ConcurrentHashMap&lt;&gt;();
+<span class="tok-k">private final</span> AtomicLong nextId
+    = <span class="tok-k">new</span> AtomicLong(1);</code></pre>
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es una interfaz?</span>
+              <span class="v">Un <strong>contrato</strong>: declara qué métodos existen (<code>findAll</code>, <code>save</code>...) sin decir cómo se resuelven. <code>FavoritoRepository</code> es el contrato; <code>InMemoryFavoritoRepository</code> es una forma de cumplirlo — podría haber otra.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">¿Qué es un Map?</span>
+              <span class="v">Una estructura <strong>clave → valor</strong>: para cada <code>Long</code> (el id) guarda un <code>Favorito</code>. Buscar, guardar o borrar por id es directo — no hay que recorrer una lista comparando uno por uno.</span>
+            </div>
+          </div>
+          <ul>
+            <li>El <strong>service depende de la interfaz</strong>, no del Map — en el TP2 se cambia la implementación por una con JPA sin tocar el service.</li>
+            <li>Acá el Map vive <em>adentro</em> de <code>InMemoryFavoritoRepository</code>, como <code>ConcurrentHashMap</code> + <code>AtomicLong</code>: Tomcat atiende requests en paralelo, y un <code>HashMap</code>/<code>long++</code> normales pueden corromperse o repetir un id.</li>
+            <li><strong>Gancho al TP2:</strong> si reinicio la app, ¿qué pasa con los favoritos?</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">03 · DTOs</span><span class="objpill">Objetivo 4</span></div>
+      <h2>Un DTO de entrada, otro de salida</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// FavoritoRequest — lo que llega</span>
+<span class="tok-k">public record</span> <span class="tok-t">FavoritoRequest</span>(
+    <span class="tok-m">@NotNull</span>(message = <span class="tok-s">"productoId es obligatorio"</span>)
+    Long productoId,
+
+    <span class="tok-m">@NotBlank</span>(message = <span class="tok-s">"nota no puede estar vacía"</span>)
+    String nota
+) {}
+
+<span class="tok-m">// FavoritoResponse — lo que se devuelve</span>
+<span class="tok-k">public record</span> <span class="tok-t">FavoritoResponse</span>(
+    Long id, Long productoId,
+    String nota, LocalDateTime fechaAgregado
+) {}</code></pre>
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es un DTO?</span>
+              <span class="v"><strong>Data Transfer Object</strong>: un objeto que solo transporta datos por la red, sin lógica de negocio. No es la entidad de dominio — es la forma que el cliente de la API ve desde afuera.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> dos records distintos — <code>FavoritoRequest</code> (con anotaciones de validación) y <code>FavoritoResponse</code> (sin ellas: no tiene sentido validar lo que la propia API produce).</li>
+            <li>Desacopla lo que el cliente ve del modelo interno (<code>Favorito</code>) — si el dominio cambia, no rompe necesariamente el contrato hacia afuera.</li>
+            <li><code>@NotNull</code> en <code>productoId</code> (un <code>Long</code> no tiene "vacío") vs <code>@NotBlank</code> en <code>nota</code> (cubre <code>null</code>, <code>""</code> y espacios en un solo chequeo).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">04 · Validación</span><span class="objpill">Objetivo 5</span></div>
+      <h2>Bean Validation en el borde de la API</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// FavoritoController</span>
+<span class="tok-m">@PostMapping</span>
+<span class="tok-k">public</span> ResponseEntity&lt;FavoritoResponse&gt; crear(
+        <span class="tok-m">@Valid</span> <span class="tok-m">@RequestBody</span> FavoritoRequest request) {
+    ...
+}</code></pre>
+        <div class="col">
+          <div class="theory">
+            <div class="concepts">
+              <div class="concept-item">
+                <span class="k">¿Qué es Bean Validation?</span>
+                <span class="v">Un estándar de Java (<strong>JSR 380</strong>) para declarar restricciones como anotaciones sobre un objeto (<code>@NotNull</code>, <code>@NotBlank</code>...) en vez de encadenar <code>if</code> a mano.</span>
+              </div>
+            </div>
+            <ul>
+              <li><strong>Cómo lo implementamos:</strong> alcanza con <code>@Valid</code> antes de <code>@RequestBody</code> en la firma del controller — Spring evalúa las anotaciones del DTO <strong>antes</strong> de ejecutar una sola línea del método.</li>
+              <li>Si falla, lanza <code>MethodArgumentNotValidException</code> — ya manejada por el <code>GlobalExceptionHandler</code> existente.</li>
+              <li>Primer <code>@RequestBody</code> del proyecto: productos es de solo lectura.</li>
+            </ul>
+          </div>
+          <div class="evidence">
+            <span class="tag">curl -i POST /api/favoritos {"productoId":null,"nota":""}</span>
+            <code class="http-400">HTTP/1.1 400</code>
+            <code>{"detail":"Uno o más campos no son válidos",
+ "title":"Error de validación",
+ "errores":{"productoId":"productoId es obligatorio",
+            "nota":"nota no puede estar vacía"}}</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">05 · Service</span><span class="objpill">Objetivo 2 / 4</span></div>
+      <h2>Mapeo y la regla del 404, en un solo lugar</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-k">private</span> Favorito buscarOFallar(Long id) {
+    <span class="tok-k">return</span> repository.findById(id)
+        .orElseThrow(() -&gt;
+            <span class="tok-k">new</span> RecursoNoEncontradoException(
+                <span class="tok-s">"No existe el favorito con id "</span> + id));
+}
+
+<span class="tok-m">@Override</span>
+<span class="tok-k">public</span> FavoritoResponse actualizar(Long id, FavoritoRequest r) {
+    Favorito existente = buscarOFallar(id);
+    Favorito actualizado = <span class="tok-k">new</span> Favorito(
+        existente.id(), r.productoId(), r.nota(),
+        existente.fechaAgregado() <span class="tok-m">// no se pisa</span>
+    );
+    <span class="tok-k">return</span> aResponse(repository.save(actualizado));
+}</code></pre>
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es <code>Optional</code>?</span>
+              <span class="v">Un contenedor que dice explícitamente "puede haber un valor, o no" — <code>findById</code> devuelve <code>Optional&lt;Favorito&gt;</code> en vez de arriesgarse a un <code>null</code> que alguien se olvide de chequear.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> <code>orElseThrow(...)</code> convierte un <code>Optional</code> vacío directamente en la excepción, en una sola línea, sin <code>if (resultado == null)</code>.</li>
+            <li><code>buscarOFallar</code> es el <strong>único lugar</strong> con la regla "si no existe, 404" — la usan <code>obtener</code>, <code>actualizar</code> y <code>eliminar</code> por igual.</li>
+            <li>El controller <strong>nunca ve la entidad</strong> <code>Favorito</code>, solo DTOs — el mapeo vive acá. Al actualizar, se conserva la <code>fechaAgregado</code> original.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">06 · Controller</span><span class="objpill">Objetivo 4</span></div>
+      <h2>Verbos y códigos de estado correctos</h2>
+      <p class="lead">Los <strong>verbos HTTP</strong> tienen semántica propia (GET no modifica nada, POST crea, PUT reemplaza, DELETE borra) y los <strong>códigos de estado</strong> le dicen al cliente qué pasó sin que tenga que leer el body.</p>
+      <div class="body-grid">
+        <table>
+          <tr><th>Operación</th><th>Método</th><th>Éxito</th></tr>
+          <tr><td>Crear</td><td><code>POST /api/favoritos</code></td><td>201</td></tr>
+          <tr><td>Listar</td><td><code>GET /api/favoritos</code></td><td>200</td></tr>
+          <tr><td>Obtener uno</td><td><code>GET /api/favoritos/{id}</code></td><td>200</td></tr>
+          <tr><td>Actualizar</td><td><code>PUT /api/favoritos/{id}</code></td><td>200</td></tr>
+          <tr><td>Eliminar</td><td><code>DELETE /api/favoritos/{id}</code></td><td>204</td></tr>
+        </table>
+        <pre><code><span class="tok-m">@PostMapping</span>
+<span class="tok-k">public</span> ResponseEntity&lt;FavoritoResponse&gt; crear(
+        <span class="tok-m">@Valid</span> <span class="tok-m">@RequestBody</span> FavoritoRequest request) {
+    FavoritoResponse creado = service.crear(request);
+    <span class="tok-k">return</span> ResponseEntity
+        .created(URI.create(<span class="tok-s">"/api/favoritos/"</span> + creado.id()))
+        .body(creado);
+}</code></pre>
+      </div>
+      <p class="lead"><strong>Cómo lo implementamos:</strong> cuando hace falta controlar algo más que el body —acá, el header <code>Location</code> y el <code>201</code>— se usa <code>ResponseEntity</code>. Cuando el status es siempre el mismo, se devuelve el DTO directo y Spring arma el <code>200 OK</code> solo.</p>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Transversal</span><span class="objpill">Objetivo 6</span></div>
+      <h2>El manejo de errores ya existía — hoy se activa</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es RFC 7807 / ProblemDetail?</span>
+              <span class="v">Un estándar para que las respuestas de error tengan una forma predecible (<code>status</code>, <code>title</code>, <code>detail</code>) en toda la API, en vez de que cada endpoint invente su propio JSON de error.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">¿Qué es <code>@RestControllerAdvice</code>?</span>
+              <span class="v">Una clase que intercepta las excepciones de <strong>todos</strong> los controllers a la vez — en vez de un <code>try/catch</code> repetido en cada uno.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> favoritos no escribió ningún manejador nuevo — solo lanza <code>RecursoNoEncontradoException</code> y deja que Bean Validation dispare <code>MethodArgumentNotValidException</code>; el <code>GlobalExceptionHandler</code> que ya existía se encarga del resto.</li>
+            <li>El <strong>mismo handler</strong> traduce la falla externa de <code>productos</code> a un <code>502</code>: las <strong>tres formas</strong> que pide la consigna —<code>404</code>, <code>400</code> y <code>5xx</code>— salen con un único formato <code>ProblemDetail</code>.</li>
+          </ul>
+        </div>
+        <div class="col" style="gap:12px">
+          <div class="evidence">
+            <span class="tag">curl -i GET /api/favoritos/1 (borrado)</span>
+            <code class="http-404">HTTP/1.1 404</code>
+            <code>{"detail":"No existe el favorito con id 1",
+ "status":404,"title":"Not Found"}</code>
+          </div>
+          <div class="evidence">
+            <span class="tag">curl -i DELETE /api/favoritos/1</span>
+            <code class="http-2xx">HTTP/1.1 204 No Content</code>
+          </div>
+          <div class="evidence">
+            <span class="tag">curl -i GET /api/productos/1 (DummyJSON caído)</span>
+            <code class="http-5xx">HTTP/1.1 502 Bad Gateway</code>
+            <code>{"detail":"No se pudo contactar a DummyJSON
+          (timeout o caída del servicio)",
+ "status":502,
+ "title":"Falla al consumir un servicio externo"}</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Documentación</span><span class="objpill">Objetivo 7</span></div>
+      <h2>Swagger/OpenAPI se genera desde el código</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">@RestController</span>
+<span class="tok-m">@RequestMapping</span>(<span class="tok-s">"/api/favoritos"</span>)
+<span class="tok-m">@Tag</span>(name = <span class="tok-s">"favoritos"</span>,
+     description = <span class="tok-s">"CRUD en memoria"</span>)
+<span class="tok-k">public class</span> <span class="tok-t">FavoritoController</span> {
+
+    <span class="tok-m">@Operation</span>(summary = <span class="tok-s">"Crear un favorito"</span>)
+    <span class="tok-m">@PostMapping</span>
+    <span class="tok-k">public</span> ResponseEntity&lt;FavoritoResponse&gt; crear(...) </code></pre>
+        <div class="col">
+          <div class="theory">
+            <div class="concepts">
+              <div class="concept-item">
+                <span class="k">¿Qué es OpenAPI?</span>
+                <span class="v">Una especificación (un JSON/YAML con un schema definido) que describe una API HTTP de forma independiente del lenguaje. Swagger UI es solo una de las herramientas que saben renderizarla.</span>
+              </div>
+            </div>
+            <ul>
+              <li><strong>Cómo lo implementamos:</strong> <code>@Tag</code> en la clase agrupa los endpoints bajo "favoritos"; <code>@Operation</code> en cada método le agrega el resumen — nada más, springdoc arma el resto solo.</li>
+              <li>springdoc lee los <code>@RestController</code> reales — la documentación <strong>nunca se desincroniza</strong> de la implementación.</li>
+            </ul>
+          </div>
+          <div class="evidence">
+            <span class="tag">curl /v3/api-docs</span>
+            <code>"tags":[{"name":"productos"},{"name":"favoritos"}]
+"paths": /api/productos, /api/productos/{id},
+         /api/favoritos, /api/favoritos/{id}</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Balance</span><span class="objpill">7/7</span></div>
+      <h2>Los 7 objetivos, cerrados</h2>
+      <table>
+        <tr><th>#</th><th>Objetivo</th><th>Estado</th></tr>
+        <tr><td>1</td><td>Setup con Maven</td><td><span class="status status--done">✓</span></td></tr>
+        <tr><td>2</td><td>Arquitectura en capas</td><td><span class="status status--done">✓ Productos + Favoritos</span></td></tr>
+        <tr><td>3</td><td>Consumo de servicio externo</td><td><span class="status status--done">✓</span></td></tr>
+        <tr><td>4</td><td>API RESTful con DTOs desacoplados</td><td><span class="status status--done">✓</span></td></tr>
+        <tr><td>5</td><td>Validación de entrada</td><td><span class="status status--done">✓</span></td></tr>
+        <tr><td>6</td><td>Manejo uniforme de errores</td><td><span class="status status--done">✓</span></td></tr>
+        <tr><td>7</td><td>Documentación con Swagger</td><td><span class="status status--done">✓</span></td></tr>
+      </table>
+      <p class="lead">Misma arquitectura, mismo manejo de errores, misma documentación — <strong>reusada, no reinventada.</strong></p>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Generalizando el patrón</span><span class="objpill">Plantilla reusable</span></div>
+      <h2>¿Y si mañana agregamos otro recurso?</h2>
+      <ol class="steps-list">
+        <li><b>Dominio</b> — un <code>record</code> inmutable con los campos propios (ej. <code>Reseña</code>: id, productoId, puntaje, comentario, fecha).</li>
+        <li><b>Repository</b> — interfaz (<code>findAll</code>/<code>findById</code>/<code>save</code>/<code>deleteById</code>) + implementación en memoria, mismo contrato que <code>FavoritoRepository</code>.</li>
+        <li><b>DTOs</b> — uno de entrada (con <code>@NotNull</code>/<code>@NotBlank</code> donde corresponda) y uno de salida. Nunca el mismo objeto para las dos direcciones.</li>
+        <li><b>Service</b> — mapea entidad ↔ DTOs y concentra las reglas de negocio, con un <code>buscarOFallar</code> propio, igual que en favoritos.</li>
+        <li><b>Controller</b> — los endpoints con el verbo y el status code correctos; <code>@Valid</code> en los que reciben body.</li>
+        <li><b>Nada más:</b> <code>GlobalExceptionHandler</code>, <code>RestClientConfig</code>, <code>OpenApiConfig</code> se reusan tal cual — no se tocan.</li>
+      </ol>
+      <p class="closing-note">Es la misma receta que usamos hoy con <code>Favorito</code> — no hay nada nuevo que inventar, solo repetir el patrón con otro nombre.</p>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Demo en vivo</span><span class="objpill">Cierre</span></div>
+      <h2>Ahora, en Swagger UI</h2>
+      <div class="cover-url">http://localhost:8080/swagger-ui/index.html</div>
+      <ol class="steps-list">
+        <li>Abrir Swagger y mostrar los <b>dos grupos</b>: <code>productos</code> y <code>favoritos</code>.</li>
+        <li><code>GET /api/productos/1</code> → mostrar el mapeo a <code>ProductoDTO</code> (nombre/precio/imagenUrl) que acabamos de ver en código.</li>
+        <li><code>POST /api/favoritos</code> → Try it out → crear uno (con ese mismo <code>productoId</code>) → <b>201</b> + header <code>Location</code>.</li>
+        <li><code>GET</code> listar y <code>GET /{id}</code> del que se acaba de crear.</li>
+        <li><code>PUT /{id}</code> → mostrar que <code>fechaAgregado</code> no cambia.</li>
+        <li><code>DELETE /{id}</code> → <b>204</b>, y <code>GET</code> de nuevo → <b>404</b> con <code>ProblemDetail</code>.</li>
+        <li><code>POST</code> con body vacío → <b>400</b> con el detalle de qué campo falló.</li>
+      </ol>
+      <p class="closing-note">Todo lo mostrado ya fue verificado end-to-end antes de esta clase.</p>
+      <p class="closing-note">Repositorio: <a href="https://github.com/Rns2590/demo" target="_blank" rel="noopener noreferrer" style="color:var(--tp1-accent-strong); font-weight:600; text-decoration:none;">github.com/Rns2590/demo</a></p>
+    </section>
+
+  </main>
+
+  <div class="chrome-bottom">
+    <button class="navbtn" id="tp1-prev" aria-label="Diapositiva anterior">‹</button>
+    <div class="counter"><b id="tp1-cur">1</b> / <span id="tp1-total">19</span></div>
+    <button class="navbtn" id="tp1-next" aria-label="Diapositiva siguiente">›</button>
+  </div>
+</div>
+</div><script type="module">(function(){var e=document.getElementById(`tp1-deck`),t=Array.prototype.slice.call(e.querySelectorAll(`.slide`)),n=t.length,r=0,i=document.getElementById(`tp1-progress`),a=document.getElementById(`tp1-cur`),o=document.getElementById(`tp1-total`);o.textContent=n;function s(){t.forEach(function(e,t){e.classList.toggle(`active`,t===r)}),a.textContent=r+1,i.style.width=(r+1)/n*100+`%`,t[r].scrollTop=0}function c(e){r=Math.max(0,Math.min(n-1,r+e)),s()}document.getElementById(`tp1-prev`).addEventListener(`click`,function(){c(-1)}),document.getElementById(`tp1-next`).addEventListener(`click`,function(){c(1)}),e.addEventListener(`keydown`,function(e){(e.key===`ArrowRight`||e.key===` `||e.key===`PageDown`)&&(e.preventDefault(),c(1)),(e.key===`ArrowLeft`||e.key===`PageUp`)&&(e.preventDefault(),c(-1))}),s()})();</script>
+<p><em>Usá las flechas ‹ › (hacé clic en la diapositiva primero para que capture el teclado) o las teclas de flecha para navegar.</em></p></div><footer class="sl-flex astro-xhxjzfa7"><div class="meta sl-flex astro-xhxjzfa7"></div><div class="pagination-links print:hidden astro-jgq3vlii" dir="ltr"></div></footer></div></div></main></div></div></div></div></body></html>

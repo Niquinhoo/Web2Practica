@@ -1,0 +1,50 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-10-06T21:56:24.686-03:00  INFO 10836 --- [api-blank] [           main] a.e.unvime.apiblank.ApiBlankApplication  : Starting ApiBlankApplication v0.0.1-SNAPSHOT using Java 25.0.4 with PID 10836 (C:\Users\Nicolás\Desktop\Facultad\Web-2\Web2Practica\api-blank\target\api-blank-0.0.1-SNAPSHOT.jar started by Nicolás in C:\Users\Nicolás\Desktop\Facultad\Web-2\Web2Practica\api-blank)
+2026-10-06T21:56:24.693-03:00  INFO 10836 --- [api-blank] [           main] a.e.unvime.apiblank.ApiBlankApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-10-06T21:56:26.664-03:00  INFO 10836 --- [api-blank] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-06T21:56:26.761-03:00  INFO 10836 --- [api-blank] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 66 ms. Found 2 JPA repository interfaces.
+2026-10-06T21:56:27.816-03:00  INFO 10836 --- [api-blank] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-06T21:56:27.916-03:00  INFO 10836 --- [api-blank] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-06T21:56:27.964-03:00  INFO 10836 --- [api-blank] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-06T21:56:28.095-03:00  INFO 10836 --- [api-blank] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3265 ms
+2026-10-06T21:56:28.583-03:00  INFO 10836 --- [api-blank] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-06T21:56:28.855-03:00  INFO 10836 --- [api-blank] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4fd74223
+2026-10-06T21:56:28.863-03:00  INFO 10836 --- [api-blank] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-06T21:56:28.895-03:00  INFO 10836 --- [api-blank] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://127.0.0.1:55432/webii_tp2 (PostgreSQL 17.11)
+2026-10-06T21:56:29.018-03:00  INFO 10836 --- [api-blank] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 4 migrations (execution time 00:00.057s)
+2026-10-06T21:56:29.063-03:00  INFO 10836 --- [api-blank] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 4
+2026-10-06T21:56:29.068-03:00  INFO 10836 --- [api-blank] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-10-06T21:56:29.288-03:00  INFO 10836 --- [api-blank] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-06T21:56:29.413-03:00  INFO 10836 --- [api-blank] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-06T21:56:30.238-03:00  INFO 10836 --- [api-blank] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-06T21:56:30.398-03:00  INFO 10836 --- [api-blank] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://127.0.0.1:55432/webii_tp2]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 17.11
+	Default catalog/schema: webii_tp2/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-06T21:56:31.640-03:00  INFO 10836 --- [api-blank] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-06T21:56:31.702-03:00  INFO 10836 --- [api-blank] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-06T21:56:31.837-03:00  INFO 10836 --- [api-blank] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-06T21:56:34.096-03:00  INFO 10836 --- [api-blank] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-10-06T21:56:34.120-03:00  INFO 10836 --- [api-blank] [           main] a.e.unvime.apiblank.ApiBlankApplication  : Started ApiBlankApplication in 10.446 seconds (process running for 11.433)
+2026-10-06T21:56:34.126-03:00  WARN 10836 --- [api-blank] [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-10-06T21:56:34.127-03:00  WARN 10836 --- [api-blank] [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-10-06T21:57:01.445-03:00  INFO 10836 --- [api-blank] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-06T21:57:01.446-03:00  INFO 10836 --- [api-blank] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-06T21:57:01.448-03:00  INFO 10836 --- [api-blank] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms

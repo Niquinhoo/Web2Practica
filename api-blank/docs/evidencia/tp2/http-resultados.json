@@ -1,0 +1,287 @@
+[
+  {
+    "metodo": "GET",
+    "ruta": "/health",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "status": "ok",
+      "service": "api-blank"
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/listas",
+    "esperado": 201,
+    "obtenido": 201,
+    "respuesta": {
+      "id": 2,
+      "nombre": "Regalos evidencia TP2"
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/listas",
+    "esperado": 201,
+    "obtenido": 201,
+    "respuesta": {
+      "id": 3,
+      "nombre": "Ofertas evidencia TP2"
+    }
+  },
+  {
+    "metodo": "GET",
+    "ruta": "/api/listas",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": [
+      {
+        "id": 1,
+        "nombre": "Sin clasificar"
+      },
+      {
+        "id": 2,
+        "nombre": "Regalos evidencia TP2"
+      },
+      {
+        "id": 3,
+        "nombre": "Ofertas evidencia TP2"
+      }
+    ]
+  },
+  {
+    "metodo": "GET",
+    "ruta": "/api/listas/2",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "id": 2,
+      "nombre": "Regalos evidencia TP2"
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/favoritos",
+    "esperado": 201,
+    "obtenido": 201,
+    "respuesta": {
+      "id": 1,
+      "productoId": 1,
+      "nota": "Persistencia verificada",
+      "fechaAgregado": "2026-10-07T00:55:53.152383Z",
+      "listaId": 2
+    }
+  },
+  {
+    "metodo": "PUT",
+    "ruta": "/api/favoritos/1",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "id": 1,
+      "productoId": 2,
+      "nota": "Conservar después del reinicio",
+      "fechaAgregado": "2026-10-07T00:55:53.152383Z",
+      "listaId": 2
+    }
+  },
+  {
+    "metodo": "GET",
+    "ruta": "/api/listas/2/favoritos",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "id": 1,
+      "productoId": 2,
+      "nota": "Conservar después del reinicio",
+      "fechaAgregado": "2026-10-07T00:55:53.152383Z",
+      "listaId": 2
+    }
+  },
+  {
+    "metodo": "DELETE",
+    "ruta": "/api/listas/2",
+    "esperado": 409,
+    "obtenido": 409,
+    "respuesta": {
+      "status": 409,
+      "mensaje": "La lista 2 todavía tiene favoritos",
+      "campos": {}
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/listas",
+    "esperado": 400,
+    "obtenido": 400,
+    "respuesta": {
+      "status": 400,
+      "mensaje": "Hay datos inválidos",
+      "campos": {
+        "nombre": "es obligatorio y no puede estar vacío"
+      }
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/favoritos",
+    "esperado": 400,
+    "obtenido": 400,
+    "respuesta": {
+      "status": 400,
+      "mensaje": "Hay datos inválidos",
+      "campos": {
+        "listaId": "es obligatorio"
+      }
+    }
+  },
+  {
+    "metodo": "GET",
+    "ruta": "/api/listas/9223372036854775807",
+    "esperado": 404,
+    "obtenido": 404,
+    "respuesta": {
+      "status": 404,
+      "mensaje": "No existe la lista 9223372036854775807",
+      "campos": {}
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/listas/2/mover-favoritos",
+    "esperado": 404,
+    "obtenido": 404,
+    "respuesta": {
+      "status": 404,
+      "mensaje": "No existe la lista 9223372036854775807",
+      "campos": {}
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/listas/2/mover-favoritos",
+    "esperado": 400,
+    "obtenido": 400,
+    "respuesta": {
+      "status": 400,
+      "mensaje": "Las listas de origen y destino deben ser distintas",
+      "campos": {}
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/listas/2/mover-favoritos",
+    "esperado": 204,
+    "obtenido": 204,
+    "respuesta": null
+  },
+  {
+    "metodo": "GET",
+    "ruta": "/api/listas/2",
+    "esperado": 404,
+    "obtenido": 404,
+    "respuesta": {
+      "status": 404,
+      "mensaje": "No existe la lista 2",
+      "campos": {}
+    }
+  },
+  {
+    "metodo": "GET",
+    "ruta": "/api/favoritos/1",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "id": 1,
+      "productoId": 2,
+      "nota": "Conservar después del reinicio",
+      "fechaAgregado": "2026-10-07T00:55:53.152383Z",
+      "listaId": 3
+    }
+  },
+  {
+    "metodo": "GET",
+    "ruta": "/api/listas/3/favoritos",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "id": 1,
+      "productoId": 2,
+      "nota": "Conservar después del reinicio",
+      "fechaAgregado": "2026-10-07T00:55:53.152383Z",
+      "listaId": 3
+    }
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/listas",
+    "esperado": 201,
+    "obtenido": 201,
+    "respuesta": {
+      "id": 4,
+      "nombre": "Vacía evidencia"
+    }
+  },
+  {
+    "metodo": "DELETE",
+    "ruta": "/api/listas/4",
+    "esperado": 204,
+    "obtenido": 204,
+    "respuesta": null
+  },
+  {
+    "metodo": "POST",
+    "ruta": "/api/favoritos",
+    "esperado": 201,
+    "obtenido": 201,
+    "respuesta": {
+      "id": 2,
+      "productoId": 3,
+      "nota": null,
+      "fechaAgregado": "2026-10-07T00:55:53.478269Z",
+      "listaId": 3
+    }
+  },
+  {
+    "metodo": "DELETE",
+    "ruta": "/api/favoritos/2",
+    "esperado": 204,
+    "obtenido": 204,
+    "respuesta": null
+  },
+  {
+    "metodo": "GET",
+    "ruta": "/api/favoritos/2",
+    "esperado": 404,
+    "obtenido": 404,
+    "respuesta": {
+      "status": 404,
+      "mensaje": "No existe el favorito 2",
+      "campos": {}
+    }
+  },
+  {
+    "metodo": "GET",
+    "ruta": "/api/productos/1",
+    "esperado": 200,
+    "obtenido": 200,
+    "respuesta": {
+      "id": 1,
+      "nombre": "Essence Mascara Lash Princess",
+      "descripcion": "The Essence Mascara Lash Princess is a popular mascara known for its volumizing and lengthening effects. Achieve dramatic lashes with this long-lasting and cruelty-free formula.",
+      "precio": 9.99,
+      "categoria": "beauty"
+    }
+  },
+  {
+    "metodo": "GET",
+    "ruta": "/api/productos/9223372036854775807",
+    "esperado": 404,
+    "obtenido": 404,
+    "respuesta": {
+      "status": 404,
+      "mensaje": "No existe el producto 9223372036854775807",
+      "campos": {}
+    }
+  }
+]

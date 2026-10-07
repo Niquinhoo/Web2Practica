@@ -1,0 +1,65 @@
+[
+  {
+    "suite": "ar.edu.unvime.apiblank.favorito.FavoritoControllerTests",
+    "tests": 17,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "suite": "ar.edu.unvime.apiblank.favorito.FavoritoServiceTests",
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "suite": "ar.edu.unvime.apiblank.lista.ListaServiceTests",
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "suite": "ar.edu.unvime.apiblank.producto.DummyJsonProductoClientTests",
+    "tests": 14,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "suite": "ar.edu.unvime.apiblank.producto.ProductoControllerTests",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "suite": "ar.edu.unvime.apiblank.producto.ProductoServiceTests",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "suite": "ar.edu.unvime.apiblank.web.HealthControllerTests",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "suite": "ar.edu.unvime.apiblank.ApiIntegrationIT",
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  {
+    "suite": "ar.edu.unvime.apiblank.FlywayMigrationIT",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+]

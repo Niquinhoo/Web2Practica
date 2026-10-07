@@ -2,7 +2,7 @@ name: Java CI
 
 on:
   push:
-    branches: [main, TP1]
+    branches: [main, TP1, tp2]
   pull_request:
     branches: [main]
 
@@ -12,6 +12,20 @@ permissions:
 jobs:
   test-api-blank:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: webii_tp2
+          POSTGRES_USER: webii_tp2
+          POSTGRES_PASSWORD: webii_tp2
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U webii_tp2 -d webii_tp2"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     defaults:
       run:
         working-directory: api-blank

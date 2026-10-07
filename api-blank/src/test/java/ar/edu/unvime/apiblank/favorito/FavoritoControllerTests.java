@@ -17,7 +17,7 @@ import ar.edu.unvime.apiblank.error.*;
 class FavoritoControllerTests {
     private final FavoritoService service = mock(FavoritoService.class);
     private MockMvc mvc;
-    private final FavoritoResponse respuesta = new FavoritoResponse(1L, 3L, null, Instant.parse("2026-09-06T12:00:00Z"));
+    private final FavoritoResponse respuesta = new FavoritoResponse(1L, 3L, null, Instant.parse("2026-09-06T12:00:00Z"), 1L);
 
     @BeforeEach
     void setup() {
@@ -27,8 +27,8 @@ class FavoritoControllerTests {
 
     @Test
     void crearDevuelve201YLocation() throws Exception {
-        when(service.crear(new FavoritoRequest(3L, null))).thenReturn(respuesta);
-        mvc.perform(post("/api/favoritos").contentType(MediaType.APPLICATION_JSON).content("{\"productoId\":3}"))
+        when(service.crear(new FavoritoRequest(3L, null, 1L))).thenReturn(respuesta);
+        mvc.perform(post("/api/favoritos").contentType(MediaType.APPLICATION_JSON).content("{\"productoId\":3,\"listaId\":1}"))
                 .andExpect(status().isCreated()).andExpect(header().string("Location", "http://localhost/api/favoritos/1"))
                 .andExpect(jsonPath("$.id").value(1)).andExpect(jsonPath("$.fechaAgregado").value("2026-09-06T12:00:00Z"));
     }
@@ -37,10 +37,10 @@ class FavoritoControllerTests {
     void listarObtenerActualizarYEliminar() throws Exception {
         when(service.listar()).thenReturn(List.of(respuesta));
         when(service.obtener(1L)).thenReturn(respuesta);
-        when(service.actualizar(1L, new FavoritoRequest(3L, null))).thenReturn(respuesta);
+        when(service.actualizar(1L, new FavoritoRequest(3L, null, 1L))).thenReturn(respuesta);
         mvc.perform(get("/api/favoritos")).andExpect(status().isOk()).andExpect(jsonPath("$[0].productoId").value(3));
         mvc.perform(get("/api/favoritos/1")).andExpect(status().isOk()).andExpect(jsonPath("$.id").value(1));
-        mvc.perform(put("/api/favoritos/1").contentType(MediaType.APPLICATION_JSON).content("{\"productoId\":3}"))
+        mvc.perform(put("/api/favoritos/1").contentType(MediaType.APPLICATION_JSON).content("{\"productoId\":3,\"listaId\":1}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(1));
         mvc.perform(delete("/api/favoritos/1")).andExpect(status().isNoContent()).andExpect(content().string(""));
         verify(service).eliminar(1L);
@@ -65,13 +65,24 @@ class FavoritoControllerTests {
         verifyNoInteractions(service);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"{\"productoId\":1}", "{\"productoId\":1,\"listaId\":null}",
+            "{\"productoId\":1,\"listaId\":0}", "{\"productoId\":1,\"listaId\":-1}"})
+    void validaListaIdEnPostYPut(String json) throws Exception {
+        for (var request : List.of(post("/api/favoritos"), put("/api/favoritos/1"))) {
+            mvc.perform(request.contentType(MediaType.APPLICATION_JSON).content(json))
+                    .andExpect(status().isBadRequest()).andExpect(jsonPath("$.campos.listaId").exists());
+        }
+        verifyNoInteractions(service);
+    }
+
     @Test
     void inexistentesDevuelven404() throws Exception {
         when(service.obtener(99L)).thenThrow(new RecursoNoEncontradoException("No existe el favorito 99"));
         when(service.actualizar(eq(99L), any())).thenThrow(new RecursoNoEncontradoException("No existe el favorito 99"));
         doThrow(new RecursoNoEncontradoException("No existe el favorito 99")).when(service).eliminar(99L);
         mvc.perform(get("/api/favoritos/99")).andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404));
-        mvc.perform(put("/api/favoritos/99").contentType(MediaType.APPLICATION_JSON).content("{\"productoId\":1}"))
+        mvc.perform(put("/api/favoritos/99").contentType(MediaType.APPLICATION_JSON).content("{\"productoId\":1,\"listaId\":1}"))
                 .andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404));
         mvc.perform(delete("/api/favoritos/99")).andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404));
     }

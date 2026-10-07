@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -17,6 +18,23 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
+
+    @ExceptionHandler(ConflictoException.class)
+    public ResponseEntity<ApiError> conflicto(ConflictoException ex) {
+        return ResponseEntity.status(409).body(new ApiError(409, ex.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> integridad(DataIntegrityViolationException ex) {
+        log.warn("Conflicto de integridad al modificar listas o favoritos", ex);
+        return ResponseEntity.status(409).body(new ApiError(409,
+                "La operación entra en conflicto con los datos existentes", Map.of()));
+    }
+
+    @ExceptionHandler(SolicitudInvalidaException.class)
+    public ResponseEntity<ApiError> solicitudInvalida(SolicitudInvalidaException ex) {
+        return ResponseEntity.badRequest().body(new ApiError(400, ex.getMessage(), Map.of()));
+    }
 
     @ExceptionHandler(RecursoNoEncontradoException.class)
     public ResponseEntity<ApiError> noEncontrado(RecursoNoEncontradoException ex) {

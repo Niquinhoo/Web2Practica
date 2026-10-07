@@ -1,0 +1,402 @@
+
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <meta name="google-site-verification" content="YV1-hoq543iYpEkoDJrgCSboWwOevS1Ro07SKJXwUfQ" />
+        <meta name="ajs-page-id" content=273973333>
+        <title>Versioned migrations - Redgate Flyway - Product Documentation</title>
+      
+                <script nonce="wELi95JRXciKD9KW6I5xhgeXYsc=">
+window.WRM=window.WRM||{};window.WRM._unparsedData=window.WRM._unparsedData||{};window.WRM._unparsedErrors=window.WRM._unparsedErrors||{};
+WRM._unparsedData["com.atlassian.plugins.atlassian-plugins-webresource-plugin:context-path.context-path"]="\u0022\u0022";
+WRM._unparsedData["confluence.macro.metadata.provider:macro-browser-metadata-resources.macro-meta-client-cache-key"]="\u00221791006801455\u0022";
+WRM._unparsedData["com.atlassian.confluence.plugins.confluence-feature-discovery-plugin:confluence-feature-discovery-plugin-resources.test-mode"]="false";
+if(window.WRM._dataArrived)window.WRM._dataArrived();</script>
+<link rel="stylesheet" href="/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-74zzst/9424/1n7bvk5/d2ecf9f1f6d6aebf30da45a0c41161d8/_/download/contextbatch/css/_super/batch.css?isReactDevMode=false&amp;plugins.aui.deprecated.webresource.jquery.form.legacy=false&amp;react.devmode=false" data-wrm-key="_super" data-wrm-batch-type="context" media="all">
+<link rel="stylesheet" href="/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-74zzst/9424/1n7bvk5/1ecdcce778cba2232a1864fd674e1583/_/download/contextbatch/css/viewcontent,-_super/batch.css?highlightactions=true&amp;isReactDevMode=false&amp;plugins.aui.deprecated.webresource.jquery.form.legacy=false&amp;react.devmode=false&amp;table-resizable.breaking-text=false&amp;theme.switcher=true" data-wrm-key="viewcontent,-_super" data-wrm-batch-type="context" media="all">
+<link rel="stylesheet" href="/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-74zzst/9424/1n7bvk5/20.2.44/_/download/batch/com.atlassian.confluence.plugins.confluence-inline-tasks:inline-tasks-styles/com.atlassian.confluence.plugins.confluence-inline-tasks:inline-tasks-styles.css" data-wrm-key="com.atlassian.confluence.plugins.confluence-inline-tasks:inline-tasks-styles" data-wrm-batch-type="resource" media="all">
+<link rel="stylesheet" href="/s/-74zzst/9424/1n7bvk5/111/_/styles/colors.css" media="all">
+<link rel="stylesheet" href="/s/-74zzst/9424/1n7bvk5/111/_/styles/custom.css" media="all">
+
+      
+                <link rel="stylesheet" href="/fd/_/7F00000101521132AF2A579D57E76CD8/1781708764669/assets/honeycomb/honeycomb.css?v=202516112">
+        <link rel="stylesheet" href="/fd/_/7F00000101521132AF2A579D57E76CD8/1781708764669/assets/css/redgate.confluence.css?v=202516112">    
+      
+        <script>
+			var contextPath = '';
+      	   	var pageId = '273973333';
+    		var commentResourcePath = '/plugins/servlet/scroll-viewport/comment';
+		</script>
+      
+                
+
+                <meta id="confluence-base-url" name="confluence-base-url" content="https://documentation.red-gate.com">
+<meta id="ajs-static-resource-url-prefix" name="ajs-static-resource-url-prefix" content="/s/-74zzst/9424/1n7bvk5/_">
+<meta id="confluence-context-path" name="confluence-context-path" content="">
+<meta id="ajs-enabled-dark-features" name="ajs-enabled-dark-features" content="site-wide.shared-drafts,site-wide.synchrony,confluence.view.edit.transition,confluence.attachments.bulk.delete,confluence-inline-comments-resolved,http.session.registrar,theme.switcher,scope.manage.subscriptions,atlassian.cdn.static.assets,confluence.attachment.restrict.execute.permissions,confluence.content-manager,confluence.efi.onboarding.rich.space.content,file-annotations,applinks.uniconn,crowd.sync.nested.groups.group.membership.changes.batching.enabled,atlassian.webresource.performance.tracking.disable,confluence.page.readtime,atlassian.authentication.sso.fallback.to.cached.user.when.operation.failed,lucene.caching.filter,confluence.convert.page.to.blog,confluence.table.resizable,notification.batch,confluence-inline-comments-rich-editor,confluence.copy-heading-link,site-wide.synchrony.opt-in,atlassian.webresource.twophase.js.i18n.disabled,confluence.edit.wordcount,gatekeeper-ui-v2,confluence.search.improvements.ranking,crowd.event.transformer.directory.manager.cache,mobile.supported.version,crowd.sync.delete.user.memberships.batching.enabled,confluence.dark.theme.text.colors,quick-reload-inline-comments-flags,scope.jsm.kb,cql.search.screen,clc.quick.create,nps.survey.inline.dialog,confluence.efi.onboarding.new.templates,pdf-preview,confluence.fair.journal.index.queue,com.atlassian.analytics.essential.supported,confluence.retention.rules.trash.fast.removal,previews.sharing,previews.versions,collaborative-audit-log,confluence.reindex.improvements,previews.conversion-service,atlassian.servlet.filter.default.to.licensed.access.enabled,confluence.search.cql.semanticSearch,read.only.mode,graphql,benefits.modal,previews.trigger-all-file-types,AsyncReplicationCache,attachment.extracted.text.extractor,confluence.readable.url,previews.sharing.pushstate,tc.tacca.dacca,confluence.reindex.audit,atlassian.rest.default.to.licensed.access.enabled,confluence.retention.rules.version.fast.removal,confluence.denormalisedpermissions,file-annotations.likes,v2.content.name.searcher,confluence.reindex.spaces,confluence.fast-xml-backup-restore,embedded.crowd.directory.azuread.enabled,pulp,confluence-inline-comments,confluence-inline-comments-dangling-comment,confluence.fast-space-deletion,confluence.retention.rules">
+<meta id="ajs-context-path" name="ajs-context-path" content="">
+<meta id="ajs-base-url" name="ajs-base-url" content="https://documentation.red-gate.com">
+<meta id="ajs-user-locale" name="ajs-user-locale" content="en_GB">
+
+
+                <!-- Page resources.js -->
+                <script nonce="wELi95JRXciKD9KW6I5xhgeXYsc=">
+window.WRM=window.WRM||{};window.WRM._unparsedData=window.WRM._unparsedData||{};window.WRM._unparsedErrors=window.WRM._unparsedErrors||{};
+WRM._unparsedData["com.atlassian.plugins.atlassian-plugins-webresource-plugin:context-path.context-path"]="\u0022\u0022";
+WRM._unparsedData["confluence.macro.metadata.provider:macro-browser-metadata-resources.macro-meta-client-cache-key"]="\u00221791006801455\u0022";
+WRM._unparsedData["com.atlassian.confluence.plugins.confluence-feature-discovery-plugin:confluence-feature-discovery-plugin-resources.test-mode"]="false";
+if(window.WRM._dataArrived)window.WRM._dataArrived();</script>
+<script src="/s/3b07e879a3fe34a2fea6fc3718e294dc-CDN/-74zzst/9424/1n7bvk5/d2ecf9f1f6d6aebf30da45a0c41161d8/_/download/contextbatch/js/_super/batch.js?isReactDevMode=false&amp;locale=en-GB&amp;plugins.aui.deprecated.webresource.jquery.form.legacy=false&amp;react.devmode=false" data-wrm-key="_super" data-wrm-batch-type="context" data-initially-rendered nonce="wELi95JRXciKD9KW6I5xhgeXYsc="></script>
+<script src="/s/3c40298335548a4fd5e30eb7a7171289-CDN/-74zzst/9424/1n7bvk5/1ecdcce778cba2232a1864fd674e1583/_/download/contextbatch/js/viewcontent,-_super/batch.js?highlightactions=true&amp;isReactDevMode=false&amp;locale=en-GB&amp;plugins.aui.deprecated.webresource.jquery.form.legacy=false&amp;react.devmode=false&amp;table-resizable.breaking-text=false&amp;theme.switcher=true" data-wrm-key="viewcontent,-_super" data-wrm-batch-type="context" data-initially-rendered nonce="wELi95JRXciKD9KW6I5xhgeXYsc="></script>
+<script src="/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-74zzst/9424/1n7bvk5/2.25.3/_/download/batch/com.k15t.scroll.scroll-viewport:resource-editor-resource-omitter/com.k15t.scroll.scroll-viewport:resource-editor-resource-omitter.js" data-wrm-key="com.k15t.scroll.scroll-viewport:resource-editor-resource-omitter" data-wrm-batch-type="resource" data-initially-rendered nonce="wELi95JRXciKD9KW6I5xhgeXYsc="></script>
+<script src="/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-74zzst/9424/1n7bvk5/2.25.3/_/download/batch/com.k15t.scroll.scroll-viewport:resource-quick-reload-manager-disabler/com.k15t.scroll.scroll-viewport:resource-quick-reload-manager-disabler.js" data-wrm-key="com.k15t.scroll.scroll-viewport:resource-quick-reload-manager-disabler" data-wrm-batch-type="resource" data-initially-rendered nonce="wELi95JRXciKD9KW6I5xhgeXYsc="></script>
+
+      	<!-- / Page resources.js -->
+
+                <script src="/fd/_/7F00000101521132AF2A579D57E76CD8/1781708764669/assets/js/modernizr.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@e006587/loader/run_prettify.js" integrity="sha384-kzCVIKjPGX5Z3kl3N77p1HfqOB9a1qXhDxX5FhD9AEDuQKEShJBzrR0o3iKAMUWR" crossorigin="anonymous"></script>
+
+                
+      
+                
+    <meta name="generator" content="Created with Scroll Sites - K15t"><meta name="scroll-sites-version" content="2.25.3">
+<style>.sv-bidi-marker:before { unicode-bidi: isolate; background-color: #fff0b3; color: #7f5f01; cursor: pointer; content: attr(data-charcode); }
+#main-content .confluence-embedded-file-wrapper.confluence-embedded-manual-size {max-width: none;}</style>
+</head>
+
+    <body class="fd" itemscope="" itemtype="http://schema.org/WebPage">
+
+        <div class="band header--primary">
+            <nav>
+                <a href="https://www.red-gate.com/" class="header--primary__app-logo-container">
+                    <img src="/fd/_/7F00000101521132AF2A579D57E76CD8/1781708764669/assets/images/redgate-logo--white.svg" width="94" alt="">
+                </a>
+
+                <a href="/home" class="header--primary__app-name-container">
+                    Documentation
+                </a>
+              
+              	<ul class="hide-on-small">
+                  <li><a href="/home">All Products</a></li>
+                  <li><a href="https://productsupport.red-gate.com/">Support</a></li>
+                  <li><a href="https://forum.red-gate.com/">Forums</a></li>
+                </ul>
+
+                <span class="float-right hide-on-medium">
+                    <!-- <ul>
+                        <li><a href="https://documentation.red-gate.com/">Documentation Home</a></li>
+                    </ul> -->
+                  
+                  	
+
+
+<!-- Confluence search form -->
+<form action="/fd/search" method="GET" id="search" class="header--primary__search-form">
+  <input id="search-input" type="text" size="100" autocomplete="on" placeholder="Search ..." name="q" value="">
+  <input type="hidden" name="s" value="FD" />
+  <button type="submit">Search</button>
+</form>
+
+<!-- Redgate.com global search form
+<form action="https://www.red-gate.com/Search/" method="GET" id="search" class="header--primary__search-form">
+  <input id="search-input" type="text" size="100" autocomplete="on" placeholder="Search ..." name="s">
+  <input type="hidden" name="t" value="support">
+  <button type="submit">Search</button>
+</form> -->
+                </span>
+            </nav>
+        </div>
+ 
+
+<section class="band background-color--grey--1 space-header">
+  <div class="band__inner-container flex display--block--small">  
+    <div class="media flex-grow">
+      <img src="/download/attachments/138346876/FD?version=3&amp;modificationDate=1633982869952&amp;api=v2" class="media__image space-header__logo">
+      <div class="media__body">
+        <h1 class="beta text--redgate spaced-bottom--none">Redgate Flyway</h1>
+        
+        <div class="media">        
+                    <p class="media__image media__image--right spaced-bottom--none hide-on-medium js-older-versions" style="display:none;">Help for <a href="/fd/release-notes-and-other-versions">older versions</a> available.</p>
+          <div class="media__body">
+            <ul class="breadcrumbs list--bare list--horizontal">
+      <li><a href="/fd/redgate-flyway-documentation-138346877.html">Redgate Flyway Documentation</a></li>           
+      <li><a href="/fd/flyway-concepts-271583830.html">Flyway concepts</a></li>           
+      <li><a href="/fd/migrations-271585107.html">Migrations</a></li>           
+    <li>Versioned migrations</li>
+</ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    
+        
+  </div>
+</section>
+
+<section class="band content-container">
+    <div class="band__inner-container band__inner-container--tight grid padded-v--none flex display--block--small">
+
+                <div class="grid__col grid__col--span-3-of-12 flex">
+			<div class="confluence-sidebar-rail">
+  <div class="confluence-sidebar flex flex-grow flex-direction--column">
+      <nav class="nav--vertical nav--vertical--minimal">
+        <ul 
+            data-viewport-id="AC1F31CC017C70E07CE81F7B1C68CD2E" 
+            data-root="/fd/redgate-flyway-documentation-138346877.html"
+            data-current="/fd/versioned-migrations-273973333.html"
+        ></ul>
+    </nav>
+  </div>
+</div>
+        </div>
+      
+      	        <div class="grid__col grid__col--span-8-of-12 grid__col--push-1-of-12 page-content">
+          	<div class="padded-top">
+              <h1 class="spaced-bottom--none">Versioned migrations</h1>
+                            	<p class="page__metadata" itemprop="dateModified" datetime="23 December 2024">Page last updated 23 December 2024</p>
+              
+              <p class="visually-hidden" itemprop="datePublished" datetime="17 December 2024">Published 17 December 2024</p>
+
+              <div id="content" class="page conf-macro output-block" data-hasbody="true" data-macro-name="sp-pagelayout" data-host-id="d073a8d5-9a2e-3e89-b4de-245d9cba031a" data-macro-id="56af496d-eb69-4b38-8154-66acd29f23fe" data-content-id="273973333" data-content-version="5">
+    <div id="main-content" class="wiki-content">
+                    <div class="grid__row grid__row--confluence">
+                                    <div class="grid__col grid__col--span-12-of-12">
+                        <p><em>Versioned migrations </em>are applied to a target database in order exactly once.&nbsp; The <a data-content-id="273973333" data-macro-name="sp-richtextbody-link" data-content-version="5" href="/fd/flyway-schema-history-table-273973417.html" class="conf-macro output-inline" data-hasbody="true" data-host-id="d073a8d5-9a2e-3e89-b4de-245d9cba031a" data-macro-id="13d63231-39f0-4113-9f11-8b975bbf8472"><em>flyway_schema_history</em> table</a> tracks which <em>versioned migrations</em> have already been applied and stores the&nbsp;<em>checksum</em> to make sure they haven't changed.&nbsp;&nbsp;It is best practice not to make changes to existing<span>&nbsp;</span><em>versioned migrations</em><span>&nbsp;</span>once they have been applied to a permanent downstream environment.&nbsp; It's best to create a new<span>&nbsp;</span><em>versioned migration</em><span>&nbsp;</span>script and roll forward any necessary changes.&nbsp;</p><p>Versioned migrations are typically used for:</p><ul><li>Creating/altering/dropping tables/indexes/foreign keys/enums/UDTs/...</li><li>Reference data updates</li><li>User data corrections</li></ul><h2 id="Versionedmigrations-Naming">Naming</h2><p>Each versioned migration has a <em>version</em>, a <em>description</em> and a <em>checksum</em>. eg., V001.002__NewTwitterColumn.sql</p><p>Each versioned migration must be assigned a&nbsp;<strong>unique version</strong>.</p><p>Versioned migrations are applied in the order of their versions. Versions are sorted numerically as you would normally expect.</p><p>Any version is valid as long as it conforms to the usual dotted notation or an underscore separated notation. For most cases a simple increasing integer padded with zeros should be all you need, though Flyway Desktop generates a timestamp as part of the version by default when generating migrations as it helps to avoid conflicts if two team members simultaneously add migrations with no conflicting SQL.</p><p>The description is purely informative for you to be able to remember what each migration does.</p><p>The checksum is there to detect accidental changes.&nbsp;</p><p>Relevant configuration:</p><ul><li><a data-content-id="273973333" data-macro-name="sp-plaintextbody-link" data-content-version="5" href="#" class="unresolved conf-macro output-inline" data-hasbody="true" data-host-id="d073a8d5-9a2e-3e89-b4de-245d9cba031a" data-macro-id="3bdfda43-30ee-4b30-823c-e358c8fe9acd">SQL migration prefix</a></li><li><a data-content-id="273973333" data-macro-name="sp-plaintextbody-link" data-content-version="5" href="#" class="unresolved conf-macro output-inline" data-hasbody="true" data-host-id="d073a8d5-9a2e-3e89-b4de-245d9cba031a" data-macro-id="428f07fa-b69d-42f4-8bac-385ec73ba41d">SQL migration separator</a></li><li><a data-content-id="273973333" data-macro-name="sp-plaintextbody-link" data-content-version="5" href="#" class="unresolved conf-macro output-inline" data-hasbody="true" data-host-id="d073a8d5-9a2e-3e89-b4de-245d9cba031a" data-macro-id="aaa5c3e2-60d0-4910-89c6-4bda4fe7881f">SQL migration suffixes</a></li></ul><h2 id="Versionedmigrations-Example">Example</h2><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">car</span> <span class="p">(</span>
+    <span class="n">id</span> <span class="nb">INT</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="n">license_plate</span> <span class="nb">VARCHAR</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+    <span class="n">color</span> <span class="nb">VARCHAR</span> <span class="k">NOT</span> <span class="k">NULL</span>
+<span class="p">);</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="k">owner</span> <span class="k">ADD</span> <span class="n">driver_license_id</span> <span class="nb">VARCHAR</span><span class="p">;</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">brand</span> <span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">'DeLorean'</span><span class="p">);</span>
+</code></pre><p><br></p>
+                    </div>
+                            </div>
+            </div>
+</div>
+
+              <div class="article-copyright-notice spaced-top padded-top" style="border-top:1px solid #e0e0e0; margin-top:2rem; padding-top:1rem; font-size:0.85rem; color:#666;">
+                                    <p>This documentation contains proprietary information and is protected by copyright law.<br>
+                  Copyright &copy; 2026 Red Gate Software Limited. All rights reserved</p>
+              </div>
+
+              
+                
+<div class="clearfix">
+  <hr>
+  <p class="delta">Didn't find what you were looking for?</p>
+
+  <div class="float-left">
+    <ul class="list--horizontal list--dividers">
+      <li>Visit the <a href="https://forum.red-gate.com/">Redgate forum</a></li>
+      <li><a href="http://redgatesupport.red-gate.com/home">Contact Support</a></li>
+    </ul>
+  </div>
+  
+</div>
+            </div>
+        </div>
+      
+    </div>
+</section>
+          
+		<section class="band scheme--white hub__footer-links spaced-top">
+            <div class="band__inner-container grid">
+                <div class="grid__col grid__col--span-2-of-10">
+                    <a href="https://www.red-gate.com/hub/product-learning/" class="rounded border display--block text--center padded spaced-right--tight">
+                        <img src="https://cdn.rd.gt/assets/hub/images/product-learning.svg?v=1533306588" alt="" class="padded-bottom--tight">
+                        <p class="beta">Product Articles</p>
+                        <p>Tips and how-to guides for Redgate products</p>
+                    </a>
+                </div>
+
+                <div class="grid__col grid__col--span-2-of-10">
+                    <a href="https://www.red-gate.com/hub/university/" class="rounded border display--block text--center padded spaced-right--tight">
+                        <img src="https://cdn.rd.gt/assets/hub/images/university.svg?v=1563457804512" alt="" class="padded-bottom--tight">
+                        <p class="beta">University</p>
+                        <p>Easy to follow video courses</p>
+                    </a>
+                </div>
+
+                <div class="grid__col grid__col--span-2-of-10">
+                    <a href="https://forum.red-gate.com" class="rounded border display--block text--center padded spaced-right--tight">
+                        <img src="https://cdn.rd.gt/assets/hub/images/product-forums.svg?v=1533306584" alt="" class="padded-bottom--tight">
+                        <p class="beta">Community Forums</p>
+                        <p>Ask, discuss, and solve questions about Redgate's tools</p>
+                    </a>
+                </div>
+
+                <div class="grid__col grid__col--span-2-of-10">
+                    <a href="https://www.red-gate.com/hub/events/" class="rounded border display--block text--center padded spaced-right--tight">
+                        <img src="https://cdn.rd.gt/assets/hub/images/events-and-friends.svg?v=1533306579" alt="" class="padded-bottom--tight">
+                        <p class="beta">Events &amp; Friends</p>
+                        <p>Meet us at an event, get sponsored, and join our Friends of Redgate</p>
+                    </a>
+                </div>
+
+                <div class="grid__col grid__col--span-2-of-10">
+                    <a href="https://www.red-gate.com/simple-talk/" class="rounded border display--block text--center padded spaced-right--tight">
+                        <img src="https://cdn.rd.gt/assets/hub/images/simple-talk.svg?v=1533306593" alt="" class="padded-bottom--tight">
+                        <p class="beta">Simple Talk</p>
+                        <p>In-depth articles and opinion from Redgate's technical journal</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+		
+
+		<footer class="band scheme--lightest-grey">
+            <div class="band__inner-container band__inner-container--tight">
+                <p class="text--body-small color--grey--7 spaced-bottom--none">Copyright 1999 - 2026 Red Gate Software Ltd</p>                
+            </div>
+        </footer>
+
+		<script>
+          var Confluence = Confluence || {};
+          Confluence.Space = {
+            "key": "FD",
+            "name": "Redgate Flyway",
+            "properties": {
+				"pollId": "16264378",
+            }
+          };
+          Confluence.Page = {
+            "id": "273973333"
+          };
+          Confluence.BaseUrl = "https://documentation.red-gate.com";
+		</script>
+
+        <script src="https://cdn.rd.gt/assets/scripts/jquery-3.7.1.min.js" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>
+        <script src="/fd/_/7F00000101521132AF2A579D57E76CD8/1781708764669/assets/honeycomb/confluence/vendor/jquery.scroll-tree.js"></script>
+        <script src="/fd/_/7F00000101521132AF2A579D57E76CD8/1781708764669/assets/honeycomb/confluence/vendor/jquery.toc-1.5.js"></script>
+        <script src="/fd/_/7F00000101521132AF2A579D57E76CD8/1781708764669/assets/honeycomb/lightbox/vendor/jquery.fancybox.min.js"></script>
+        <script src="/fd/_/7F00000101521132AF2A579D57E76CD8/1781708764669/assets/honeycomb/tabs/vendor/jquery.tabs.js"></script>
+		<script>window.Honeycomb = window.Honeycomb || {}; window.Honeycomb.path='';</script>
+        <script src="/fd/_/7F00000101521132AF2A579D57E76CD8/1781708764669/assets/honeycomb/honeycomb.js?v=20240105"></script>
+		<script src="/fd/_/7F00000101521132AF2A579D57E76CD8/1781708764669/assets/js/redgate.confluence.js?v=20240105"></script>
+		<script src="//cdn.rd.gt/assets/documentation/includes/documentation.js"></script>
+
+                <!-- Begin Gooogle Analytics V3 -->
+<script>
+if (
+    window.Honeycomb &&
+    window.Honeycomb.CookieConsent &&
+    window.Honeycomb.CookieConsent.hasConsent('performance')
+) {
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    // Documentation site property
+    ga('create', 'UA-90206-130', 'auto');
+    ga('send', 'pageview');
+
+    // Cross-domain property
+    const sites = [
+        'www.red-gate.com',
+        'www.sqlservercentral.com',
+        'documentation.red-gate.com',
+        'sqlmonitormetrics.red-gate.com'
+    ];
+    ga( 'create', 'UA-90206-169', { name: 'crossDomain', cookieName: '_crossDomainGa', 'allowLinker': true } );
+    ga( 'crossDomain.require', 'linker' );
+    ga( 'crossDomain.linker:autoLink', sites );
+    ga( 'crossDomain.send', 'pageview' );
+}
+</script>
+<!-- End Gooogle Analytics V3 -->
+
+
+<!-- Begin Gooogle Analytics V4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L187L6MND1"></script>
+<script>
+    if (
+        window.Honeycomb &&
+        window.Honeycomb.CookieConsent // We do not need to check for 'performance' consent here as above, because we initialise GA4 as cookieless by default
+    ) {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+            window.dataLayer.push(arguments);
+        };
+        window.gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'analytics_storage': 'denied',
+            'wait_for_update': 500,
+        });
+        window.gtag('js', new Date());
+        window.gtag('config', 'G-L187L6MND1'); // Main profile for documentation.red-gate.com
+        window.gtag('config', 'G-X7VDRWRT4P'); // Cross-domain tracking
+
+        // Update consent for storing cookies if targeting consent given.
+        var hasTargetingConsent = window.Honeycomb.CookieConsent.hasConsent('targeting');
+        if (hasTargetingConsent) {
+            window.gtag('consent', 'update', {
+                'ad_storage': 'granted',
+                'analytics_storage': 'granted',
+            });
+        }
+    }
+</script>
+<!-- End Gooogle Analytics V4 -->
+
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PVF2ZJ7');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Begin LinkedIn Lead Accelerator -->
+<script type="text/javascript">
+    _bizo_data_partner_id = "8524";
+    (function() {
+        if (
+            window.Honeycomb &&
+            window.Honeycomb.CookieConsent &&
+            window.Honeycomb.CookieConsent.hasConsent('targeting')
+        ) {
+            var s = document.getElementsByTagName("script")[0];
+            var b = document.createElement("script");
+            b.type = "text/javascript";
+            b.async = true;
+            b.src = (window.location.protocol === "https:" ? "https://sjs" : "http://js") + ".bizographics.com/insight.min.js";
+            s.parentNode.insertBefore(b, s);
+        }
+    })();
+</script>
+<noscript>
+	<img height="1" width="1" alt="" style="display:none;" src="//www.bizographics.com/collect/?pid=8524&fmt=gif" />
+</noscript>
+<!-- End LinkedIn Lead Accelerator -->
+
+<!-- 6sense -->
+<script>
+    if (
+		window.Honeycomb &&
+		window.Honeycomb.CookieConsent &&
+		window.Honeycomb.CookieConsent.hasConsent('targeting')
+    ) {
+        var s = document.getElementsByTagName("script")[0];
+        var b = document.createElement("script");
+        b.type = "text/javascript";
+        b.id = "6senseWebTag";
+        b.src = "https://j.6sc.co/j/394205b8-8f17-4ed0-8848-b9419131aec3.js";
+        s.parentNode.insertBefore(b, s);
+    }
+</script>
+<!-- End 6sense -->
+
+<!-- Powered by Scroll Sites -->
+    <script src="//documentation.red-gate.com/plugins/servlet/scroll-viewport/bootstrap.js?viewportId=AC1F31CC017C70E07CE81F7B1C68CD2E&pageId=273973333&spaceKey=FD&isDraftViewport=false&isViewportControlEnabled=true" async></script>
+</body>
+</html>
