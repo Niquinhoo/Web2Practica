@@ -1,0 +1,616 @@
+<!DOCTYPE html><html lang="es" dir="ltr" data-theme="dark" class="astro-vdxcvpsm"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>TP2: persistencia y arquitectura hexagonal | Web II</title><link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml"/><meta name="generator" content="Astro v7.1.3"/><meta name="generator" content="Starlight v0.41.4"/><meta property="og:title" content="TP2: persistencia y arquitectura hexagonal"/><meta property="og:type" content="article"/><meta property="og:locale" content="es"/><meta property="og:description" content="Presentación de la resolución del TP2 — PostgreSQL, JPA/Hibernate, Flyway, relación entre entidades, transacciones y el patrón de puertos y adapters."/><meta property="og:site_name" content="Web II"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="Presentación de la resolución del TP2 — PostgreSQL, JPA/Hibernate, Flyway, relación entre entidades, transacciones y el patrón de puertos y adapters."/><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/_astro/print.ehPL0gv-.css" media="print"><link rel="stylesheet" href="/_astro/common.CZ0EvY4u.css"><style>@layer starlight.components{.card:where(.astro-zts4jgjd){--sl-card-border:var(--sl-color-purple);--sl-card-bg:var(--sl-color-purple-low);border:1px solid var(--sl-color-gray-5);background-color:var(--sl-color-black);flex-direction:column;gap:clamp(.5rem,.125rem + 1vw,1rem);padding:clamp(1rem,.125rem + 3vw,2.5rem)}.card:where(.astro-zts4jgjd):nth-child(4n+1){--sl-card-border:var(--sl-color-orange);--sl-card-bg:var(--sl-color-orange-low)}.card:where(.astro-zts4jgjd):nth-child(4n+3){--sl-card-border:var(--sl-color-green);--sl-card-bg:var(--sl-color-green-low)}.card:where(.astro-zts4jgjd):nth-child(4n+4){--sl-card-border:var(--sl-color-red);--sl-card-bg:var(--sl-color-red-low)}.card:where(.astro-zts4jgjd):nth-child(4n+5){--sl-card-border:var(--sl-color-blue);--sl-card-bg:var(--sl-color-blue-low)}.title:where(.astro-zts4jgjd){font-weight:600;font-size:var(--sl-text-h4);color:var(--sl-color-white);line-height:var(--sl-line-height-headings);align-items:center;gap:1rem}.card:where(.astro-zts4jgjd) .icon:where(.astro-zts4jgjd){border:1px solid var(--sl-card-border);background-color:var(--sl-card-bg);border-radius:.25rem;flex-shrink:0;padding:.2em}.card:where(.astro-zts4jgjd) .body:where(.astro-zts4jgjd){font-size:clamp(var(--sl-text-sm), calc(.5rem + 1vw), var(--sl-text-body));margin:0}.card-grid:where(.astro-lmor3ela){grid-template-columns:100%;gap:1rem;display:grid}.card-grid:where(.astro-lmor3ela)>*{margin-top:0!important}@media (width>=50rem){.card-grid:where(.astro-lmor3ela){grid-template-columns:1fr 1fr;gap:1.5rem}.stagger:where(.astro-lmor3ela){--stagger-height:5rem;padding-bottom:var(--stagger-height)}.stagger:where(.astro-lmor3ela)>:nth-child(2n){transform:translateY(var(--stagger-height))}}}
+@layer starlight.components{:root{--sl-badge-default-border:var(--sl-color-accent);--sl-badge-default-bg:var(--sl-color-accent-low);--sl-badge-default-text:#fff;--sl-badge-note-border:var(--sl-color-blue);--sl-badge-note-bg:var(--sl-color-blue-low);--sl-badge-note-text:#fff;--sl-badge-danger-border:var(--sl-color-red);--sl-badge-danger-bg:var(--sl-color-red-low);--sl-badge-danger-text:#fff;--sl-badge-success-border:var(--sl-color-green);--sl-badge-success-bg:var(--sl-color-green-low);--sl-badge-success-text:#fff;--sl-badge-caution-border:var(--sl-color-orange);--sl-badge-caution-bg:var(--sl-color-orange-low);--sl-badge-caution-text:#fff;--sl-badge-tip-border:var(--sl-color-purple);--sl-badge-tip-bg:var(--sl-color-purple-low);--sl-badge-tip-text:#fff}[data-theme=light]:root{--sl-badge-default-bg:var(--sl-color-accent-high);--sl-badge-note-bg:var(--sl-color-blue-high);--sl-badge-danger-bg:var(--sl-color-red-high);--sl-badge-success-bg:var(--sl-color-green-high);--sl-badge-caution-bg:var(--sl-color-orange-high);--sl-badge-tip-bg:var(--sl-color-purple-high)}.sl-badge:where(.astro-7hkzaclv){border:1px solid var(--sl-color-border-badge);font-family:var(--sl-font-system-mono);color:var(--sl-color-text-badge);background-color:var(--sl-color-bg-badge);overflow-wrap:anywhere;border-radius:.25rem;line-height:normal;display:inline-block}.sidebar-content .sl-badge:where(.astro-7hkzaclv){line-height:1;font-size:var(--sl-text-xs);padding:.125rem .375rem}.sidebar-content a[aria-current=page]>.sl-badge:where(.astro-7hkzaclv){--sl-color-bg-badge:transparent;--sl-color-border-badge:currentColor;color:inherit}.default:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-default-bg);--sl-color-border-badge:var(--sl-badge-default-border);--sl-color-text-badge:var(--sl-badge-default-text)}.note:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-note-bg);--sl-color-border-badge:var(--sl-badge-note-border);--sl-color-text-badge:var(--sl-badge-note-text)}.danger:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-danger-bg);--sl-color-border-badge:var(--sl-badge-danger-border);--sl-color-text-badge:var(--sl-badge-danger-text)}.success:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-success-bg);--sl-color-border-badge:var(--sl-badge-success-border);--sl-color-text-badge:var(--sl-badge-success-text)}.tip:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-tip-bg);--sl-color-border-badge:var(--sl-badge-tip-border);--sl-color-text-badge:var(--sl-badge-tip-text)}.caution:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-caution-bg);--sl-color-border-badge:var(--sl-badge-caution-border);--sl-color-text-badge:var(--sl-badge-caution-text)}.small:where(.astro-7hkzaclv){font-size:var(--sl-text-xs);padding:.125rem .25rem}.medium:where(.astro-7hkzaclv){font-size:var(--sl-text-sm);padding:.175rem .35rem}.large:where(.astro-7hkzaclv){font-size:var(--sl-text-base);padding:.225rem .45rem}.sl-markdown-content :is(h1,h2,h3,h4,h5,h6) .sl-badge:where(.astro-7hkzaclv){vertical-align:middle}.sl-link-button:where(.astro-hlbqph7b){font-size:var(--sl-text-sm);outline-offset:.25rem;border:1px solid #0000;border-radius:999rem;align-items:center;gap:.5em;padding:.4375rem 1.125rem;line-height:1.1875;text-decoration:none;display:inline-flex}.sl-link-button:where(.astro-hlbqph7b).primary{background:var(--sl-color-text-accent);border-color:var(--sl-color-text-accent);color:var(--sl-color-black)}.sl-link-button:where(.astro-hlbqph7b).primary:hover{color:var(--sl-color-black)}.sl-link-button:where(.astro-hlbqph7b).secondary{border-color:inherit;color:var(--sl-color-white)}.sl-link-button:where(.astro-hlbqph7b).minimal{color:var(--sl-color-white);padding-inline:0}.sl-link-button:where(.astro-hlbqph7b) svg{flex-shrink:0}@media (width>=50rem){.sl-link-button:where(.astro-hlbqph7b){font-size:var(--sl-text-base);padding:.9375rem 1.25rem}}.sl-markdown-content .sl-link-button:where(.astro-hlbqph7b){margin-inline-end:1rem}.sl-markdown-content .sl-link-button:where(.astro-hlbqph7b):not(:where(p *)){margin-block:1rem}}
+@layer starlight.components{svg:where(.astro-n5k4ipy7){color:var(--sl-icon-color);font-size:var(--sl-icon-size,1em);width:1em;height:1em}}
+@layer starlight.components{starlight-tabs:where(.astro-hbt4ddzs){display:block}.tablist-wrapper:where(.astro-hbt4ddzs){overflow-x:auto}:where(.astro-hbt4ddzs)[role=tablist]{border-bottom:2px solid var(--sl-color-gray-5);padding:0;list-style:none;display:flex}.tab:where(.astro-hbt4ddzs){display:flex}.tab:where(.astro-hbt4ddzs)>:where(.astro-hbt4ddzs)[role=tab]{--sl-tab-color-border:var(--sl-color-gray-5);line-height:var(--sl-line-height-headings);box-shadow:0 2px 0 var(--sl-tab-color-border);color:var(--sl-color-gray-3);outline-offset:var(--sl-outline-offset-inside);overflow-wrap:initial;align-items:center;gap:.5rem;padding:.275rem 1.25rem;text-decoration:none;display:flex}.tab:where(.astro-hbt4ddzs) :where(.astro-hbt4ddzs)[role=tab][aria-selected=true]{--sl-tab-color-border:var(--sl-color-text-accent);color:var(--sl-color-white);font-weight:600}.tablist-wrapper:where(.astro-hbt4ddzs)~[role=tabpanel]{margin-top:1rem}.sl-steps{--bullet-size:calc(var(--sl-line-height) * 1rem);--bullet-margin:.375rem;counter-reset:steps-counter var(--sl-steps-start,0);padding-inline-start:0;list-style:none}.sl-steps>li{counter-increment:steps-counter;padding-inline-start:calc(var(--bullet-size) + 1rem);min-height:calc(var(--bullet-size) + var(--bullet-margin));padding-bottom:1px;position:relative}.sl-steps>li+li{margin-top:0}.sl-steps>li:before{content:counter(steps-counter);top:0;width:var(--bullet-size);height:var(--bullet-size);line-height:var(--bullet-size);font-size:var(--sl-text-xs);text-align:center;color:var(--sl-color-white);background-color:var(--sl-color-gray-6);box-shadow:inset 0 0 0 1px var(--sl-color-gray-5);border-radius:99rem;font-weight:600;position:absolute;inset-inline-start:0}.sl-steps>li:after{--guide-width:1px;content:"";top:calc(var(--bullet-size) + var(--bullet-margin));bottom:var(--bullet-margin);width:var(--guide-width);background-color:var(--sl-color-hairline-light);position:absolute;inset-inline-start:calc((var(--bullet-size) - var(--guide-width)) / 2)}}@layer starlight.content{.sl-steps>li>:first-child{--lh:calc(1em * var(--sl-line-height));--shift-y:calc(.5 * (var(--bullet-size) - var(--lh)));transform:translateY(var(--shift-y));margin-bottom:var(--shift-y)}.sl-steps>li>:first-child:where(h1,h2,h3,h4,h5,h6){--lh:calc(1em * var(--sl-line-height-headings))}@supports (--prop:1lh){.sl-steps>li>:first-child{--lh:1lh}}}
+@layer starlight.components{.sl-link-card:where(.astro-vodiqeol){border:1px solid var(--sl-color-gray-5);box-shadow:var(--sl-shadow-sm);border-radius:.5rem;grid-template-columns:1fr auto;gap:.5rem;padding:1rem;display:grid;position:relative}a:where(.astro-vodiqeol){line-height:var(--sl-line-height-headings);text-decoration:none}a:where(.astro-vodiqeol):before{content:"";position:absolute;inset:0}.stack:where(.astro-vodiqeol){flex-direction:column;gap:.5rem}.title:where(.astro-vodiqeol){color:var(--sl-color-white);font-weight:600;font-size:var(--sl-text-lg)}.description:where(.astro-vodiqeol){color:var(--sl-color-gray-3);line-height:1.5}.icon:where(.astro-vodiqeol){color:var(--sl-color-gray-3)}.sl-link-card:where(.astro-vodiqeol):hover{background:var(--sl-color-gray-7,var(--sl-color-gray-6));border-color:var(--sl-color-gray-2)}.sl-link-card:where(.astro-vodiqeol):hover .icon:where(.astro-vodiqeol){color:var(--sl-color-white)}}
+</style><script type="module" src="/_astro/page.LAbJoB63.js"></script><link rel="stylesheet" href="/_astro/tp2-persistencia-presentacion.BpWW9iwH.css"></head><body class="astro-vdxcvpsm"><a class="sl-skip-link astro-vxeigawq" href="#_top">Ir al contenido</a><div class="page sl-flex astro-gqpr5s5a"><header class="header astro-gqpr5s5a"><div class="header astro-nczgtkxc"><div class="title-wrapper sl-flex astro-nczgtkxc"><a href="/" class="site-title sl-flex astro-clw6ags5"><img class="light:sl-hidden print:hidden astro-clw6ags5" alt="Web II — Universidad Nacional de Villa Mercedes" src="/_astro/web-ii-logo-dark.DZkE8zqB.svg" width="256" height="48"><img class="dark:sl-hidden print:block astro-clw6ags5" alt="Web II — Universidad Nacional de Villa Mercedes" src="/_astro/web-ii-logo-light.BlJd4hlf.svg" width="256" height="48"><span class="sr-only astro-clw6ags5" translate="no">Web II</span></a></div><div class="sl-flex print:hidden astro-nczgtkxc"><site-search class="astro-nczgtkxc astro-r5ar4xm7" data-translations="{&quot;placeholder&quot;:&quot;Buscar&quot;,&quot;clear_search&quot;:&quot;Limpiar&quot;,&quot;load_more&quot;:&quot;Cargar más resultados&quot;,&quot;search_label&quot;:&quot;Buscar página&quot;,&quot;filters_label&quot;:&quot;Filtros&quot;,&quot;zero_results&quot;:&quot;Ningún resultado para: [SEARCH_TERM]&quot;,&quot;many_results&quot;:&quot;[COUNT] resultados para: [SEARCH_TERM]&quot;,&quot;one_result&quot;:&quot;[COUNT] resultado para: [SEARCH_TERM]&quot;,&quot;alt_search&quot;:&quot;Ningún resultado para [SEARCH_TERM]. Mostrando resultados para: [DIFFERENT_TERM]&quot;,&quot;search_suggestion&quot;:&quot;Ningún resultado para [SEARCH_TERM]. Prueba alguna de estas búsquedas:&quot;,&quot;searching&quot;:&quot;Buscando [SEARCH_TERM]...&quot;}"><button data-open-modal disabled aria-label="Buscar" aria-keyshortcuts="Control+K" class="astro-r5ar4xm7"><svg aria-hidden="true" class="astro-r5ar4xm7 astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg><span class="sl-hidden md:sl-block astro-r5ar4xm7" aria-hidden="true">Buscar</span><kbd class="sl-hidden md:sl-flex astro-r5ar4xm7" style="display: none;"><kbd class="astro-r5ar4xm7">Ctrl</kbd><kbd class="astro-r5ar4xm7">K</kbd></kbd></button><dialog style="padding:0" aria-label="Buscar" class="astro-r5ar4xm7"><div class="dialog-frame sl-flex astro-r5ar4xm7"><button data-close-modal class="sl-flex md:sl-hidden astro-r5ar4xm7">Cancelar</button><div class="search-container astro-r5ar4xm7"><div id="starlight__search" class="astro-r5ar4xm7"></div></div></div></dialog></site-search><script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script><script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.CM1HKbUQ.js"></script></div><div class="sl-hidden md:sl-flex print:hidden right-group astro-nczgtkxc"><div class="sl-flex social-icons astro-nczgtkxc"></div><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-r2p65idu"><span class="sr-only astro-r2p65idu">Seleccionar tema</span><svg aria-hidden="true" class="icon label-icon astro-r2p65idu astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-r2p65idu"><option value="dark" class="astro-r2p65idu">Oscuro</option><option value="light" class="astro-r2p65idu">Claro</option><option value="auto" selected class="astro-r2p65idu">Automático</option></select><svg aria-hidden="true" class="icon caret astro-r2p65idu astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script><script type="module">var e=`starlight-theme`,t=e=>e===`auto`||e===`dark`||e===`light`?e:`auto`,n=()=>t(typeof localStorage<`u`&&localStorage.getItem(e));function r(t){typeof localStorage<`u`&&localStorage.setItem(e,t===`light`||t===`dark`?t:``)}var i=()=>matchMedia(`(prefers-color-scheme: light)`).matches?`light`:`dark`;function a(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e===`auto`?i():e,r(e)}matchMedia(`(prefers-color-scheme: light)`).addEventListener(`change`,()=>{n()===`auto`&&a(`auto`)});var o=class extends HTMLElement{constructor(){super(),a(n()),this.querySelector(`select`)?.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&a(t(e.currentTarget.value))})}};customElements.define(`starlight-theme-select`,o);</script><script type="module">var e=class extends HTMLElement{constructor(){super();let e=this.querySelector(`select`);e&&(e.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=e.currentTarget.value)}),window.addEventListener(`pageshow`,t=>{if(!t.persisted)return;let n=e.querySelector(`option[selected]`)?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}};customElements.define(`starlight-lang-select`,e);</script></div></div></header><div class="main-frame astro-gqpr5s5a"><script type="module">var e=document.getElementById(`starlight__sidebar`),t=e?.querySelector(`sl-sidebar-state-persist`),n=`sl-sidebar-state`,r=()=>{let r=[],i=t?.dataset.hash||``;try{let e=sessionStorage.getItem(n),t=JSON.parse(e||`{}`);Array.isArray(t.open)&&t.hash===i&&(r=t.open)}catch{}return{hash:i,open:r,scroll:e?.scrollTop||0}},i=e=>{try{sessionStorage.setItem(n,JSON.stringify(e))}catch{}},a=()=>i(r()),o=(e,t)=>{let n=r();n.open[t]=e,i(n)};t?.addEventListener(`click`,e=>{if(!(e.target instanceof Element))return;let t=e.target.closest(`summary`)?.closest(`details`);if(!t)return;let n=t.querySelector(`sl-sidebar-restore`),r=parseInt(n?.dataset.index||``);isNaN(r)||o(!t.open,r)}),addEventListener(`visibilitychange`,()=>{document.visibilityState===`hidden`&&a()});</script><div class="lg:sl-flex astro-abfeecmu"><div class="main-pane astro-abfeecmu"><main data-pagefind-body class="astro-vdxcvpsm" lang="es" dir="ltr"><div class="content-panel astro-oil7k7jf"><div class="sl-container astro-oil7k7jf"><h1 id="_top" class="astro-2sm4b3ln">TP2: persistencia y arquitectura hexagonal</h1></div></div><div class="content-panel astro-oil7k7jf"><div class="sl-container astro-oil7k7jf"><div class="sl-markdown-content"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"><div>
+<div class="tp2-deck" id="tp2-deck" tabindex="0">
+  <div class="progress" id="tp2-progress"></div>
+  <div class="chrome-top">
+    <span><span class="brand">TP2</span> · Persistencia, migraciones y arquitectura hexagonal</span>
+    <span>rama tp2</span>
+  </div>
+
+  <main class="stage">
+
+    <section class="slide active">
+      <div class="cover">
+        <div class="cover-eyebrow">TP2 · Spring Boot — rama tp2</div>
+        <h1>De un Map a PostgreSQL,<br>sin tocar el Service</h1>
+        <p class="cover-sub">Flyway versiona el esquema, JPA/Hibernate lo mapea, y un puerto (<code>FavoritoRepository</code>) deja cambiar de memoria a base de datos real sin que el Service ni el Controller se enteren.</p>
+        <div class="cover-meta">
+          <span>Silva Rodrigo Nahuel</span><span class="dot">•</span><span>demo · localhost:8080</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Agenda</span><span class="objpill">6 objetivos del TP2</span></div>
+      <h2>¿Qué pide el TP2?</h2>
+      <table>
+        <tr><th>#</th><th>Objetivo</th></tr>
+        <tr><td>1</td><td>Levantar PostgreSQL y conectarla con Spring Data JPA</td></tr>
+        <tr><td>2</td><td>Reemplazar el repository en memoria por un adapter JPA — sin tocar dominio, Service ni Controller</td></tr>
+        <tr><td>3</td><td>Versionar el esquema de base de datos con Flyway</td></tr>
+        <tr><td>4</td><td>Modelar una relación entre entidades y exponerla en la API</td></tr>
+        <tr><td>5</td><td>Delimitar una operación transaccional y justificarla en términos de atomicidad</td></tr>
+        <tr><td>6</td><td>Reconocer la diferencia entre un puerto (contrato) y un adapter (implementación)</td></tr>
+      </table>
+      <p class="lead">Los puntos 2 y 6 son la misma idea vista dos veces: <strong>arquitectura hexagonal</strong>, el término que da nombre al práctico.</p>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Preparación del entorno</span><span class="objpill">Objetivo 1</span></div>
+      <h2>PostgreSQL: dos caminos, mismo resultado</h2>
+      <div class="twocol-cards">
+        <div class="card missing">
+          <h3>Docker (recomendado)</h3>
+          <ul>
+            <li><code>docker-compose.yml</code> en la raíz del repo, imagen oficial <code>postgres:17</code>.</li>
+            <li><code>docker compose up -d</code> y listo — mismo entorno para cualquiera que clone el repo.</li>
+            <li><strong>Estado en esta máquina:</strong> pendiente — el motor de Docker Desktop quedó fallando al arrancar (<code>context deadline exceeded</code> en WSL2) incluso después de un reset de fábrica. El <code>docker-compose.yml</code> ya está commiteado y listo para cuando se resuelva.</li>
+          </ul>
+        </div>
+        <div class="card existing">
+          <h3>Local (lo que usamos hoy)</h3>
+          <ul>
+            <li>PostgreSQL 18 instalado directo (instalador de EnterpriseDB) — la alternativa que la propia consigna permite si no se puede usar Docker.</li>
+            <li>Rol y base creados a mano, desde pgAdmin (Query Tool sobre la base <code>postgres</code>):</li>
+          </ul>
+          <pre><code><span class="tok-k">CREATE ROLE</span> webii_tp2 <span class="tok-k">WITH LOGIN PASSWORD</span> <span class="tok-s">'webii_tp2'</span> <span class="tok-k">SUPERUSER</span>;
+<span class="tok-k">CREATE DATABASE</span> webii_tp2 <span class="tok-k">OWNER</span> webii_tp2;</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Configuración del repo</span><span class="objpill">Objetivo 1</span></div>
+      <h2>application.properties: la conexión y quién manda en el esquema</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m"># Base de datos (ver docker-compose.yml)</span>
+spring.datasource.url=jdbc:postgresql://localhost:5432/webii_tp2
+spring.datasource.username=webii_tp2
+spring.datasource.password=webii_tp2
+
+<span class="tok-m"># El esquema lo maneja Flyway, no Hibernate</span>
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.open-in-view=false</code></pre>
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Por qué <code>ddl-auto=validate</code> y no <code>update</code>?</span>
+              <span class="v">Con <code>update</code> o <code>create</code>, Hibernate también podría modificar el esquema — dos herramientas (Hibernate y Flyway) compitiendo por la misma tabla. <code>validate</code> deja que Hibernate solo <strong>chequee</strong> que sus entidades coinciden con lo que Flyway ya creó.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> mismo usuario/base tanto si se usa Docker como instalación local — solo cambia cómo se levantó el servidor, no cómo se conecta la app.</li>
+            <li><code>open-in-view=false</code>: evita que la conexión a la base quede abierta durante todo el ciclo de vida del request HTTP — buena práctica con JPA que no se ve a simple vista.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Flyway · teoría</span><span class="objpill">Objetivo 3</span></div>
+      <h2>Versionar el esquema, no improvisarlo</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es una migración?</span>
+              <span class="v">Un script SQL versionado que describe <strong>un cambio puntual</strong> del esquema. Flyway las aplica en orden, una sola vez cada una, y registra cuáles ya corrieron.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">¿Para qué sirve, si ya tengo Hibernate?</span>
+              <span class="v">Hibernate puede <em>inferir</em> un esquema a partir de las entidades, pero eso es implícito y difícil de auditar. Flyway deja un historial explícito, reproducible en cualquier máquina — y el único con <code>NOT NULL</code>, índices o backfills a mano.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> convención <code>V{versión}__{descripción}.sql</code> en <code>src/main/resources/db/migration</code> — Flyway la lee del classpath sola, sin configuración extra.</li>
+            <li>Cada migración aplicada queda registrada en <code>flyway_schema_history</code>, con su checksum.</li>
+          </ul>
+        </div>
+        <div class="evidence">
+          <span class="tag">SELECT version, description, success FROM flyway_schema_history;</span>
+          <code>1 | create favoritos         | t
+2 | create listas            | t
+3 | add lista id a favoritos | t
+4 | lista id obligatorio     | t</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Flyway · cómo lo implementamos</span><span class="objpill">Objetivo 3</span></div>
+      <h2>Cuatro migraciones, una por cambio</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">-- V1__create_favoritos.sql</span>
+<span class="tok-k">CREATE TABLE</span> favoritos (
+    id <span class="tok-t">BIGINT</span> <span class="tok-k">GENERATED ALWAYS AS IDENTITY PRIMARY KEY</span>,
+    producto_id <span class="tok-t">BIGINT</span> <span class="tok-k">NOT NULL</span>,
+    nota <span class="tok-t">VARCHAR</span>(500) <span class="tok-k">NOT NULL</span>,
+    fecha_alta <span class="tok-t">TIMESTAMP</span> <span class="tok-k">NOT NULL</span>
+);
+
+<span class="tok-m">-- V3__add_lista_id_a_favoritos.sql</span>
+<span class="tok-k">ALTER TABLE</span> favoritos
+    <span class="tok-k">ADD COLUMN</span> lista_id <span class="tok-t">BIGINT</span> <span class="tok-k">REFERENCES</span> listas (id);</code></pre>
+        <div class="col theory">
+          <ul>
+            <li><code>V1</code> crea <code>favoritos</code>, <code>V2</code> crea <code>listas</code> (misma forma), <code>V3</code> suma <code>lista_id</code> — <strong>nullable</strong> a propósito, para no romper filas ya existentes.</li>
+            <li><code>V4</code> (dos diapositivas más adelante) es la que la vuelve obligatoria — ese orden es la parte interesante del práctico.</li>
+            <li>Reiniciar la app no vuelve a correr <code>V1</code>-<code>V3</code>: Flyway ve que ya están en <code>flyway_schema_history</code> y solo valida sus checksums.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">JPA / Hibernate · teoría</span><span class="objpill">Objetivo 1</span></div>
+      <h2>Un ORM: ni una query SQL escrita a mano</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es un ORM?</span>
+              <span class="v"><strong>Object-Relational Mapping</strong>: traduce automáticamente entre objetos Java y filas de una tabla, a partir de anotaciones (<code>@Entity</code>, <code>@Id</code>, <code>@Column</code>) — nosotros describimos la forma, Hibernate arma el SQL.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">¿Y si no escribimos ninguna query?</span>
+              <span class="v"><code>JpaRepository</code> ya trae <code>save</code>/<code>findById</code>/<code>deleteById</code> implementados en tiempo de ejecución (Spring genera un proxy — no hay una clase <code>.java</code> con ese código). Para <code>findByListaId</code>, Spring Data <strong>lee el nombre del método</strong> y arma el <code>WHERE</code> solo — se llama <em>derived query</em>.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> ningún método nuestro tiene SQL, JPQL ni <code>@Query</code> — todo el CRUD sale de heredar <code>JpaRepository</code> + una convención de nombre. Si hiciera falta algo que el nombre no puede expresar, ahí sí se escribiría <code>@Query</code>, pero no fue necesario acá.</li>
+          </ul>
+        </div>
+        <div class="evidence">
+          <span class="tag">Lo que llamamos → lo que ejecuta Hibernate</span>
+          <code>jpaRepository.save(entity)            <span class="tok-m">// id nuevo</span>
+  → INSERT INTO favoritos (...) VALUES (...)
+
+jpaRepository.save(entity)            <span class="tok-m">// id existente</span>
+  → UPDATE favoritos SET ... WHERE id = ?
+
+jpaRepository.findById(id)
+  → SELECT * FROM favoritos WHERE id = ?
+
+jpaRepository.findByListaId(listaId)  <span class="tok-m">// derivada del nombre</span>
+  → SELECT * FROM favoritos WHERE lista_id = ?
+
+jpaRepository.deleteById(id)
+  → DELETE FROM favoritos WHERE id = ?</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">JPA · una acción específica</span><span class="objpill">Objetivo 1</span></div>
+      <h2>¿Method derivado, orquestación o @Query?</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Dónde vive "mover favoritos"?</span>
+              <span class="v">En el <strong>Service</strong>, no en el repository: no es una operación de la base, es <em>combinar</em> operaciones simples que ya existen (<code>findById</code>, <code>findByListaId</code>, <code>save</code>, <code>deleteById</code>) dentro de un <code>@Transactional</code>.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">¿Y si el nombre de un método no alcanza?</span>
+              <span class="v">Ahí sí se escribe <strong>JPQL</strong> con <code>@Query</code> — como SQL, pero habla de entidades y campos Java, no de tablas y columnas.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> <code>moverFavoritos</code> no escribe ninguna query nueva — un <code>for</code> con <code>N</code> llamadas a <code>save()</code>, más fácil de leer que optimizar.</li>
+          </ul>
+        </div>
+        <pre><code><span class="tok-m">// Alternativa con @Query + @Modifying:</span>
+<span class="tok-m">// un solo UPDATE en vez del for con N save()</span>
+<span class="tok-m">@Modifying</span>
+<span class="tok-m">@Query</span>(<span class="tok-s">"UPDATE FavoritoEntity f "</span> +
+       <span class="tok-s">"SET f.lista.id = :destinoId "</span> +
+       <span class="tok-s">"WHERE f.lista.id = :origenId"</span>)
+<span class="tok-k">void</span> reasignarLista(Long origenId, Long destinoId);
+
+<span class="tok-m">// más rápido con muchos favoritos, pero se salta</span>
+<span class="tok-m">// las validaciones que Hibernate corre por save()</span></code></pre>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">JPA / Hibernate · cómo lo implementamos</span><span class="objpill">Objetivo 1</span></div>
+      <h2>FavoritoEntity: mutable, con constructor vacío</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">@Entity</span>
+<span class="tok-m">@Table</span>(name = <span class="tok-s">"favoritos"</span>)
+<span class="tok-k">public class</span> <span class="tok-t">FavoritoEntity</span> {
+
+    <span class="tok-m">@Id</span>
+    <span class="tok-m">@GeneratedValue</span>(strategy = <span class="tok-t">GenerationType</span>.IDENTITY)
+    <span class="tok-k">private</span> Long id;
+
+    <span class="tok-m">@Column</span>(name = <span class="tok-s">"producto_id"</span>, nullable = <span class="tok-k">false</span>)
+    <span class="tok-k">private</span> Long productoId;
+
+    <span class="tok-m">// constructor vacío + getters/setters</span>
+    <span class="tok-k">public</span> FavoritoEntity() {}
+}</code></pre>
+        <div class="col theory">
+          <ul>
+            <li><code>@Id</code> + <code>@GeneratedValue(IDENTITY)</code> delega en Postgres (<code>GENERATED ALWAYS AS IDENTITY</code> de <code>V1</code>) quién asigna el id — no lo calcula Java.</li>
+            <li><code>@Column(name = "producto_id")</code> es explícito: sin esa anotación, Hibernate ya adivina <code>producto_id</code> a partir de <code>productoId</code> (convención camelCase → snake_case), pero se deja explícito donde el nombre de columna importa para leer la migración.</li>
+            <li>El <code>record Favorito</code> del dominio (TP1) <strong>no se tocó</strong> — sigue siendo inmutable y sin ninguna anotación de JPA.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Puerto y adapter</span><span class="objpill">Objetivo 2 / 6</span></div>
+      <h2>Un contrato, dos formas de cumplirlo</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// FavoritoRepository — el puerto (sin cambios de forma)</span>
+<span class="tok-k">public interface</span> <span class="tok-t">FavoritoRepository</span> {
+    List&lt;Favorito&gt; findAll();
+    Optional&lt;Favorito&gt; findById(Long id);
+    Favorito save(Favorito favorito);
+    <span class="tok-k">void</span> deleteById(Long id);
+}
+
+<span class="tok-m">// FavoritoRepositoryAdapter — el adapter nuevo (JPA)</span>
+<span class="tok-m">@Override</span>
+<span class="tok-k">public</span> Favorito save(Favorito favorito) {
+    FavoritoEntity entity = <span class="tok-k">new</span> FavoritoEntity();
+    entity.setProductoId(favorito.productoId());
+    entity.setLista(listaJpaRepository
+        .getReferenceById(favorito.listaId()));
+    <span class="tok-k">return</span> aDominio(jpaRepository.save(entity));
+}</code></pre>
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es un puerto?</span>
+              <span class="v">Una interfaz que declara <strong>qué</strong> necesita el dominio, sin decir <strong>cómo</strong> se resuelve — <code>FavoritoRepository</code>, la misma del TP1, solo que ahora le ponemos nombre.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">¿Qué es un adapter?</span>
+              <span class="v">Una implementación concreta de infraestructura para ese puerto. <code>InMemoryFavoritoRepository</code> (TP1) y <code>FavoritoRepositoryAdapter</code> (TP2) son adapters intercambiables detrás de la misma interfaz.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> <code>InMemoryFavoritoRepository</code> se <strong>eliminó</strong> — dos beans implementando el mismo puerto no son ambiguos por accidente, Spring no sabría cuál inyectar.</li>
+            <li><code>getReferenceById</code> arma un proxy con solo el id de la lista, sin ir a buscarla completa — alcanza para setear la FK.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Arquitectura hexagonal · teoría</span><span class="objpill">El tema del título</span></div>
+      <h2>Ports &amp; Adapters, con dibujito</h2>
+      <div class="body-grid">
+        <div class="diagram-wrap">
+          <svg class="diagram" viewBox="0 0 640 300" role="img" aria-label="FavoritoService depende del puerto FavoritoRepository; dos adapters lo implementan: el de TP1 en memoria (descartado) y el de TP2 con JPA hacia PostgreSQL">
+            <defs>
+              <marker id="tp2-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--tp2-ink-muted)"></path>
+              </marker>
+            </defs>
+            <rect class="dbox-fav" x="210" y="16" width="220" height="42" rx="7"></rect>
+            <text x="320" y="42" class="dtext" text-anchor="middle">FavoritoService</text>
+
+            <line x1="320" y1="58" x2="320" y2="90" class="dline" marker-end="url(#tp2-arrow)"></line>
+
+            <rect class="dbox-shared" x="170" y="90" width="300" height="42" rx="7"></rect>
+            <text x="320" y="116" class="dtext-shared" text-anchor="middle">FavoritoRepository — el puerto (contrato)</text>
+
+            <line x1="320" y1="132" x2="170" y2="170" class="dline"></line>
+            <line x1="320" y1="132" x2="470" y2="170" class="dline"></line>
+
+            <rect class="dbox-inactive" x="50" y="170" width="240" height="42" rx="7"></rect>
+            <text x="170" y="196" class="dtext-muted" text-anchor="middle">InMemoryFavoritoRepository (TP1)</text>
+
+            <rect class="dbox-fav" x="350" y="170" width="240" height="42" rx="7"></rect>
+            <text x="470" y="196" class="dtext" text-anchor="middle">FavoritoRepositoryAdapter (TP2)</text>
+
+            <line x1="470" y1="212" x2="470" y2="244" class="dline" marker-end="url(#tp2-arrow)"></line>
+            <rect class="dbox" x="380" y="244" width="180" height="38" rx="7"></rect>
+            <text x="470" y="268" class="dtext" text-anchor="middle">PostgreSQL</text>
+          </svg>
+        </div>
+        <div class="col theory">
+          <ul>
+            <li>El dominio (<code>Favorito</code>, el puerto) queda en el centro; la infraestructura (memoria, JPA) queda <strong>afuera</strong> y es reemplazable.</li>
+            <li><strong>Cómo lo implementamos:</strong> el adapter tachado ya no existe en el código — se borró al reemplazarlo — pero el diagrama lo deja para mostrar que <em>pudo</em> seguir ahí, intercambiable.</li>
+            <li>Nada que dependa del puerto (<code>FavoritoServiceImpl</code>, y por lo tanto <code>FavoritoController</code>) tuvo que enterarse del cambio.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Qué cambió y qué no</span><span class="objpill">Objetivo 2</span></div>
+      <h2>El Service y el Controller, intactos</h2>
+      <div class="twocol-cards">
+        <div class="card existing">
+          <h3>No se tocó</h3>
+          <ul>
+            <li><code>FavoritoService</code> / <code>FavoritoServiceImpl</code></li>
+            <li><code>FavoritoController</code></li>
+            <li><code>FavoritoRequest</code> / <code>FavoritoResponse</code> (forma; solo sumaron <code>listaId</code>)</li>
+            <li><code>record Favorito</code> del dominio</li>
+            <li><code>GlobalExceptionHandler</code> (se le agregó un handler, no se modificó el existente)</li>
+          </ul>
+        </div>
+        <div class="card missing">
+          <h3>Nuevo / reemplazado</h3>
+          <ul>
+            <li><code>InMemoryFavoritoRepository</code> → <code>FavoritoRepositoryAdapter</code></li>
+            <li><code>entity/</code>: <code>FavoritoEntity</code>, <code>ListaEntity</code></li>
+            <li><code>FavoritoJpaRepository</code>, <code>ListaJpaRepository</code> (Spring Data)</li>
+            <li>Módulo <code>Listas</code> completo (dominio, puerto, adapter, service, controller)</li>
+          </ul>
+        </div>
+      </div>
+      <p class="lead">Esa lista de la izquierda, vacía, es <strong>la</strong> demostración de que <code>FavoritoRepository</code> cumplió su rol de puerto.</p>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Relación entre entidades · teoría</span><span class="objpill">Objetivo 4</span></div>
+      <h2>@ManyToOne, sin el lado inverso</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué modela <code>@ManyToOne</code>?</span>
+              <span class="v">Que <strong>muchos</strong> favoritos pueden apuntar a <strong>una</strong> lista — el lado "muchos" de la relación es quien tiene la columna de foreign key (<code>lista_id</code>).</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">¿Por qué no un <code>@OneToMany</code> del otro lado?</span>
+              <span class="v">Un <code>@OneToMany</code> bidireccional (que <code>ListaEntity</code> tenga una lista de sus favoritos) trae complicaciones de carga perezosa (<em>lazy loading</em>) que no hacen falta para este práctico.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> el lado inverso — "los favoritos de una lista" — se resuelve con una <strong>consulta derivada</strong> en el repository, no con una relación de objetos.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Relación entre entidades · cómo lo implementamos</span><span class="objpill">Objetivo 4</span></div>
+      <h2>La FK en la entidad, la consulta en el repository</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// FavoritoEntity</span>
+<span class="tok-m">@ManyToOne</span>(fetch = FetchType.LAZY)
+<span class="tok-m">@JoinColumn</span>(name = <span class="tok-s">"lista_id"</span>, nullable = <span class="tok-k">false</span>)
+<span class="tok-k">private</span> ListaEntity lista;
+
+<span class="tok-m">// FavoritoJpaRepository — el lado inverso, sin @OneToMany</span>
+<span class="tok-k">public interface</span> <span class="tok-t">FavoritoJpaRepository</span>
+        <span class="tok-k">extends</span> JpaRepository&lt;FavoritoEntity, Long&gt; {
+    List&lt;FavoritoEntity&gt; findByListaId(Long listaId);
+}</code></pre>
+        <div class="col theory">
+          <ul>
+            <li><code>fetch = LAZY</code>: la lista completa no se trae de la base hasta que alguien la pida explícitamente — <code>entity.getLista().getId()</code> sí funciona sin ir a la base, porque el id ya está disponible en el proxy.</li>
+            <li><code>findByListaId</code> es una <strong>consulta derivada</strong>: Spring Data arma el SQL solo a partir del nombre del método — nada de HQL ni SQL nativo a mano.</li>
+            <li>La usan <code>GET /api/listas/{id}/favoritos</code>, el chequeo del <code>409</code> (slide 17) y la operación de mover favoritos.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Evolución del esquema · teoría</span><span class="objpill">Objetivo 3</span></div>
+      <h2>Nunca se edita una migración ya aplicada</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es el checksum de una migración?</span>
+              <span class="v">Un hash del contenido del script, que Flyway calcula al aplicarlo y guarda en <code>flyway_schema_history</code>. Si el archivo cambia después, el checksum ya no coincide.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">¿Por qué rechaza el arranque?</span>
+              <span class="v">Porque una base que ya corrió la versión vieja de <code>V3</code> quedaría en un estado <strong>distinto</strong> del de una base nueva que corre la versión editada por primera vez — Flyway prefiere frenar la app antes que dejar bases divergentes.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>El problema real:</strong> las filas de <code>favoritos</code> creadas antes del punto 5 (relación con Listas) no tenían <code>lista_id</code>.</li>
+            <li><strong>Cómo lo resolvimos:</strong> una migración <strong>nueva</strong>, <code>V4</code> — nunca tocando <code>V1</code>-<code>V3</code> ya aplicadas.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Evolución del esquema · cómo lo implementamos</span><span class="objpill">Objetivo 3</span></div>
+      <h2>Backfill primero, restricción después</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">-- V4__lista_id_obligatorio.sql</span>
+<span class="tok-k">INSERT INTO</span> listas (nombre)
+<span class="tok-k">SELECT</span> <span class="tok-s">'Sin clasificar'</span>
+<span class="tok-k">WHERE NOT EXISTS</span> (<span class="tok-k">SELECT</span> 1 <span class="tok-k">FROM</span> listas
+                <span class="tok-k">WHERE</span> nombre = <span class="tok-s">'Sin clasificar'</span>);
+
+<span class="tok-k">UPDATE</span> favoritos
+<span class="tok-k">SET</span> lista_id = (<span class="tok-k">SELECT</span> id <span class="tok-k">FROM</span> listas
+                 <span class="tok-k">WHERE</span> nombre = <span class="tok-s">'Sin clasificar'</span>)
+<span class="tok-k">WHERE</span> lista_id <span class="tok-k">IS NULL</span>;
+
+<span class="tok-k">ALTER TABLE</span> favoritos
+    <span class="tok-k">ALTER COLUMN</span> lista_id <span class="tok-k">SET NOT NULL</span>;</code></pre>
+        <div class="col theory">
+          <ul>
+            <li>Las tres sentencias van <strong>en ese orden</strong>: crear la lista por defecto, reasignar los favoritos huérfanos, y recién ahí declarar <code>NOT NULL</code> — invertir el orden rompería contra datos existentes.</li>
+            <li>Corrimos la migración contra una base con favoritos creados antes del punto 5 y no rompió ninguna fila.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Transacciones · teoría</span><span class="objpill">Objetivo 5</span></div>
+      <h2>ACID, y en particular la "A"</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es una transacción?</span>
+              <span class="v">Un conjunto de escrituras que la base trata como <strong>una sola unidad</strong>: o se aplican todas, o no se aplica ninguna.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">¿Qué es la atomicidad (la "A" de ACID)?</span>
+              <span class="v">La garantía de que no queda un estado a mitad de camino — ni el "antes" de la operación ni el "después", sino algo intermedio que la API nunca debería poder producir.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>La operación:</strong> <code>POST /api/listas/{origenId}/mover-favoritos</code> — reasigna todos los favoritos de una lista a otra, y borra la de origen. Varias escrituras, una sola operación de negocio.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Transacciones · cómo lo implementamos</span><span class="objpill">Objetivo 5</span></div>
+      <h2>@Transactional en el Service, no en el Controller</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">@Override</span>
+<span class="tok-m">@Transactional</span>
+<span class="tok-k">public void</span> moverFavoritos(Long origenId,
+        MoverFavoritosRequest request) {
+    Lista origen = buscarOFallar(origenId);
+    Lista destino = buscarOFallar(request.listaDestinoId());
+
+    <span class="tok-k">for</span> (Favorito f : favoritoRepository
+            .findByListaId(origen.id())) {
+        favoritoRepository.save(<span class="tok-k">new</span> Favorito(
+            f.id(), f.productoId(), f.nota(),
+            f.fechaAgregado(), destino.id()));
+    }
+    listaRepository.deleteById(origen.id());
+}</code></pre>
+        <div class="col theory">
+          <ul>
+            <li><strong>Sin <code>@Transactional</code>:</strong> si la escritura que borra la lista origen fallara después de reasignar algunos favoritos (por ejemplo, una caída de conexión a mitad de camino), quedarían favoritos ya movidos a destino pero la lista origen seguiría existiendo — inconsistente.</li>
+            <li>Ambas listas se validan <strong>antes</strong> de escribir nada (<code>404</code> si alguna no existe) — la transacción cubre las escrituras, no reemplaza la validación previa.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Manejo de errores</span><span class="objpill">Consigna 5.6</span></div>
+      <h2>Un caso de negocio nuevo: 409, no 500</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// ListaServiceImpl.eliminar</span>
+<span class="tok-k">if</span> (!favoritoRepository
+        .findByListaId(lista.id()).isEmpty()) {
+    <span class="tok-k">throw new</span> ListaNoVaciaException(
+        <span class="tok-s">"La lista "</span> + id +
+        <span class="tok-s">" todavía tiene favoritos, no se puede eliminar"</span>);
+}
+
+<span class="tok-m">// GlobalExceptionHandler — un handler más, ninguno tocado</span>
+<span class="tok-m">@ExceptionHandler</span>(ListaNoVaciaException.class)
+<span class="tok-k">public</span> ProblemDetail handleListaNoVacia(
+        ListaNoVaciaException ex) {
+    <span class="tok-k">return</span> ProblemDetail.forStatusAndDetail(
+        HttpStatus.CONFLICT, ex.getMessage());
+}</code></pre>
+        <div class="col" style="gap:12px">
+          <div class="evidence">
+            <span class="tag">curl -i DELETE /api/listas/2 (con favoritos)</span>
+            <code class="http-400">HTTP/1.1 409</code>
+            <code>{"detail":"La lista 2 todavía tiene favoritos,
+ no se puede eliminar","status":409,"title":"Conflict"}</code>
+          </div>
+          <div class="evidence">
+            <span class="tag">curl -i POST /api/listas/2/mover-favoritos {"listaDestinoId":3}</span>
+            <code class="http-2xx">HTTP/1.1 204 No Content</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Balance</span><span class="objpill">6/6</span></div>
+      <h2>Los 6 objetivos, cerrados</h2>
+      <table>
+        <tr><th>#</th><th>Objetivo</th><th>Estado</th></tr>
+        <tr><td>1</td><td>PostgreSQL + Spring Data JPA</td><td><span class="status status--done">✓</span></td></tr>
+        <tr><td>2</td><td>Adapter JPA sin tocar dominio/Service/Controller</td><td><span class="status status--done">✓</span></td></tr>
+        <tr><td>3</td><td>Esquema versionado con Flyway</td><td><span class="status status--done">✓ 4 migraciones</span></td></tr>
+        <tr><td>4</td><td>Relación entre entidades expuesta en la API</td><td><span class="status status--done">✓ Favorito ↔ Lista</span></td></tr>
+        <tr><td>5</td><td>Operación transaccional justificada</td><td><span class="status status--done">✓ mover-favoritos</span></td></tr>
+        <tr><td>6</td><td>Puerto vs. adapter</td><td><span class="status status--done">✓</span></td></tr>
+      </table>
+      <p class="lead">Mismo Service, mismo Controller, mismos DTOs (+1 campo) — <strong>la infraestructura cambió, el dominio no se enteró.</strong></p>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Demo en vivo</span><span class="objpill">Cierre</span></div>
+      <h2>Ahora, en Swagger UI</h2>
+      <div class="cover-url">http://localhost:8080/swagger-ui/index.html</div>
+      <ol class="steps-list">
+        <li>Mostrar los <b>tres grupos</b>: <code>productos</code>, <code>favoritos</code> y <code>listas</code>.</li>
+        <li><code>POST /api/listas</code> → crear "Regalos" → <b>201</b>.</li>
+        <li><code>POST /api/favoritos</code> con ese <code>listaId</code> → <b>201</b>.</li>
+        <li><code>DELETE</code> esa lista (todavía con el favorito adentro) → <b>409 Conflict</b>.</li>
+        <li><code>POST /api/listas/{origenId}/mover-favoritos</code> a una segunda lista → <b>204</b>, y la lista origen desaparece.</li>
+        <li>Reiniciar la app (<code>Ctrl+C</code>, volver a <code>spring-boot:run</code>) → los datos siguen ahí.</li>
+      </ol>
+      <p class="closing-note">Todo lo mostrado ya fue verificado end-to-end antes de esta clase, incluyendo la persistencia real entre reinicios.</p>
+      <p class="closing-note">Repositorio: <a href="https://github.com/Rns2590/demo" target="_blank" rel="noopener noreferrer" style="color:var(--tp2-accent-strong); font-weight:600; text-decoration:none;">github.com/Rns2590/demo</a> — rama <code>tp2</code></p>
+    </section>
+
+  </main>
+
+  <div class="chrome-bottom">
+    <button class="navbtn" id="tp2-prev" aria-label="Diapositiva anterior">‹</button>
+    <div class="counter"><b id="tp2-cur">1</b> / <span id="tp2-total">20</span></div>
+    <button class="navbtn" id="tp2-next" aria-label="Diapositiva siguiente">›</button>
+  </div>
+</div>
+</div><script type="module">(function(){var e=document.getElementById(`tp2-deck`),t=Array.prototype.slice.call(e.querySelectorAll(`.slide`)),n=t.length,r=0,i=document.getElementById(`tp2-progress`),a=document.getElementById(`tp2-cur`),o=document.getElementById(`tp2-total`);o.textContent=n;function s(){t.forEach(function(e,t){e.classList.toggle(`active`,t===r)}),a.textContent=r+1,i.style.width=(r+1)/n*100+`%`,t[r].scrollTop=0}function c(e){r=Math.max(0,Math.min(n-1,r+e)),s()}document.getElementById(`tp2-prev`).addEventListener(`click`,function(){c(-1)}),document.getElementById(`tp2-next`).addEventListener(`click`,function(){c(1)}),e.addEventListener(`keydown`,function(e){(e.key===`ArrowRight`||e.key===` `||e.key===`PageDown`)&&(e.preventDefault(),c(1)),(e.key===`ArrowLeft`||e.key===`PageUp`)&&(e.preventDefault(),c(-1))}),s()})();</script>
+<p><em>Usá las flechas ‹ › (hacé clic en la diapositiva primero para que capture el teclado) o las teclas de flecha para navegar.</em></p></div><footer class="sl-flex astro-xhxjzfa7"><div class="meta sl-flex astro-xhxjzfa7"></div><div class="pagination-links print:hidden astro-jgq3vlii" dir="ltr"></div></footer></div></div></main></div></div></div></div></body></html>

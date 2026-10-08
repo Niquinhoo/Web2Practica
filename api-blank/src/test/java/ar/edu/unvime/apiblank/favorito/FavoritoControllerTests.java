@@ -65,6 +65,17 @@ class FavoritoControllerTests {
         verifyNoInteractions(service);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"{\"productoId\":1}", "{\"productoId\":1,\"listaId\":null}",
+            "{\"productoId\":1,\"listaId\":0}", "{\"productoId\":1,\"listaId\":-1}"})
+    void validaListaIdEnPostYPut(String json) throws Exception {
+        for (var request : List.of(post("/api/favoritos"), put("/api/favoritos/1"))) {
+            mvc.perform(request.contentType(MediaType.APPLICATION_JSON).content(json))
+                    .andExpect(status().isBadRequest()).andExpect(jsonPath("$.campos.listaId").exists());
+        }
+        verifyNoInteractions(service);
+    }
+
     @Test
     void inexistentesDevuelven404() throws Exception {
         when(service.obtener(99L)).thenThrow(new RecursoNoEncontradoException("No existe el favorito 99"));

@@ -1,12 +1,12 @@
 services:
   postgres:
-    image: postgres:17-alpine
+    image: postgres:17
     environment:
-      POSTGRES_DB: ${DB_NAME:-web2}
-      POSTGRES_USER: ${DB_USER:-web2}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-web2}
+      POSTGRES_DB: ${POSTGRES_DB:-webii_tp2}
+      POSTGRES_USER: ${POSTGRES_USER:-webii_tp2}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-webii_tp2}
     ports:
-      - "127.0.0.1:${DB_PORT:-55432}:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:

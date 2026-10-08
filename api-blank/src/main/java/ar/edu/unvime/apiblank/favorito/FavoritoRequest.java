@@ -10,5 +10,5 @@ public record FavoritoRequest(
         @NotNull(message = "es obligatorio") @Positive(message = "debe ser mayor que 0") Long productoId,
         @Schema(description = "Nota opcional, hasta 500 caracteres; PUT la reemplaza", example = "Comprar para regalar")
         @Size(max = 500, message = "no debe superar los 500 caracteres") String nota,
-        @Schema(description = "Lista existente a la que pertenece", example = "1")
+        @Schema(description = "ID de una lista existente", example = "1")
         @NotNull(message = "es obligatorio") @Positive(message = "debe ser mayor que 0") Long listaId) {}

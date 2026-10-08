@@ -1,4 +1,4 @@
-package ar.edu.unvime.apiblank.lista;
+package ar.edu.unvime.apiblank.lista.persistencia;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -32,7 +32,7 @@ public class ApiConfig {
     @Bean
     OpenAPI openAPI() {
         return new OpenAPI().info(new Info().title("TP2 · Productos, favoritos y listas").version("2.0.0")
-                .description("Catálogo de DummyJSON de solo lectura y favoritos y listas en PostgreSQL. "
-                        + "Migraciones Flyway y movimiento transaccional entre listas."));
+                .description("Catálogo de DummyJSON de solo lectura. Favoritos y listas persistidos "
+                        + "en PostgreSQL, migraciones Flyway y movimiento transaccional de favoritos."));
     }
 }

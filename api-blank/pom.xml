@@ -12,7 +12,7 @@
 	<artifactId>api-blank</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>api-blank</name>
-	<description>TP2: productos, favoritos y listas con PostgreSQL para Web II</description>
+	<description>TP2: Productos, favoritos y listas con PostgreSQL y Flyway para Web II</description>
 	<url>https://github.com/Niquinhoo/Web2Practica/tree/main/api-blank</url>
 	<licenses>
 		<license/>
@@ -70,6 +70,15 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals><goal>integration-test</goal><goal>verify</goal></goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

@@ -14,7 +14,9 @@ import ar.edu.unvime.apiblank.error.ApiError;
 
 @RestController
 @RequestMapping("/api/favoritos")
-@Tag(name = "Favoritos", description = "CRUD persistente en PostgreSQL; admite varias notas para el mismo producto")
+@Tag(name = "Favoritos", description = "CRUD persistido en PostgreSQL; cada favorito pertenece a una lista")
+@ApiResponse(responseCode = "409", description = "Conflicto de integridad de la lista",
+        content = @Content(schema = @Schema(implementation = ApiError.class)))
 @ApiResponse(responseCode = "400", description = "Datos o ID inválidos",
         content = @Content(schema = @Schema(implementation = ApiError.class)))
 public class FavoritoController {
@@ -31,7 +33,7 @@ public class FavoritoController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener un favorito")
+    @Operation(summary = "Obtener un favorito", description = "Devuelve los datos y el ID de su lista.")
     @ApiResponse(responseCode = "200", description = "Favorito encontrado")
     @ApiResponse(responseCode = "404", description = "Favorito inexistente",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
@@ -40,7 +42,9 @@ public class FavoritoController {
     }
 
     @PostMapping
-    @Operation(summary = "Crear un favorito", description = "Genera ID y fecha UTC. No verifica la existencia del producto externo.")
+    @Operation(summary = "Crear un favorito", description = "Genera ID y fecha UTC. Requiere listaId existente (404 si no existe). No verifica la existencia del producto externo.")
+    @ApiResponse(responseCode = "404", description = "Lista inexistente",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     @ApiResponse(responseCode = "201", description = "Favorito creado; Location indica su URL",
             content = @Content(schema = @Schema(implementation = FavoritoResponse.class)))
     public ResponseEntity<FavoritoResponse> crear(@Valid @RequestBody FavoritoRequest request) {
@@ -61,7 +65,7 @@ public class FavoritoController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar un favorito")
+    @Operation(summary = "Eliminar un favorito", description = "Elimina el registro persistido; devuelve 404 si no existe.")
     @ApiResponse(responseCode = "204", description = "Favorito eliminado", content = @Content)
     @ApiResponse(responseCode = "404", description = "Favorito inexistente",
             content = @Content(schema = @Schema(implementation = ApiError.class)))

@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:8080
 
-### Crear origen — 201 y Location
+### Crear origen — 201; ejecutar primero
 # @name origen
 POST {{baseUrl}}/api/listas
 Content-Type: application/json
@@ -14,87 +14,93 @@ Content-Type: application/json
 
 {"nombre":"Para comprar en oferta"}
 
-### Listar — 200
+### Listar listas — 200
 GET {{baseUrl}}/api/listas
 
-### Obtener — 200
-GET {{baseUrl}}/api/listas/{{origen.response.body.id}}
+### Obtener lista — 200
+GET {{baseUrl}}/api/listas/{{origen.response.body.$.id}}
 
-### Nombre vacío — 400
-POST {{baseUrl}}/api/listas
-Content-Type: application/json
+### Lista vacía — 200 []
+GET {{baseUrl}}/api/listas/{{origen.response.body.$.id}}/favoritos
 
-{"nombre":" "}
-
-### Lista inexistente — 404
-GET {{baseUrl}}/api/listas/9223372036854775807
-
-### Crear favorito — 201
+### Crear favorito persistente — 201
 # @name favorito
 POST {{baseUrl}}/api/favoritos
 Content-Type: application/json
 
-{"productoId":1,"nota":"Comprar para regalar","listaId":{{origen.response.body.id}}}
+{"productoId":1,"nota":"Comprar para regalar","listaId":{{origen.response.body.$.id}}}
 
-### Reiniciar la aplicación antes de este GET para verificar persistencia — 200
-GET {{baseUrl}}/api/favoritos/{{favorito.response.body.id}}
+### Obtener favorito — 200; repetir después de reiniciar para comprobar persistencia
+GET {{baseUrl}}/api/favoritos/{{favorito.response.body.$.id}}
 
-### Modificar — 200, conserva fecha e ID
-PUT {{baseUrl}}/api/favoritos/{{favorito.response.body.id}}
+### Listar favoritos — 200
+GET {{baseUrl}}/api/favoritos
+
+### Actualizar favorito — 200; conserva ID y fecha
+PUT {{baseUrl}}/api/favoritos/{{favorito.response.body.$.id}}
 Content-Type: application/json
 
-{"productoId":2,"nota":"Esperar oferta","listaId":{{origen.response.body.id}}}
+{"productoId":2,"nota":"Esperar oferta","listaId":{{origen.response.body.$.id}}}
 
-### Favoritos del origen — 200
-GET {{baseUrl}}/api/listas/{{origen.response.body.id}}/favoritos
+### Favoritos de una lista — 200
+GET {{baseUrl}}/api/listas/{{origen.response.body.$.id}}/favoritos
 
-### No borrar lista ocupada — 409
-DELETE {{baseUrl}}/api/listas/{{origen.response.body.id}}
+### Borrar lista con favoritos — 409
+DELETE {{baseUrl}}/api/listas/{{origen.response.body.$.id}}
 
-### listaId obligatorio — 400
+### Nombre inválido — 400
+POST {{baseUrl}}/api/listas
+Content-Type: application/json
+
+{"nombre":"  "}
+
+### Lista inexistente — 404
+GET {{baseUrl}}/api/listas/9223372036854775807
+
+### Favorito sin lista — 400
 POST {{baseUrl}}/api/favoritos
 Content-Type: application/json
 
 {"productoId":1}
 
-### Lista inexistente — 404
+### Favorito con lista inexistente — 404
 POST {{baseUrl}}/api/favoritos
 Content-Type: application/json
 
 {"productoId":1,"listaId":9223372036854775807}
 
-### Destino inexistente — 404, origen sin cambios
-POST {{baseUrl}}/api/listas/{{origen.response.body.id}}/mover-favoritos
+### Mover a la misma lista — 400
+POST {{baseUrl}}/api/listas/{{origen.response.body.$.id}}/mover-favoritos
+Content-Type: application/json
+
+{"destinoId":{{origen.response.body.$.id}}}
+
+### Mover a destino inexistente — 404; conserva el origen
+POST {{baseUrl}}/api/listas/{{origen.response.body.$.id}}/mover-favoritos
 Content-Type: application/json
 
 {"destinoId":9223372036854775807}
 
-### Origen = destino — 400, sin cambios
-POST {{baseUrl}}/api/listas/{{origen.response.body.id}}/mover-favoritos
+### Mover todos y eliminar origen — 204
+POST {{baseUrl}}/api/listas/{{origen.response.body.$.id}}/mover-favoritos
 Content-Type: application/json
 
-{"destinoId":{{origen.response.body.id}}}
-
-### Mover y eliminar origen — 204
-POST {{baseUrl}}/api/listas/{{origen.response.body.id}}/mover-favoritos
-Content-Type: application/json
-
-{"destinoId":{{destino.response.body.id}}}
+{"destinoId":{{destino.response.body.$.id}}}
 
 ### Origen eliminado — 404
-GET {{baseUrl}}/api/listas/{{origen.response.body.id}}
+GET {{baseUrl}}/api/listas/{{origen.response.body.$.id}}
 
 ### Destino contiene el favorito — 200
-GET {{baseUrl}}/api/listas/{{destino.response.body.id}}/favoritos
+GET {{baseUrl}}/api/listas/{{destino.response.body.$.id}}/favoritos
 
 ### Eliminar favorito — 204
-DELETE {{baseUrl}}/api/favoritos/{{favorito.response.body.id}}
+DELETE {{baseUrl}}/api/favoritos/{{favorito.response.body.$.id}}
 
-### Eliminar destino ahora vacío — 204
-DELETE {{baseUrl}}/api/listas/{{destino.response.body.id}}
+### Eliminar destino vacío — 204
+DELETE {{baseUrl}}/api/listas/{{destino.response.body.$.id}}
 
-### Catálogo externo — 200 si DummyJSON responde
-GET {{baseUrl}}/api/productos/1
+### Catálogo externo — 200
+GET {{baseUrl}}/api/productos
 
-### OpenAPI incluye los tres recursos — 200
+### Swagger y OpenAPI — 200
 GET {{baseUrl}}/v3/api-docs

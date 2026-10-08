@@ -4,10 +4,12 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import ar.edu.unvime.apiblank.error.RecursoNoEncontradoException;
+import org.springframework.transaction.annotation.Transactional;
 import ar.edu.unvime.apiblank.lista.ListaRepository;
+import ar.edu.unvime.apiblank.error.RecursoNoEncontradoException;
 
 @Service
+@Transactional(readOnly = true)
 public class FavoritoService {
     private final FavoritoRepository repository;
     private final Clock clock;
@@ -27,17 +29,21 @@ public class FavoritoService {
         return respuesta(repository.buscarPorId(id).orElseThrow(() -> noEncontrado(id)));
     }
 
+    @Transactional
     public FavoritoResponse crear(FavoritoRequest request) {
         validarLista(request.listaId());
         return respuesta(repository.crear(request.productoId(), request.nota(), Instant.now(clock), request.listaId()));
     }
 
+    @Transactional
     public FavoritoResponse actualizar(Long id, FavoritoRequest request) {
+        obtener(id);
         validarLista(request.listaId());
         return respuesta(repository.actualizar(id, request.productoId(), request.nota(), request.listaId())
                 .orElseThrow(() -> noEncontrado(id)));
     }
 
+    @Transactional
     public void eliminar(Long id) {
         if (!repository.eliminar(id)) {
             throw noEncontrado(id);
@@ -49,12 +55,10 @@ public class FavoritoService {
     }
 
     private FavoritoResponse respuesta(Favorito favorito) {
-        return new FavoritoResponse(favorito.id(), favorito.productoId(),
-                favorito.nota(), favorito.fechaAgregado(), favorito.listaId());
+        return FavoritoResponse.desde(favorito);
     }
 
-    private void validarLista(Long listaId) {
-        listas.buscarPorId(listaId).orElseThrow(() ->
-                new RecursoNoEncontradoException("No existe la lista " + listaId));
+    private void validarLista(Long id) {
+        listas.buscarPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No existe la lista " + id));
     }
 }

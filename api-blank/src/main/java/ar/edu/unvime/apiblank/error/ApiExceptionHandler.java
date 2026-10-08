@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -18,15 +19,20 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
-    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
-    public ResponseEntity<ApiError> conflicto(org.springframework.dao.DataIntegrityViolationException ex) {
-        return ResponseEntity.status(409).body(new ApiError(409,
-                "Conflicto de integridad: no se puede borrar una lista con favoritos ni referenciar una lista eliminada",
-                Map.of()));
+    @ExceptionHandler(ConflictoException.class)
+    public ResponseEntity<ApiError> conflicto(ConflictoException ex) {
+        return ResponseEntity.status(409).body(new ApiError(409, ex.getMessage(), Map.of()));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiError> solicitudInvalida(IllegalArgumentException ex) {
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> integridad(DataIntegrityViolationException ex) {
+        log.warn("Conflicto de integridad al modificar listas o favoritos", ex);
+        return ResponseEntity.status(409).body(new ApiError(409,
+                "La operación entra en conflicto con los datos existentes", Map.of()));
+    }
+
+    @ExceptionHandler(SolicitudInvalidaException.class)
+    public ResponseEntity<ApiError> solicitudInvalida(SolicitudInvalidaException ex) {
         return ResponseEntity.badRequest().body(new ApiError(400, ex.getMessage(), Map.of()));
     }
 
