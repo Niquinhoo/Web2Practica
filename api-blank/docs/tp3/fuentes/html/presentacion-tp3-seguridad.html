@@ -1,0 +1,439 @@
+<!DOCTYPE html><html lang="es" dir="ltr" data-theme="dark" class="astro-vdxcvpsm"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>TP3: autenticación, autorización y pruebas | Web II</title><link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml"/><meta name="generator" content="Astro v7.1.3"/><meta name="generator" content="Starlight v0.41.4"/><meta property="og:title" content="TP3: autenticación, autorización y pruebas"/><meta property="og:type" content="article"/><meta property="og:locale" content="es"/><meta property="og:description" content="Presentación de la primera clase del TP3 — JWT, autorización por rol y por propiedad de recursos, y pruebas con Testcontainers."/><meta property="og:site_name" content="Web II"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="Presentación de la primera clase del TP3 — JWT, autorización por rol y por propiedad de recursos, y pruebas con Testcontainers."/><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/_astro/print.ehPL0gv-.css" media="print"><link rel="stylesheet" href="/_astro/common.qhQnlWH4.css"><style>@layer starlight.components{.card:where(.astro-zts4jgjd){--sl-card-border:var(--sl-color-purple);--sl-card-bg:var(--sl-color-purple-low);border:1px solid var(--sl-color-gray-5);background-color:var(--sl-color-black);flex-direction:column;gap:clamp(.5rem,.125rem + 1vw,1rem);padding:clamp(1rem,.125rem + 3vw,2.5rem)}.card:where(.astro-zts4jgjd):nth-child(4n+1){--sl-card-border:var(--sl-color-orange);--sl-card-bg:var(--sl-color-orange-low)}.card:where(.astro-zts4jgjd):nth-child(4n+3){--sl-card-border:var(--sl-color-green);--sl-card-bg:var(--sl-color-green-low)}.card:where(.astro-zts4jgjd):nth-child(4n+4){--sl-card-border:var(--sl-color-red);--sl-card-bg:var(--sl-color-red-low)}.card:where(.astro-zts4jgjd):nth-child(4n+5){--sl-card-border:var(--sl-color-blue);--sl-card-bg:var(--sl-color-blue-low)}.title:where(.astro-zts4jgjd){font-weight:600;font-size:var(--sl-text-h4);color:var(--sl-color-white);line-height:var(--sl-line-height-headings);align-items:center;gap:1rem}.card:where(.astro-zts4jgjd) .icon:where(.astro-zts4jgjd){border:1px solid var(--sl-card-border);background-color:var(--sl-card-bg);border-radius:.25rem;flex-shrink:0;padding:.2em}.card:where(.astro-zts4jgjd) .body:where(.astro-zts4jgjd){font-size:clamp(var(--sl-text-sm), calc(.5rem + 1vw), var(--sl-text-body));margin:0}.card-grid:where(.astro-lmor3ela){grid-template-columns:100%;gap:1rem;display:grid}.card-grid:where(.astro-lmor3ela)>*{margin-top:0!important}@media (width>=50rem){.card-grid:where(.astro-lmor3ela){grid-template-columns:1fr 1fr;gap:1.5rem}.stagger:where(.astro-lmor3ela){--stagger-height:5rem;padding-bottom:var(--stagger-height)}.stagger:where(.astro-lmor3ela)>:nth-child(2n){transform:translateY(var(--stagger-height))}}}
+@layer starlight.components{:root{--sl-badge-default-border:var(--sl-color-accent);--sl-badge-default-bg:var(--sl-color-accent-low);--sl-badge-default-text:#fff;--sl-badge-note-border:var(--sl-color-blue);--sl-badge-note-bg:var(--sl-color-blue-low);--sl-badge-note-text:#fff;--sl-badge-danger-border:var(--sl-color-red);--sl-badge-danger-bg:var(--sl-color-red-low);--sl-badge-danger-text:#fff;--sl-badge-success-border:var(--sl-color-green);--sl-badge-success-bg:var(--sl-color-green-low);--sl-badge-success-text:#fff;--sl-badge-caution-border:var(--sl-color-orange);--sl-badge-caution-bg:var(--sl-color-orange-low);--sl-badge-caution-text:#fff;--sl-badge-tip-border:var(--sl-color-purple);--sl-badge-tip-bg:var(--sl-color-purple-low);--sl-badge-tip-text:#fff}[data-theme=light]:root{--sl-badge-default-bg:var(--sl-color-accent-high);--sl-badge-note-bg:var(--sl-color-blue-high);--sl-badge-danger-bg:var(--sl-color-red-high);--sl-badge-success-bg:var(--sl-color-green-high);--sl-badge-caution-bg:var(--sl-color-orange-high);--sl-badge-tip-bg:var(--sl-color-purple-high)}.sl-badge:where(.astro-7hkzaclv){border:1px solid var(--sl-color-border-badge);font-family:var(--sl-font-system-mono);color:var(--sl-color-text-badge);background-color:var(--sl-color-bg-badge);overflow-wrap:anywhere;border-radius:.25rem;line-height:normal;display:inline-block}.sidebar-content .sl-badge:where(.astro-7hkzaclv){line-height:1;font-size:var(--sl-text-xs);padding:.125rem .375rem}.sidebar-content a[aria-current=page]>.sl-badge:where(.astro-7hkzaclv){--sl-color-bg-badge:transparent;--sl-color-border-badge:currentColor;color:inherit}.default:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-default-bg);--sl-color-border-badge:var(--sl-badge-default-border);--sl-color-text-badge:var(--sl-badge-default-text)}.note:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-note-bg);--sl-color-border-badge:var(--sl-badge-note-border);--sl-color-text-badge:var(--sl-badge-note-text)}.danger:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-danger-bg);--sl-color-border-badge:var(--sl-badge-danger-border);--sl-color-text-badge:var(--sl-badge-danger-text)}.success:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-success-bg);--sl-color-border-badge:var(--sl-badge-success-border);--sl-color-text-badge:var(--sl-badge-success-text)}.tip:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-tip-bg);--sl-color-border-badge:var(--sl-badge-tip-border);--sl-color-text-badge:var(--sl-badge-tip-text)}.caution:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-caution-bg);--sl-color-border-badge:var(--sl-badge-caution-border);--sl-color-text-badge:var(--sl-badge-caution-text)}.small:where(.astro-7hkzaclv){font-size:var(--sl-text-xs);padding:.125rem .25rem}.medium:where(.astro-7hkzaclv){font-size:var(--sl-text-sm);padding:.175rem .35rem}.large:where(.astro-7hkzaclv){font-size:var(--sl-text-base);padding:.225rem .45rem}.sl-markdown-content :is(h1,h2,h3,h4,h5,h6) .sl-badge:where(.astro-7hkzaclv){vertical-align:middle}.sl-link-button:where(.astro-hlbqph7b){font-size:var(--sl-text-sm);outline-offset:.25rem;border:1px solid #0000;border-radius:999rem;align-items:center;gap:.5em;padding:.4375rem 1.125rem;line-height:1.1875;text-decoration:none;display:inline-flex}.sl-link-button:where(.astro-hlbqph7b).primary{background:var(--sl-color-text-accent);border-color:var(--sl-color-text-accent);color:var(--sl-color-black)}.sl-link-button:where(.astro-hlbqph7b).primary:hover{color:var(--sl-color-black)}.sl-link-button:where(.astro-hlbqph7b).secondary{border-color:inherit;color:var(--sl-color-white)}.sl-link-button:where(.astro-hlbqph7b).minimal{color:var(--sl-color-white);padding-inline:0}.sl-link-button:where(.astro-hlbqph7b) svg{flex-shrink:0}@media (width>=50rem){.sl-link-button:where(.astro-hlbqph7b){font-size:var(--sl-text-base);padding:.9375rem 1.25rem}}.sl-markdown-content .sl-link-button:where(.astro-hlbqph7b){margin-inline-end:1rem}.sl-markdown-content .sl-link-button:where(.astro-hlbqph7b):not(:where(p *)){margin-block:1rem}}
+@layer starlight.components{svg:where(.astro-n5k4ipy7){color:var(--sl-icon-color);font-size:var(--sl-icon-size,1em);width:1em;height:1em}}
+@layer starlight.components{starlight-tabs:where(.astro-hbt4ddzs){display:block}.tablist-wrapper:where(.astro-hbt4ddzs){overflow-x:auto}:where(.astro-hbt4ddzs)[role=tablist]{border-bottom:2px solid var(--sl-color-gray-5);padding:0;list-style:none;display:flex}.tab:where(.astro-hbt4ddzs){display:flex}.tab:where(.astro-hbt4ddzs)>:where(.astro-hbt4ddzs)[role=tab]{--sl-tab-color-border:var(--sl-color-gray-5);line-height:var(--sl-line-height-headings);box-shadow:0 2px 0 var(--sl-tab-color-border);color:var(--sl-color-gray-3);outline-offset:var(--sl-outline-offset-inside);overflow-wrap:initial;align-items:center;gap:.5rem;padding:.275rem 1.25rem;text-decoration:none;display:flex}.tab:where(.astro-hbt4ddzs) :where(.astro-hbt4ddzs)[role=tab][aria-selected=true]{--sl-tab-color-border:var(--sl-color-text-accent);color:var(--sl-color-white);font-weight:600}.tablist-wrapper:where(.astro-hbt4ddzs)~[role=tabpanel]{margin-top:1rem}.sl-steps{--bullet-size:calc(var(--sl-line-height) * 1rem);--bullet-margin:.375rem;counter-reset:steps-counter var(--sl-steps-start,0);padding-inline-start:0;list-style:none}.sl-steps>li{counter-increment:steps-counter;padding-inline-start:calc(var(--bullet-size) + 1rem);min-height:calc(var(--bullet-size) + var(--bullet-margin));padding-bottom:1px;position:relative}.sl-steps>li+li{margin-top:0}.sl-steps>li:before{content:counter(steps-counter);top:0;width:var(--bullet-size);height:var(--bullet-size);line-height:var(--bullet-size);font-size:var(--sl-text-xs);text-align:center;color:var(--sl-color-white);background-color:var(--sl-color-gray-6);box-shadow:inset 0 0 0 1px var(--sl-color-gray-5);border-radius:99rem;font-weight:600;position:absolute;inset-inline-start:0}.sl-steps>li:after{--guide-width:1px;content:"";top:calc(var(--bullet-size) + var(--bullet-margin));bottom:var(--bullet-margin);width:var(--guide-width);background-color:var(--sl-color-hairline-light);position:absolute;inset-inline-start:calc((var(--bullet-size) - var(--guide-width)) / 2)}}@layer starlight.content{.sl-steps>li>:first-child{--lh:calc(1em * var(--sl-line-height));--shift-y:calc(.5 * (var(--bullet-size) - var(--lh)));transform:translateY(var(--shift-y));margin-bottom:var(--shift-y)}.sl-steps>li>:first-child:where(h1,h2,h3,h4,h5,h6){--lh:calc(1em * var(--sl-line-height-headings))}@supports (--prop:1lh){.sl-steps>li>:first-child{--lh:1lh}}}
+@layer starlight.components{.sl-link-card:where(.astro-vodiqeol){border:1px solid var(--sl-color-gray-5);box-shadow:var(--sl-shadow-sm);border-radius:.5rem;grid-template-columns:1fr auto;gap:.5rem;padding:1rem;display:grid;position:relative}a:where(.astro-vodiqeol){line-height:var(--sl-line-height-headings);text-decoration:none}a:where(.astro-vodiqeol):before{content:"";position:absolute;inset:0}.stack:where(.astro-vodiqeol){flex-direction:column;gap:.5rem}.title:where(.astro-vodiqeol){color:var(--sl-color-white);font-weight:600;font-size:var(--sl-text-lg)}.description:where(.astro-vodiqeol){color:var(--sl-color-gray-3);line-height:1.5}.icon:where(.astro-vodiqeol){color:var(--sl-color-gray-3)}.sl-link-card:where(.astro-vodiqeol):hover{background:var(--sl-color-gray-7,var(--sl-color-gray-6));border-color:var(--sl-color-gray-2)}.sl-link-card:where(.astro-vodiqeol):hover .icon:where(.astro-vodiqeol){color:var(--sl-color-white)}}
+</style><script type="module" src="/_astro/page.LAbJoB63.js"></script><link rel="stylesheet" href="/_astro/tp3-seguridad-presentacion.B-40dV02.css"></head><body class="astro-vdxcvpsm"><a class="sl-skip-link astro-vxeigawq" href="#_top">Ir al contenido</a><div class="page sl-flex astro-gqpr5s5a"><header class="header astro-gqpr5s5a"><div class="header astro-nczgtkxc"><div class="title-wrapper sl-flex astro-nczgtkxc"><div class="site-brand astro-2gc4fo37"><a href="/" class="site-title sl-flex astro-clw6ags5"><img class="light:sl-hidden print:hidden astro-clw6ags5" alt="Web II — Universidad Nacional de Villa Mercedes" src="/_astro/web-ii-logo-dark.DZkE8zqB.svg" width="256" height="48"><img class="dark:sl-hidden print:block astro-clw6ags5" alt="Web II — Universidad Nacional de Villa Mercedes" src="/_astro/web-ii-logo-light.BlJd4hlf.svg" width="256" height="48"><span class="sr-only astro-clw6ags5" translate="no">Web II</span></a></div><script type="module">var e=class extends HTMLElement{constructor(){super();let e=this.querySelector(`button`),t=document.documentElement,n=()=>{let n=t.hasAttribute(`data-sidebar-collapsed`),r=n?`Mostrar barra lateral`:`Ocultar barra lateral`;e.setAttribute(`aria-expanded`,String(!n)),e.setAttribute(`aria-label`,r),e.title=r};n(),e.addEventListener(`click`,()=>{let e=t.toggleAttribute(`data-sidebar-collapsed`);n();try{localStorage.setItem(`web-ii-sidebar-collapsed`,String(e))}catch{}})}};customElements.define(`web-ii-sidebar-toggle`,e);</script></div><div class="sl-flex print:hidden astro-nczgtkxc"><site-search class="astro-nczgtkxc astro-r5ar4xm7" data-translations="{&quot;placeholder&quot;:&quot;Buscar&quot;,&quot;clear_search&quot;:&quot;Limpiar&quot;,&quot;load_more&quot;:&quot;Cargar más resultados&quot;,&quot;search_label&quot;:&quot;Buscar página&quot;,&quot;filters_label&quot;:&quot;Filtros&quot;,&quot;zero_results&quot;:&quot;Ningún resultado para: [SEARCH_TERM]&quot;,&quot;many_results&quot;:&quot;[COUNT] resultados para: [SEARCH_TERM]&quot;,&quot;one_result&quot;:&quot;[COUNT] resultado para: [SEARCH_TERM]&quot;,&quot;alt_search&quot;:&quot;Ningún resultado para [SEARCH_TERM]. Mostrando resultados para: [DIFFERENT_TERM]&quot;,&quot;search_suggestion&quot;:&quot;Ningún resultado para [SEARCH_TERM]. Prueba alguna de estas búsquedas:&quot;,&quot;searching&quot;:&quot;Buscando [SEARCH_TERM]...&quot;}"><button data-open-modal disabled aria-label="Buscar" aria-keyshortcuts="Control+K" class="astro-r5ar4xm7"><svg aria-hidden="true" class="astro-r5ar4xm7 astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg><span class="sl-hidden md:sl-block astro-r5ar4xm7" aria-hidden="true">Buscar</span><kbd class="sl-hidden md:sl-flex astro-r5ar4xm7" style="display: none;"><kbd class="astro-r5ar4xm7">Ctrl</kbd><kbd class="astro-r5ar4xm7">K</kbd></kbd></button><dialog style="padding:0" aria-label="Buscar" class="astro-r5ar4xm7"><div class="dialog-frame sl-flex astro-r5ar4xm7"><button data-close-modal class="sl-flex md:sl-hidden astro-r5ar4xm7">Cancelar</button><div class="search-container astro-r5ar4xm7"><div id="starlight__search" class="astro-r5ar4xm7"></div></div></div></dialog></site-search><script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script><script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.CM1HKbUQ.js"></script></div><div class="sl-hidden md:sl-flex print:hidden right-group astro-nczgtkxc"><div class="sl-flex social-icons astro-nczgtkxc"></div><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-r2p65idu"><span class="sr-only astro-r2p65idu">Seleccionar tema</span><svg aria-hidden="true" class="icon label-icon astro-r2p65idu astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-r2p65idu"><option value="dark" class="astro-r2p65idu">Oscuro</option><option value="light" class="astro-r2p65idu">Claro</option><option value="auto" selected class="astro-r2p65idu">Automático</option></select><svg aria-hidden="true" class="icon caret astro-r2p65idu astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script><script type="module">var e=`starlight-theme`,t=e=>e===`auto`||e===`dark`||e===`light`?e:`auto`,n=()=>t(typeof localStorage<`u`&&localStorage.getItem(e));function r(t){typeof localStorage<`u`&&localStorage.setItem(e,t===`light`||t===`dark`?t:``)}var i=()=>matchMedia(`(prefers-color-scheme: light)`).matches?`light`:`dark`;function a(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e===`auto`?i():e,r(e)}matchMedia(`(prefers-color-scheme: light)`).addEventListener(`change`,()=>{n()===`auto`&&a(`auto`)});var o=class extends HTMLElement{constructor(){super(),a(n()),this.querySelector(`select`)?.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&a(t(e.currentTarget.value))})}};customElements.define(`starlight-theme-select`,o);</script><script type="module">var e=class extends HTMLElement{constructor(){super();let e=this.querySelector(`select`);e&&(e.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=e.currentTarget.value)}),window.addEventListener(`pageshow`,t=>{if(!t.persisted)return;let n=e.querySelector(`option[selected]`)?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}};customElements.define(`starlight-lang-select`,e);</script></div></div></header><div class="main-frame astro-gqpr5s5a"><script type="module">var e=document.getElementById(`starlight__sidebar`),t=e?.querySelector(`sl-sidebar-state-persist`),n=`sl-sidebar-state`,r=()=>{let r=[],i=t?.dataset.hash||``;try{let e=sessionStorage.getItem(n),t=JSON.parse(e||`{}`);Array.isArray(t.open)&&t.hash===i&&(r=t.open)}catch{}return{hash:i,open:r,scroll:e?.scrollTop||0}},i=e=>{try{sessionStorage.setItem(n,JSON.stringify(e))}catch{}},a=()=>i(r()),o=(e,t)=>{let n=r();n.open[t]=e,i(n)};t?.addEventListener(`click`,e=>{if(!(e.target instanceof Element))return;let t=e.target.closest(`summary`)?.closest(`details`);if(!t)return;let n=t.querySelector(`sl-sidebar-restore`),r=parseInt(n?.dataset.index||``);isNaN(r)||o(!t.open,r)}),addEventListener(`visibilitychange`,()=>{document.visibilityState===`hidden`&&a()});</script><div class="lg:sl-flex astro-abfeecmu"><div class="main-pane astro-abfeecmu"><main data-pagefind-body class="astro-vdxcvpsm" lang="es" dir="ltr"><div class="content-panel astro-oil7k7jf"><div class="sl-container astro-oil7k7jf"><h1 id="_top" class="astro-2sm4b3ln">TP3: autenticación, autorización y pruebas</h1></div></div><div class="content-panel astro-oil7k7jf"><div class="sl-container astro-oil7k7jf"><div class="sl-markdown-content"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"><div>
+<div class="tp3-deck" id="tp3-deck" tabindex="0">
+  <div class="progress" id="tp3-progress"></div>
+  <div class="chrome-top">
+    <span><span class="brand">TP3</span> · Autenticación, autorización y pruebas</span>
+    <span>rama tp3</span>
+  </div>
+
+  <main class="stage">
+
+    <section class="slide active">
+      <div class="cover">
+        <div class="cover-eyebrow">TP3 · Spring Boot — rama tp3</div>
+        <h1>¿Quién sos, y qué podés tocar?</h1>
+        <p class="cover-sub">Hoy: autenticación (JWT), autorización (por rol y por propiedad de recursos) y pruebas automatizadas. CI y despliegue quedan para la próxima clase.</p>
+        <div class="cover-meta">
+          <span>Silva Rodrigo Nahuel</span><span class="dot">•</span><span>demo · localhost:8080</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Agenda de hoy</span><span class="objpill">3 de 5 bloques del TP3</span></div>
+      <h2>¿Qué vemos, y qué queda para después?</h2>
+      <table>
+        <tr><th>#</th><th>Tema</th><th>Hoy</th></tr>
+        <tr><td>1</td><td>Autenticación: registro, login, JWT</td><td><span class="status status--done">Sí</span></td></tr>
+        <tr><td>2</td><td>Autorización: por rol y por propiedad de recursos</td><td><span class="status status--done">Sí</span></td></tr>
+        <tr><td>3</td><td>Pruebas unitarias y de integración (Testcontainers)</td><td><span class="status status--done">Sí</span></td></tr>
+        <tr><td>4</td><td>Integración continua (GitHub Actions)</td><td><span class="status status--pend">Próxima clase</span></td></tr>
+        <tr><td>5</td><td>Despliegue básico</td><td><span class="status status--pend">Próxima clase</span></td></tr>
+      </table>
+      <p class="lead">El dominio (<code>Favorito</code>, <code>Lista</code>, productos) <strong>no cambia</strong>. Lo que se suma es quién puede hacer qué.</p>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">El dominio de hoy</span><span class="objpill">Objetivo 2</span></div>
+      <h2>Usuario es dueño de sus Listas</h2>
+      <div class="body-grid">
+        <div class="diagram-wrap">
+          <svg class="diagram" viewBox="0 0 640 220" role="img" aria-label="Usuario tiene muchas Listas, cada Lista tiene muchos Favoritos">
+            <defs>
+              <marker id="tp3-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--tp3-ink-muted)"></path>
+              </marker>
+            </defs>
+            <rect class="dbox-fav" x="20" y="80" width="160" height="50" rx="7"></rect>
+            <text x="100" y="105" class="dtext" text-anchor="middle">Usuario</text>
+
+            <line x1="180" y1="105" x2="235" y2="105" class="dline" marker-end="url(#tp3-arrow)"></line>
+            <text x="207" y="95" class="dtext-lane" text-anchor="middle">1 — N</text>
+
+            <rect class="dbox-fav" x="240" y="80" width="160" height="50" rx="7"></rect>
+            <text x="320" y="105" class="dtext" text-anchor="middle">Lista</text>
+
+            <line x1="400" y1="105" x2="455" y2="105" class="dline" marker-end="url(#tp3-arrow)"></line>
+            <text x="427" y="95" class="dtext-lane" text-anchor="middle">1 — N</text>
+
+            <rect class="dbox" x="460" y="80" width="160" height="50" rx="7"></rect>
+            <text x="540" y="105" class="dtext" text-anchor="middle">Favorito</text>
+
+            <text x="320" y="170" class="dtext-shared" text-anchor="middle">Mismo patrón @ManyToOne de TP2, un nivel más — ya lo conocés</text>
+          </svg>
+        </div>
+        <div class="col theory">
+          <ul>
+            <li><code>Usuario</code> (<code>id</code>, <code>email</code>, <code>passwordHash</code>, <code>rol</code>) — <code>rol</code> es <code>USER</code> o <code>ADMIN</code>.</li>
+            <li>Una <code>Lista</code> pertenece a un <code>Usuario</code> — <code>usuarioId</code>, exactamente como <code>Favorito</code> ya referenciaba <code>listaId</code>.</li>
+            <li>Un <code>USER</code> solo ve y toca <strong>sus</strong> listas (y por herencia, sus favoritos). Un <code>ADMIN</code> ve las de todos.</li>
+            <li><code>/api/productos</code> sigue público — es de solo lectura, no hay nada que proteger ahí.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Autenticación · teoría</span><span class="objpill">Objetivo 1</span></div>
+      <h2>¿Quién sos? Dos formas de que la API lo recuerde</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">Sesión (stateful)</span>
+              <span class="v">El servidor guarda el estado ("este id de sesión es Ana") en memoria o en una base. El cliente solo manda un id de sesión en una cookie. Si el servidor se reinicia o hay varias instancias, hay que compartir ese estado.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">Token (stateless) — lo que usamos</span>
+              <span class="v">El servidor no guarda nada. El token (JWT) <em>es</em> la prueba de identidad — autocontenido, firmado, verificable sin ir a ninguna base. Coherente con que toda la API ya es <em>sin estado</em> (REST, visto en Unidad 1).</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>JWT</strong> = JSON Web Token: tres partes separadas por puntos — header, payload (claims: quién sos, tu rol, cuándo vence) y firma. La firma es lo que hace que no se pueda inventar o editar un token sin que el servidor lo note.</li>
+            <li><strong>Cómo lo implementamos:</strong> el servidor firma el token con un secreto que solo él conoce (<code>app.jwt.secreto</code>). Cualquiera puede <em>leer</em> el contenido de un JWT (no está encriptado, solo firmado) — nunca guardes algo sensible en el payload.</li>
+          </ul>
+        </div>
+        <div class="evidence">
+          <span class="tag">Un JWT, decodificado</span>
+          <code>header:  { "alg": "HS384" }
+
+payload: {
+  "sub": "1",           <span class="tok-m">// id del usuario</span>
+  "rol": "USER",
+  "iat": 1791397821,    <span class="tok-m">// emitido</span>
+  "exp": 1791401421     <span class="tok-m">// vence</span>
+}
+
+firma:   HMAC-SHA384(header + payload, secreto)</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Autenticación · registro</span><span class="objpill">Objetivo 1</span></div>
+      <h2>Nunca la contraseña en texto plano</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// UsuarioServiceImpl.registrar</span>
+<span class="tok-k">if</span> (repository.existsByEmail(request.email())) {
+    <span class="tok-k">throw new</span> EmailDuplicadoException(
+        <span class="tok-s">"Ya existe una cuenta con el email "</span> + request.email());
+}
+Usuario nuevo = <span class="tok-k">new</span> Usuario(
+    <span class="tok-k">null</span>, request.email(),
+    passwordEncoder.encode(request.password()),  <span class="tok-m">// hash, no texto plano</span>
+    Rol.USER);
+<span class="tok-k">return</span> aResponse(repository.save(nuevo));</code></pre>
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es <code>PasswordEncoder</code>?</span>
+              <span class="v">Una interfaz de Spring Security con dos métodos: <code>encode(texto)</code> (hashea) y <code>matches(texto, hash)</code> (compara sin desencriptar — un hash <strong>no se puede revertir</strong>). Usamos <code>BCryptPasswordEncoder</code>, el estándar de la industria.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> el registro crea siempre un usuario <code>USER</code> — no hay forma de auto-asignarse <code>ADMIN</code> desde la API. Promover a alguien es una operación manual (SQL), a propósito.</li>
+            <li>Si el email ya existe, <code>409 Conflict</code> — mismo patrón que <code>ListaNoVaciaException</code> del TP2.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Autenticación · login y JWT</span><span class="objpill">Objetivo 1</span></div>
+      <h2>Validar credenciales, emitir el token</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// AuthServiceImpl.login</span>
+Usuario usuario = usuarioRepository.findByEmail(request.email())
+    .orElseThrow(() -&gt; <span class="tok-k">new</span> CredencialesInvalidasException(
+        <span class="tok-s">"Email o contraseña incorrectos"</span>));
+
+<span class="tok-k">if</span> (!passwordEncoder.matches(request.password(), usuario.passwordHash())) {
+    <span class="tok-k">throw new</span> CredencialesInvalidasException(
+        <span class="tok-s">"Email o contraseña incorrectos"</span>);
+}
+
+String token = jwtService.generarToken(usuario.id(), usuario.rol());
+<span class="tok-k">return new</span> LoginResponse(token);</code></pre>
+        <div class="col theory">
+          <ul>
+            <li><strong>Mismo mensaje de error</strong> si el email no existe o si la contraseña está mal — distinguirlos le regala información a quien intenta adivinar emails registrados.</li>
+            <li><code>jwtService.generarToken</code> mete el <code>id</code> y el <code>rol</code> del usuario adentro del token — eso es lo que después va a leer el filtro en <strong>cada</strong> request, sin volver a consultar la base.</li>
+            <li><code>CredencialesInvalidasException</code> → <code>401</code> (nuevo handler en <code>GlobalExceptionHandler</code>, mismo patrón que siempre).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Autenticación · el filtro</span><span class="objpill">Objetivo 1</span></div>
+      <h2>Un filtro lee el token en cada request</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// JwtAuthenticationFilter.doFilterInternal</span>
+String header = request.getHeader(<span class="tok-s">"Authorization"</span>);
+<span class="tok-k">if</span> (header != <span class="tok-k">null</span> &amp;&amp; header.startsWith(<span class="tok-s">"Bearer "</span>)) {
+    String token = header.substring(<span class="tok-s">"Bearer "</span>.length());
+    <span class="tok-k">try</span> {
+        Claims claims = jwtService.validarYObtenerClaims(token);
+        Long usuarioId = Long.valueOf(claims.getSubject());
+        Rol rol = Rol.valueOf(claims.get(<span class="tok-s">"rol"</span>, String.class));
+        <span class="tok-k">var</span> auth = <span class="tok-k">new</span> UsernamePasswordAuthenticationToken(
+            usuarioId, <span class="tok-k">null</span>,
+            List.of(<span class="tok-k">new</span> SimpleGrantedAuthority(<span class="tok-s">"ROLE_"</span> + rol)));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    } <span class="tok-k">catch</span> (JwtException e) { <span class="tok-m">/* token inválido: no autentica */</span> }
+}
+filterChain.doFilter(request, response);</code></pre>
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">¿Qué es un filtro?</span>
+              <span class="v">Código que se ejecuta <strong>antes</strong> de que el request llegue a tu Controller — Spring Security engancha varios filtros en cadena, uno de validación de sesión, uno de CSRF, etc. Este es el único que agregamos nosotros.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> si el token es válido, deja la identidad en el <code>SecurityContext</code> — disponible para <em>todo</em> el resto del request, sin pasarla a mano por cada método.</li>
+            <li>Si no hay token, o es inválido/vencido, simplemente no autentica a nadie — no tira error acá. El error (<code>401</code>) lo decide después Spring Security, según si esa ruta necesitaba autenticación.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Autenticación · qué es público</span><span class="objpill">Objetivo 1</span></div>
+      <h2>SecurityConfig: la lista blanca</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// SecurityConfig.securityFilterChain</span>
+http
+  .csrf(csrf -&gt; csrf.disable())
+  .sessionManagement(s -&gt;
+      s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+  .authorizeHttpRequests(auth -&gt; auth
+      .requestMatchers(
+          <span class="tok-s">"/api/auth/**"</span>, <span class="tok-s">"/api/productos/**"</span>,
+          <span class="tok-s">"/swagger-ui/**"</span>, <span class="tok-s">"/v3/api-docs/**"</span>)
+      .permitAll()
+      .anyRequest().authenticated())
+  .addFilterBefore(jwtAuthenticationFilter,
+      UsernamePasswordAuthenticationFilter.class);</code></pre>
+        <div class="col theory">
+          <ul>
+            <li><code>STATELESS</code>: Spring Security no crea ni usa cookies de sesión — coherente con que la identidad vive entera en el JWT de cada request.</li>
+            <li><code>permitAll()</code> en <code>/api/auth/**</code> (tenés que poder registrarte y loguearte <em>sin</em> estar logueado todavía) y <code>/api/productos/**</code> (catálogo público).</li>
+            <li><code>anyRequest().authenticated()</code>: todo lo demás — <code>/api/listas</code>, <code>/api/favoritos</code> — exige un JWT válido. Sin token ahí, <code>401</code>.</li>
+            <li><code>csrf().disable()</code>: CSRF protege contra ataques que abusan de cookies de sesión del navegador — no aplica a una API stateless sin cookies.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Autorización · teoría</span><span class="objpill">Objetivo 2</span></div>
+      <h2>"¿Quién sos?" no es lo mismo que "¿podés hacer esto?"</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">Autenticación (401)</span>
+              <span class="v">"No sé quién sos" — falta el token, o es inválido/venció. Lo resuelve Spring Security solo, antes de llegar a tu código.</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">Autorización (403)</span>
+              <span class="v">"Sé perfectamente quién sos — y no podés hacer esto." Dos variantes acá: <strong>por rol</strong> (¿sos <code>ADMIN</code>?) y <strong>por propiedad</strong> (¿es tuyo este recurso puntual?).</span>
+            </div>
+          </div>
+          <ul>
+            <li>La autorización por <strong>rol</strong> es genérica (cualquier <code>ADMIN</code> puede todo). La autorización por <strong>propiedad</strong> necesita mirar el dato concreto — no hay forma de saber si la lista 6 es tuya sin consultarla.</li>
+            <li><strong>Por eso no alcanza con Spring Security solo</strong> para la propiedad de recursos: esa regla vive en el Service, donde ya tenés la lista cargada.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Autorización · cómo lo implementamos</span><span class="objpill">Objetivo 2</span></div>
+      <h2>buscarPropiaOFallar: el único punto de control</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// ListaServiceImpl</span>
+<span class="tok-k">private</span> Lista buscarPropiaOFallar(Long id) {
+    Lista lista = listaRepository.findById(id)
+        .orElseThrow(() -&gt; <span class="tok-k">new</span> RecursoNoEncontradoException(
+            <span class="tok-s">"No existe la lista con id "</span> + id));
+
+    <span class="tok-k">boolean</span> esDueno = lista.usuarioId() != <span class="tok-k">null</span>
+        &amp;&amp; lista.usuarioId().equals(contexto.usuarioActualId());
+
+    <span class="tok-k">if</span> (!esDueno &amp;&amp; !contexto.esAdmin()) {
+        <span class="tok-k">throw new</span> AccesoDenegadoException(
+            <span class="tok-s">"La lista "</span> + id + <span class="tok-s">" no te pertenece"</span>);
+    }
+    <span class="tok-k">return</span> lista;
+}</code></pre>
+        <div class="col theory">
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> <code>obtener</code>, <code>eliminar</code>, <code>favoritosDe</code> y <code>moverFavoritos</code> pasan todos por acá — un solo lugar con la regla, igual que <code>buscarOFallar</code> del TP2 centralizaba el 404.</li>
+            <li><code>ContextoSeguridad</code> es quien sabe leer el <code>SecurityContext</code> — el Service no toca Spring Security directamente, solo le pregunta "¿quién sos?" y "¿sos admin?".</li>
+            <li>403, no 404, si no es tuya: existe, pero no te la muestro — distinto de "no existe". Mezclar los dos códigos confunde al cliente de la API.</li>
+            <li><code>crear</code> nunca llama a esto — ahí el dueño se <em>asigna</em> (<code>contexto.usuarioActualId()</code>), no se valida.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Autorización · evidencia</span><span class="objpill">Demostrado</span></div>
+      <h2>Los tres casos, en vivo</h2>
+      <div class="body-grid">
+        <div class="col" style="gap:12px">
+          <div class="evidence">
+            <span class="tag">curl GET /api/listas (sin token)</span>
+            <code class="http-400">HTTP/1.1 401</code>
+          </div>
+          <div class="evidence">
+            <span class="tag">curl GET /api/listas/6 (token de otro usuario)</span>
+            <code class="http-400">HTTP/1.1 403</code>
+            <code>{"detail":"La lista 6 no te pertenece",
+ "status":403,"title":"Forbidden"}</code>
+          </div>
+          <div class="evidence">
+            <span class="tag">curl GET /api/listas/6 (ADMIN, token propio)</span>
+            <code class="http-2xx">HTTP/1.1 200</code>
+            <code>{"id":6,"nombre":"Mi lista","usuarioId":1}</code>
+          </div>
+        </div>
+        <div class="col theory">
+          <ul>
+            <li><code>GET /api/listas</code> sin filtro adicional ya devuelve distinto según quién sos: solo tus listas si sos <code>USER</code>, todas si sos <code>ADMIN</code> — mismo endpoint, misma consulta derivada <code>findByUsuarioId</code>, decidido en el Service.</li>
+            <li>Importante: después de promover a alguien a <code>ADMIN</code> en la base (a mano, por SQL), <strong>necesita loguearse de nuevo</strong> — el rol viaja adentro del JWT viejo, que no se actualiza solo.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Pruebas · teoría</span><span class="objpill">Objetivo 3</span></div>
+      <h2>Unitarias vs. de integración</h2>
+      <div class="body-grid">
+        <div class="col theory">
+          <div class="concepts">
+            <div class="concept-item">
+              <span class="k">Prueba unitaria</span>
+              <span class="v">Prueba <strong>una</strong> clase aislada — sus dependencias se mockean (<code>Mockito</code>). Rápida, no toca la base ni el contexto de Spring. Sirve para lógica pura: "¿el hash de la contraseña nunca es el texto plano?".</span>
+            </div>
+            <div class="concept-item">
+              <span class="k">Prueba de integración</span>
+              <span class="v">Levanta la app real (<code>@SpringBootTest</code>) contra una base real — acá es donde entra <strong>Testcontainers</strong>: un PostgreSQL de verdad, en un contenedor Docker descartable, que se crea y se destruye en cada corrida.</span>
+            </div>
+          </div>
+          <ul>
+            <li><strong>¿Por qué no mockear la base también en los tests de integración?</strong> Porque lo que queremos probar es justamente la cadena completa: filtro → Spring Security → Service → JPA → Postgres real con las migraciones de Flyway corridas. Mockear la base ahí sería no probar nada de lo nuevo.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Pruebas · cómo lo implementamos</span><span class="objpill">Objetivo 3</span></div>
+      <h2>Un test de cada tipo</h2>
+      <div class="body-grid">
+        <pre><code><span class="tok-m">// Unitario — UsuarioServiceImplTest</span>
+<span class="tok-m">@Test</span>
+<span class="tok-k">void</span> registrar_nuncaGuardaPasswordEnTextoPlano() {
+    <span class="tok-k">when</span>(repository.existsByEmail(<span class="tok-s">"ana@test.com"</span>))
+        .thenReturn(<span class="tok-k">false</span>);
+    service.registrar(<span class="tok-k">new</span> RegistroRequest(
+        <span class="tok-s">"ana@test.com"</span>, <span class="tok-s">"12345678"</span>));
+
+    verify(repository).save(usuarioCaptor.capture());
+    assertThat(usuarioCaptor.getValue().passwordHash())
+        .isNotEqualTo(<span class="tok-s">"12345678"</span>);
+}
+
+<span class="tok-m">// Integración — ListaControllerIT (Testcontainers)</span>
+<span class="tok-m">@Test</span>
+<span class="tok-k">void</span> accederAListaAjena_devuelve403() {
+    String tokenBob = loguear(<span class="tok-s">"bob@test.com"</span>);
+    mockMvc.perform(get(<span class="tok-s">"/api/listas/{id}"</span>, listaDeAna)
+            .header(<span class="tok-s">"Authorization"</span>, <span class="tok-s">"Bearer "</span> + tokenBob))
+        .andExpect(status().isForbidden());
+}</code></pre>
+        <div class="col theory">
+          <ul>
+            <li><strong>Cómo lo implementamos:</strong> el test de integración usa <code>@Testcontainers</code> + <code>@Container</code> con <code>PostgreSQLContainer</code> — Flyway corre sus migraciones contra esa base nueva en cada ejecución, igual que contra la real.</li>
+            <li>Mínimo pedido: login válido/inválido (200/401), acceso a lista propia (200), a lista ajena (403), sin token (401), <code>ADMIN</code> accediendo a lista ajena (200).</li>
+            <li>Correlo con <code>./mvnw verify</code>: ejecuta las unitarias (<code>*Test</code>) y las de integración (<code>*IT</code>, vía Failsafe). Necesita Docker corriendo, igual que para levantar Postgres en desarrollo.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="eyebrow-row"><span class="eyebrow">Demo en vivo</span><span class="objpill">Cierre de hoy</span></div>
+      <h2>Ahora, en Swagger y la terminal</h2>
+      <div class="cover-url">http://localhost:8080/swagger-ui/index.html</div>
+      <ol class="steps-list">
+        <li><code>POST /api/auth/registro</code> → crear dos usuarios (vos y un compañero imaginario).</li>
+        <li><code>POST /api/auth/login</code> → copiar el token, autorizar en Swagger ("Authorize", pegar <code>Bearer &lt;token&gt;</code>).</li>
+        <li><code>POST /api/listas</code> → crear una lista. Mirar que <code>usuarioId</code> coincide con el tuyo, nunca con uno inventado en el body.</li>
+        <li>Loguearse con el <strong>otro</strong> token → <code>GET /api/listas/{id}</code> de la primera → <b>403</b>.</li>
+        <li>Promover a uno de los dos a <code>ADMIN</code> por SQL, loguearlo de nuevo, repetir el paso anterior → <b>200</b>.</li>
+        <li><code>./mvnw verify</code> → ver correr la suite completa, con Testcontainers levantando Postgres solo.</li>
+      </ol>
+      <p class="closing-note">Próxima clase: integración continua (GitHub Actions corriendo esta misma suite en cada push) y despliegue.</p>
+      <p class="closing-note">Repositorio: <a href="https://github.com/Rns2590/demo" target="_blank" rel="noopener noreferrer" style="color:var(--tp3-accent-strong); font-weight:600; text-decoration:none;">github.com/Rns2590/demo</a> — rama <code>tp3</code></p>
+    </section>
+
+  </main>
+
+  <div class="chrome-bottom">
+    <button class="navbtn" id="tp3-prev" aria-label="Diapositiva anterior">‹</button>
+    <div class="counter"><b id="tp3-cur">1</b> / <span id="tp3-total">14</span></div>
+    <button class="navbtn" id="tp3-next" aria-label="Diapositiva siguiente">›</button>
+  </div>
+</div>
+</div><script type="module">(function(){var e=document.getElementById(`tp3-deck`),t=Array.prototype.slice.call(e.querySelectorAll(`.slide`)),n=t.length,r=0,i=document.getElementById(`tp3-progress`),a=document.getElementById(`tp3-cur`),o=document.getElementById(`tp3-total`);o.textContent=n;function s(){t.forEach(function(e,t){e.classList.toggle(`active`,t===r)}),a.textContent=r+1,i.style.width=(r+1)/n*100+`%`,t[r].scrollTop=0}function c(e){r=Math.max(0,Math.min(n-1,r+e)),s()}document.getElementById(`tp3-prev`).addEventListener(`click`,function(){c(-1)}),document.getElementById(`tp3-next`).addEventListener(`click`,function(){c(1)}),e.addEventListener(`keydown`,function(e){(e.key===`ArrowRight`||e.key===` `||e.key===`PageDown`)&&(e.preventDefault(),c(1)),(e.key===`ArrowLeft`||e.key===`PageUp`)&&(e.preventDefault(),c(-1))}),s()})();</script>
+<p><em>Usá las flechas ‹ › (hacé clic en la diapositiva primero para que capture el teclado) o las teclas de flecha para navegar.</em></p></div><footer class="sl-flex astro-xhxjzfa7"><div class="meta sl-flex astro-xhxjzfa7"></div><div class="pagination-links print:hidden astro-jgq3vlii" dir="ltr"></div></footer></div></div></main></div></div></div></div></body></html>

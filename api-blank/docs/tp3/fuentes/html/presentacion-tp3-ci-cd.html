@@ -1,0 +1,1111 @@
+<!DOCTYPE html><html lang="es" dir="ltr" data-theme="dark" class="astro-vdxcvpsm"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>TP3: pruebas, CI y despliegue automático | Web II</title><link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml"/><meta name="generator" content="Astro v7.1.3"/><meta name="generator" content="Starlight v0.41.4"/><meta property="og:title" content="TP3: pruebas, CI y despliegue automático"/><meta property="og:type" content="article"/><meta property="og:locale" content="es"/><meta property="og:description" content="Presentación de la segunda clase del TP3 — pruebas unitarias y de integración, cobertura con JaCoCo, integración continua con GitHub Actions, despliegue automático en Render y una prueba integral en vivo."/><meta property="og:site_name" content="Web II"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="Presentación de la segunda clase del TP3 — pruebas unitarias y de integración, cobertura con JaCoCo, integración continua con GitHub Actions, despliegue automático en Render y una prueba integral en vivo."/><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/_astro/print.ehPL0gv-.css" media="print"><link rel="stylesheet" href="/_astro/common.qhQnlWH4.css"><style>@layer starlight.components{.card:where(.astro-zts4jgjd){--sl-card-border:var(--sl-color-purple);--sl-card-bg:var(--sl-color-purple-low);border:1px solid var(--sl-color-gray-5);background-color:var(--sl-color-black);flex-direction:column;gap:clamp(.5rem,.125rem + 1vw,1rem);padding:clamp(1rem,.125rem + 3vw,2.5rem)}.card:where(.astro-zts4jgjd):nth-child(4n+1){--sl-card-border:var(--sl-color-orange);--sl-card-bg:var(--sl-color-orange-low)}.card:where(.astro-zts4jgjd):nth-child(4n+3){--sl-card-border:var(--sl-color-green);--sl-card-bg:var(--sl-color-green-low)}.card:where(.astro-zts4jgjd):nth-child(4n+4){--sl-card-border:var(--sl-color-red);--sl-card-bg:var(--sl-color-red-low)}.card:where(.astro-zts4jgjd):nth-child(4n+5){--sl-card-border:var(--sl-color-blue);--sl-card-bg:var(--sl-color-blue-low)}.title:where(.astro-zts4jgjd){font-weight:600;font-size:var(--sl-text-h4);color:var(--sl-color-white);line-height:var(--sl-line-height-headings);align-items:center;gap:1rem}.card:where(.astro-zts4jgjd) .icon:where(.astro-zts4jgjd){border:1px solid var(--sl-card-border);background-color:var(--sl-card-bg);border-radius:.25rem;flex-shrink:0;padding:.2em}.card:where(.astro-zts4jgjd) .body:where(.astro-zts4jgjd){font-size:clamp(var(--sl-text-sm), calc(.5rem + 1vw), var(--sl-text-body));margin:0}.card-grid:where(.astro-lmor3ela){grid-template-columns:100%;gap:1rem;display:grid}.card-grid:where(.astro-lmor3ela)>*{margin-top:0!important}@media (width>=50rem){.card-grid:where(.astro-lmor3ela){grid-template-columns:1fr 1fr;gap:1.5rem}.stagger:where(.astro-lmor3ela){--stagger-height:5rem;padding-bottom:var(--stagger-height)}.stagger:where(.astro-lmor3ela)>:nth-child(2n){transform:translateY(var(--stagger-height))}}}
+@layer starlight.components{:root{--sl-badge-default-border:var(--sl-color-accent);--sl-badge-default-bg:var(--sl-color-accent-low);--sl-badge-default-text:#fff;--sl-badge-note-border:var(--sl-color-blue);--sl-badge-note-bg:var(--sl-color-blue-low);--sl-badge-note-text:#fff;--sl-badge-danger-border:var(--sl-color-red);--sl-badge-danger-bg:var(--sl-color-red-low);--sl-badge-danger-text:#fff;--sl-badge-success-border:var(--sl-color-green);--sl-badge-success-bg:var(--sl-color-green-low);--sl-badge-success-text:#fff;--sl-badge-caution-border:var(--sl-color-orange);--sl-badge-caution-bg:var(--sl-color-orange-low);--sl-badge-caution-text:#fff;--sl-badge-tip-border:var(--sl-color-purple);--sl-badge-tip-bg:var(--sl-color-purple-low);--sl-badge-tip-text:#fff}[data-theme=light]:root{--sl-badge-default-bg:var(--sl-color-accent-high);--sl-badge-note-bg:var(--sl-color-blue-high);--sl-badge-danger-bg:var(--sl-color-red-high);--sl-badge-success-bg:var(--sl-color-green-high);--sl-badge-caution-bg:var(--sl-color-orange-high);--sl-badge-tip-bg:var(--sl-color-purple-high)}.sl-badge:where(.astro-7hkzaclv){border:1px solid var(--sl-color-border-badge);font-family:var(--sl-font-system-mono);color:var(--sl-color-text-badge);background-color:var(--sl-color-bg-badge);overflow-wrap:anywhere;border-radius:.25rem;line-height:normal;display:inline-block}.sidebar-content .sl-badge:where(.astro-7hkzaclv){line-height:1;font-size:var(--sl-text-xs);padding:.125rem .375rem}.sidebar-content a[aria-current=page]>.sl-badge:where(.astro-7hkzaclv){--sl-color-bg-badge:transparent;--sl-color-border-badge:currentColor;color:inherit}.default:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-default-bg);--sl-color-border-badge:var(--sl-badge-default-border);--sl-color-text-badge:var(--sl-badge-default-text)}.note:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-note-bg);--sl-color-border-badge:var(--sl-badge-note-border);--sl-color-text-badge:var(--sl-badge-note-text)}.danger:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-danger-bg);--sl-color-border-badge:var(--sl-badge-danger-border);--sl-color-text-badge:var(--sl-badge-danger-text)}.success:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-success-bg);--sl-color-border-badge:var(--sl-badge-success-border);--sl-color-text-badge:var(--sl-badge-success-text)}.tip:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-tip-bg);--sl-color-border-badge:var(--sl-badge-tip-border);--sl-color-text-badge:var(--sl-badge-tip-text)}.caution:where(.astro-7hkzaclv){--sl-color-bg-badge:var(--sl-badge-caution-bg);--sl-color-border-badge:var(--sl-badge-caution-border);--sl-color-text-badge:var(--sl-badge-caution-text)}.small:where(.astro-7hkzaclv){font-size:var(--sl-text-xs);padding:.125rem .25rem}.medium:where(.astro-7hkzaclv){font-size:var(--sl-text-sm);padding:.175rem .35rem}.large:where(.astro-7hkzaclv){font-size:var(--sl-text-base);padding:.225rem .45rem}.sl-markdown-content :is(h1,h2,h3,h4,h5,h6) .sl-badge:where(.astro-7hkzaclv){vertical-align:middle}.sl-link-button:where(.astro-hlbqph7b){font-size:var(--sl-text-sm);outline-offset:.25rem;border:1px solid #0000;border-radius:999rem;align-items:center;gap:.5em;padding:.4375rem 1.125rem;line-height:1.1875;text-decoration:none;display:inline-flex}.sl-link-button:where(.astro-hlbqph7b).primary{background:var(--sl-color-text-accent);border-color:var(--sl-color-text-accent);color:var(--sl-color-black)}.sl-link-button:where(.astro-hlbqph7b).primary:hover{color:var(--sl-color-black)}.sl-link-button:where(.astro-hlbqph7b).secondary{border-color:inherit;color:var(--sl-color-white)}.sl-link-button:where(.astro-hlbqph7b).minimal{color:var(--sl-color-white);padding-inline:0}.sl-link-button:where(.astro-hlbqph7b) svg{flex-shrink:0}@media (width>=50rem){.sl-link-button:where(.astro-hlbqph7b){font-size:var(--sl-text-base);padding:.9375rem 1.25rem}}.sl-markdown-content .sl-link-button:where(.astro-hlbqph7b){margin-inline-end:1rem}.sl-markdown-content .sl-link-button:where(.astro-hlbqph7b):not(:where(p *)){margin-block:1rem}}
+@layer starlight.components{svg:where(.astro-n5k4ipy7){color:var(--sl-icon-color);font-size:var(--sl-icon-size,1em);width:1em;height:1em}}
+@layer starlight.components{starlight-tabs:where(.astro-hbt4ddzs){display:block}.tablist-wrapper:where(.astro-hbt4ddzs){overflow-x:auto}:where(.astro-hbt4ddzs)[role=tablist]{border-bottom:2px solid var(--sl-color-gray-5);padding:0;list-style:none;display:flex}.tab:where(.astro-hbt4ddzs){display:flex}.tab:where(.astro-hbt4ddzs)>:where(.astro-hbt4ddzs)[role=tab]{--sl-tab-color-border:var(--sl-color-gray-5);line-height:var(--sl-line-height-headings);box-shadow:0 2px 0 var(--sl-tab-color-border);color:var(--sl-color-gray-3);outline-offset:var(--sl-outline-offset-inside);overflow-wrap:initial;align-items:center;gap:.5rem;padding:.275rem 1.25rem;text-decoration:none;display:flex}.tab:where(.astro-hbt4ddzs) :where(.astro-hbt4ddzs)[role=tab][aria-selected=true]{--sl-tab-color-border:var(--sl-color-text-accent);color:var(--sl-color-white);font-weight:600}.tablist-wrapper:where(.astro-hbt4ddzs)~[role=tabpanel]{margin-top:1rem}.sl-steps{--bullet-size:calc(var(--sl-line-height) * 1rem);--bullet-margin:.375rem;counter-reset:steps-counter var(--sl-steps-start,0);padding-inline-start:0;list-style:none}.sl-steps>li{counter-increment:steps-counter;padding-inline-start:calc(var(--bullet-size) + 1rem);min-height:calc(var(--bullet-size) + var(--bullet-margin));padding-bottom:1px;position:relative}.sl-steps>li+li{margin-top:0}.sl-steps>li:before{content:counter(steps-counter);top:0;width:var(--bullet-size);height:var(--bullet-size);line-height:var(--bullet-size);font-size:var(--sl-text-xs);text-align:center;color:var(--sl-color-white);background-color:var(--sl-color-gray-6);box-shadow:inset 0 0 0 1px var(--sl-color-gray-5);border-radius:99rem;font-weight:600;position:absolute;inset-inline-start:0}.sl-steps>li:after{--guide-width:1px;content:"";top:calc(var(--bullet-size) + var(--bullet-margin));bottom:var(--bullet-margin);width:var(--guide-width);background-color:var(--sl-color-hairline-light);position:absolute;inset-inline-start:calc((var(--bullet-size) - var(--guide-width)) / 2)}}@layer starlight.content{.sl-steps>li>:first-child{--lh:calc(1em * var(--sl-line-height));--shift-y:calc(.5 * (var(--bullet-size) - var(--lh)));transform:translateY(var(--shift-y));margin-bottom:var(--shift-y)}.sl-steps>li>:first-child:where(h1,h2,h3,h4,h5,h6){--lh:calc(1em * var(--sl-line-height-headings))}@supports (--prop:1lh){.sl-steps>li>:first-child{--lh:1lh}}}
+@layer starlight.components{.sl-link-card:where(.astro-vodiqeol){border:1px solid var(--sl-color-gray-5);box-shadow:var(--sl-shadow-sm);border-radius:.5rem;grid-template-columns:1fr auto;gap:.5rem;padding:1rem;display:grid;position:relative}a:where(.astro-vodiqeol){line-height:var(--sl-line-height-headings);text-decoration:none}a:where(.astro-vodiqeol):before{content:"";position:absolute;inset:0}.stack:where(.astro-vodiqeol){flex-direction:column;gap:.5rem}.title:where(.astro-vodiqeol){color:var(--sl-color-white);font-weight:600;font-size:var(--sl-text-lg)}.description:where(.astro-vodiqeol){color:var(--sl-color-gray-3);line-height:1.5}.icon:where(.astro-vodiqeol){color:var(--sl-color-gray-3)}.sl-link-card:where(.astro-vodiqeol):hover{background:var(--sl-color-gray-7,var(--sl-color-gray-6));border-color:var(--sl-color-gray-2)}.sl-link-card:where(.astro-vodiqeol):hover .icon:where(.astro-vodiqeol){color:var(--sl-color-white)}}
+</style><script type="module" src="/_astro/page.LAbJoB63.js"></script><link rel="stylesheet" href="/_astro/tp3-ci-cd-presentacion.B9lmxH2b.css"></head><body class="astro-vdxcvpsm"><a class="sl-skip-link astro-vxeigawq" href="#_top">Ir al contenido</a><div class="page sl-flex astro-gqpr5s5a"><header class="header astro-gqpr5s5a"><div class="header astro-nczgtkxc"><div class="title-wrapper sl-flex astro-nczgtkxc"><div class="site-brand astro-2gc4fo37"><a href="/" class="site-title sl-flex astro-clw6ags5"><img class="light:sl-hidden print:hidden astro-clw6ags5" alt="Web II — Universidad Nacional de Villa Mercedes" src="/_astro/web-ii-logo-dark.DZkE8zqB.svg" width="256" height="48"><img class="dark:sl-hidden print:block astro-clw6ags5" alt="Web II — Universidad Nacional de Villa Mercedes" src="/_astro/web-ii-logo-light.BlJd4hlf.svg" width="256" height="48"><span class="sr-only astro-clw6ags5" translate="no">Web II</span></a></div><script type="module">var e=class extends HTMLElement{constructor(){super();let e=this.querySelector(`button`),t=document.documentElement,n=()=>{let n=t.hasAttribute(`data-sidebar-collapsed`),r=n?`Mostrar barra lateral`:`Ocultar barra lateral`;e.setAttribute(`aria-expanded`,String(!n)),e.setAttribute(`aria-label`,r),e.title=r};n(),e.addEventListener(`click`,()=>{let e=t.toggleAttribute(`data-sidebar-collapsed`);n();try{localStorage.setItem(`web-ii-sidebar-collapsed`,String(e))}catch{}})}};customElements.define(`web-ii-sidebar-toggle`,e);</script></div><div class="sl-flex print:hidden astro-nczgtkxc"><site-search class="astro-nczgtkxc astro-r5ar4xm7" data-translations="{&quot;placeholder&quot;:&quot;Buscar&quot;,&quot;clear_search&quot;:&quot;Limpiar&quot;,&quot;load_more&quot;:&quot;Cargar más resultados&quot;,&quot;search_label&quot;:&quot;Buscar página&quot;,&quot;filters_label&quot;:&quot;Filtros&quot;,&quot;zero_results&quot;:&quot;Ningún resultado para: [SEARCH_TERM]&quot;,&quot;many_results&quot;:&quot;[COUNT] resultados para: [SEARCH_TERM]&quot;,&quot;one_result&quot;:&quot;[COUNT] resultado para: [SEARCH_TERM]&quot;,&quot;alt_search&quot;:&quot;Ningún resultado para [SEARCH_TERM]. Mostrando resultados para: [DIFFERENT_TERM]&quot;,&quot;search_suggestion&quot;:&quot;Ningún resultado para [SEARCH_TERM]. Prueba alguna de estas búsquedas:&quot;,&quot;searching&quot;:&quot;Buscando [SEARCH_TERM]...&quot;}"><button data-open-modal disabled aria-label="Buscar" aria-keyshortcuts="Control+K" class="astro-r5ar4xm7"><svg aria-hidden="true" class="astro-r5ar4xm7 astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg><span class="sl-hidden md:sl-block astro-r5ar4xm7" aria-hidden="true">Buscar</span><kbd class="sl-hidden md:sl-flex astro-r5ar4xm7" style="display: none;"><kbd class="astro-r5ar4xm7">Ctrl</kbd><kbd class="astro-r5ar4xm7">K</kbd></kbd></button><dialog style="padding:0" aria-label="Buscar" class="astro-r5ar4xm7"><div class="dialog-frame sl-flex astro-r5ar4xm7"><button data-close-modal class="sl-flex md:sl-hidden astro-r5ar4xm7">Cancelar</button><div class="search-container astro-r5ar4xm7"><div id="starlight__search" class="astro-r5ar4xm7"></div></div></div></dialog></site-search><script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script><script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.CM1HKbUQ.js"></script></div><div class="sl-hidden md:sl-flex print:hidden right-group astro-nczgtkxc"><div class="sl-flex social-icons astro-nczgtkxc"></div><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-r2p65idu"><span class="sr-only astro-r2p65idu">Seleccionar tema</span><svg aria-hidden="true" class="icon label-icon astro-r2p65idu astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-r2p65idu"><option value="dark" class="astro-r2p65idu">Oscuro</option><option value="light" class="astro-r2p65idu">Claro</option><option value="auto" selected class="astro-r2p65idu">Automático</option></select><svg aria-hidden="true" class="icon caret astro-r2p65idu astro-n5k4ipy7" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script><script type="module">var e=`starlight-theme`,t=e=>e===`auto`||e===`dark`||e===`light`?e:`auto`,n=()=>t(typeof localStorage<`u`&&localStorage.getItem(e));function r(t){typeof localStorage<`u`&&localStorage.setItem(e,t===`light`||t===`dark`?t:``)}var i=()=>matchMedia(`(prefers-color-scheme: light)`).matches?`light`:`dark`;function a(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e===`auto`?i():e,r(e)}matchMedia(`(prefers-color-scheme: light)`).addEventListener(`change`,()=>{n()===`auto`&&a(`auto`)});var o=class extends HTMLElement{constructor(){super(),a(n()),this.querySelector(`select`)?.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&a(t(e.currentTarget.value))})}};customElements.define(`starlight-theme-select`,o);</script><script type="module">var e=class extends HTMLElement{constructor(){super();let e=this.querySelector(`select`);e&&(e.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=e.currentTarget.value)}),window.addEventListener(`pageshow`,t=>{if(!t.persisted)return;let n=e.querySelector(`option[selected]`)?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}};customElements.define(`starlight-lang-select`,e);</script></div></div></header><div class="main-frame astro-gqpr5s5a"><script type="module">var e=document.getElementById(`starlight__sidebar`),t=e?.querySelector(`sl-sidebar-state-persist`),n=`sl-sidebar-state`,r=()=>{let r=[],i=t?.dataset.hash||``;try{let e=sessionStorage.getItem(n),t=JSON.parse(e||`{}`);Array.isArray(t.open)&&t.hash===i&&(r=t.open)}catch{}return{hash:i,open:r,scroll:e?.scrollTop||0}},i=e=>{try{sessionStorage.setItem(n,JSON.stringify(e))}catch{}},a=()=>i(r()),o=(e,t)=>{let n=r();n.open[t]=e,i(n)};t?.addEventListener(`click`,e=>{if(!(e.target instanceof Element))return;let t=e.target.closest(`summary`)?.closest(`details`);if(!t)return;let n=t.querySelector(`sl-sidebar-restore`),r=parseInt(n?.dataset.index||``);isNaN(r)||o(!t.open,r)}),addEventListener(`visibilitychange`,()=>{document.visibilityState===`hidden`&&a()});</script><div class="lg:sl-flex astro-abfeecmu"><div class="main-pane astro-abfeecmu"><main data-pagefind-body class="astro-vdxcvpsm" lang="es" dir="ltr"><div class="content-panel astro-oil7k7jf"><div class="sl-container astro-oil7k7jf"><h1 id="_top" class="astro-2sm4b3ln">TP3: pruebas, CI y despliegue automático</h1></div></div><div class="content-panel astro-oil7k7jf"><div class="sl-container astro-oil7k7jf"><div class="sl-markdown-content"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"><div>
+<div class="tp3ci-deck" id="tp3ci-deck" tabindex="0">
+  <div class="progress" id="tp3ci-progress"></div>
+  <div class="chrome-top">
+    <span><span class="brand">TP3</span> · Pruebas, cobertura, CI y despliegue</span>
+    <span>rama tp3-ci-cd</span>
+  </div>
+
+  <main class="stage">
+
+<section class="slide active">
+  <div class="cover">
+    <div class="cover-eyebrow">TP3 · Consignas 5, 6 y 7</div>
+    <h1>De las pruebas al despliegue automático</h1>
+    <p class="cover-sub">Todo lo necesario para terminar el TP3: probar la aplicación, ejecutar esas pruebas en cada cambio con GitHub Actions y publicarla sola en Render.</p>
+    <div class="cover-meta">
+      <span>Silva Rodrigo Nahuel</span><span class="dot">•</span><span>Web II · UNVIME</span>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Mapa de la clase</span><span class="objpill">TP3 · segunda parte</span></div>
+  <h2>Lo que vamos a poder hacer hoy</h2>
+  <table>
+    <tr><th>#</th><th>Bloque</th><th>Preguntas que vamos a responder</th><th>Consigna</th></tr>
+    <tr><td>1</td><td><b>Pruebas y cobertura</b></td><td>¿Qué son las pruebas unitarias y las de integración? ¿En qué se diferencian, cómo se llaman y cómo se ejecutan? ¿Qué es JaCoCo y qué información nos da?</td><td><span class="status status--done">5</span></td></tr>
+    <tr><td>2</td><td><b>Integración continua</b></td><td>¿Qué es el CI? ¿Cómo se configura en el repo y cómo se ejecuta?</td><td><span class="status status--done">6</span></td></tr>
+    <tr><td>3</td><td><b>Despliegue automático</b></td><td>¿Cómo funciona? ¿Cómo se configura en el repo y, paso a paso, en Render?</td><td><span class="status status--done">7</span></td></tr>
+    <tr><td>4</td><td><b>Prueba integral en vivo</b></td><td>Hacemos un cambio en el repo, miramos cómo corre el CI y miramos cómo Render publica el cambio.</td><td><span class="status status--done">5, 6 y 7</span></td></tr>
+  </table>
+  <p class="lead">Cada diapositiva responde una pregunta y los pasos están numerados: sirven de guía para repetir lo mismo en tu repositorio.</p>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Mapa de la clase</span><span class="objpill">Visión de conjunto</span></div>
+  <h2>El recorrido de un cambio, de tu máquina a la URL pública</h2>
+  <div class="body-grid">
+    <div class="diagram-wrap">
+      <svg class="diagram" viewBox="0 0 440 350" role="img" aria-label="Recorrido: cambio y pruebas, push, GitHub Actions, chequeo en verde, Render publica">
+        <defs>
+          <marker id="tp3ci-arrow5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--tp3ci-ink-muted)"></path>
+          </marker>
+        </defs>
+        <rect class="dbox-fav" x="20" y="10" width="290" height="38" rx="7"></rect>
+        <text x="165" y="34" class="dtext" text-anchor="middle">Cambiás el código y sus pruebas</text>
+        <text x="330" y="34" class="dtext-lane">Bloque 1</text>
+        <line x1="165" y1="48" x2="165" y2="66" class="dline" marker-end="url(#tp3ci-arrow5)"></line>
+
+        <rect class="dbox" x="20" y="68" width="290" height="38" rx="7"></rect>
+        <text x="165" y="92" class="dtext" text-anchor="middle">./mvnw clean verify en tu máquina</text>
+        <text x="330" y="92" class="dtext-lane">Bloque 1</text>
+        <line x1="165" y1="106" x2="165" y2="124" class="dline" marker-end="url(#tp3ci-arrow5)"></line>
+
+        <rect class="dbox" x="20" y="126" width="290" height="38" rx="7"></rect>
+        <text x="165" y="150" class="dtext" text-anchor="middle">git push a main</text>
+        <text x="330" y="150" class="dtext-lane">Bloque 2</text>
+        <line x1="165" y1="164" x2="165" y2="182" class="dline" marker-end="url(#tp3ci-arrow5)"></line>
+
+        <rect class="dbox" x="20" y="184" width="290" height="38" rx="7"></rect>
+        <text x="165" y="208" class="dtext" text-anchor="middle">GitHub Actions corre ./mvnw verify</text>
+        <text x="330" y="208" class="dtext-lane">Bloque 2</text>
+        <line x1="165" y1="222" x2="165" y2="240" class="dline" marker-end="url(#tp3ci-arrow5)"></line>
+
+        <rect class="dbox" x="20" y="242" width="290" height="38" rx="7"></rect>
+        <text x="165" y="266" class="dtext" text-anchor="middle">Chequeo en verde (si falla, se corta)</text>
+        <text x="330" y="266" class="dtext-lane">Bloque 2</text>
+        <line x1="165" y1="280" x2="165" y2="298" class="dline" marker-end="url(#tp3ci-arrow5)"></line>
+
+        <rect class="dbox-fav" x="20" y="300" width="290" height="38" rx="7"></rect>
+        <text x="165" y="324" class="dtext" text-anchor="middle">Render construye, arranca y publica</text>
+        <text x="330" y="324" class="dtext-lane">Bloque 3</text>
+      </svg>
+    </div>
+    <div class="col theory">
+      <ul>
+        <li><strong>Bloque 1</strong>: escribir pruebas y comprobar que pasan en tu máquina.</li>
+        <li><strong>Bloque 2</strong>: que GitHub las ejecute solo, en cada cambio y en un entorno limpio.</li>
+        <li><strong>Bloque 3</strong>: que Render publique la aplicación solo cuando ese chequeo está en verde.</li>
+        <li><strong>Bloque 4</strong>: lo vemos funcionando de punta a punta, con un cambio real.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Pruebas y cobertura</span><span class="objpill">Consigna 5</span></div>
+  <h2>¿Para qué sirven las pruebas?</h2>
+  <div class="body-grid">
+    <pre><code><span class="tok-m">// ListaServiceImpl.buscarPropiaOFallar — alguien "simplifica"</span>
+Lista lista = listaRepository.findById(id)
+    .orElseThrow(() -&gt; <span class="tok-k">new</span> RecursoNoEncontradoException(
+        <span class="tok-s">"No existe la lista con id "</span> + id));
+
+-   <span class="tok-k">boolean</span> esDueno = lista.usuarioId() != <span class="tok-k">null</span>
+-       &amp;&amp; lista.usuarioId().equals(contexto.usuarioActualId());
+-   <span class="tok-k">if</span> (!esDueno &amp;&amp; !contexto.esAdmin()) {
+-       <span class="tok-k">throw</span> <span class="tok-k">new</span> AccesoDenegadoException(<span class="tok-s">"La lista "</span> + id + <span class="tok-s">" no te pertenece"</span>);
+-   }
+<span class="tok-k">return</span> lista;</code></pre>
+    <div class="col theory">
+      <div class="concepts">
+        <div class="concept-item">
+          <span class="k">Alguien "simplifica" el código</span>
+          <span class="v">El proyecto <strong>compila</strong>, la app <strong>arranca</strong> y ningún endpoint da error. Pero ahora Bob lee las listas de Ana.</span>
+        </div>
+      </div>
+      <ul>
+        <li>El compilador no conoce las reglas de negocio. Una <strong>prueba</strong> sí: <code>accederAListaAjena_devuelve403</code> falla en el acto.</li>
+        <li>Una prueba es una regla escrita como código, que se puede repetir las veces que haga falta.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Pruebas y cobertura</span><span class="objpill">Consigna 5</span></div>
+  <h2>Unitaria vs integración: ¿en qué se diferencian?</h2>
+  <table>
+    <tr><th></th><th>Unitaria</th><th>De integración</th></tr>
+    <tr><td>¿Qué prueba?</td><td>Una sola clase o regla, aislada</td><td>La aplicación completa, de punta a punta</td></tr>
+    <tr><td>¿Con qué?</td><td>Dependencias simuladas (Mockito)</td><td>Spring, seguridad y PostgreSQL reales (Testcontainers)</td></tr>
+    <tr><td>¿Cuánto tarda?</td><td>Milisegundos</td><td>Segundos: levanta el contexto y una base</td></tr>
+    <tr><td>¿Necesita Docker?</td><td>No</td><td>Sí</td></tr>
+    <tr><td>¿Cuándo falla?</td><td>Cambió la regla de esa clase</td><td>Dos piezas no encajan: una migración, un filtro, un mapeo</td></tr>
+    <tr><td>¿Cómo se llama?</td><td><code>*Test</code></td><td><code>*IT</code></td></tr>
+    <tr><td>En nuestro repo</td><td><strong>6 clases, 29 pruebas</strong></td><td><strong>1 clase, 10 pruebas</strong></td></tr>
+  </table>
+  <p class="lead">Se complementan: muchas unitarias rápidas y pocas de integración que cubran las <strong>uniones</strong> entre piezas. Una migración que falta no se ve con simulaciones.</p>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Pruebas y cobertura</span><span class="objpill">Consigna 5.1</span></div>
+  <h2>Prueba unitaria: cómo es</h2>
+  <div class="body-grid">
+    <pre><code><span class="tok-t">@ExtendWith</span>(MockitoExtension.<span class="tok-k">class</span>)
+<span class="tok-k">class</span> ListaServiceImplTest {
+
+    <span class="tok-t">@Mock</span> <span class="tok-k">private</span> ListaRepository listaRepository;
+    <span class="tok-t">@Mock</span> <span class="tok-k">private</span> FavoritoRepository favoritoRepository;
+    <span class="tok-t">@Mock</span> <span class="tok-k">private</span> ContextoSeguridad contextoSeguridad;
+
+    <span class="tok-t">@Test</span>
+    <span class="tok-k">void</span> obtener_listaAjena_lanzaAccesoDenegado() {
+        <span class="tok-m">// Preparación</span>
+        when(listaRepository.findById(7L))
+            .thenReturn(Optional.of(<span class="tok-k">new</span> Lista(7L, <span class="tok-s">"De Ana"</span>, ANA)));
+        when(contextoSeguridad.usuarioActualId()).thenReturn(BOB);
+        when(contextoSeguridad.esAdmin()).thenReturn(<span class="tok-k">false</span>);
+
+        <span class="tok-m">// Acción y verificación</span>
+        assertThatThrownBy(() -&gt; service.obtener(7L))
+            .isInstanceOf(AccesoDenegadoException.<span class="tok-k">class</span>);
+    }
+}</code></pre>
+    <div class="col">
+      <ol class="steps-list">
+        <li><span><b>Preparar</b>: armamos el escenario con datos de prueba (<code>when … thenReturn</code>).</span></li>
+        <li><span><b>Actuar</b>: llamamos al método que queremos probar.</span></li>
+        <li><span><b>Verificar</b>: afirmamos qué debe pasar (<code>assertThat…</code>). Si no se cumple, la prueba falla.</span></li>
+      </ol>
+      <div class="theory"><ul>
+        <li>Mockito <strong>simula</strong> el repository y el contexto de seguridad: no hay Spring ni base y corre en milisegundos.</li>
+        <li>Se puede porque el Service depende de <strong>interfaces</strong>, no de JPA.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Pruebas y cobertura</span><span class="objpill">Consigna 5.2</span></div>
+  <h2>Prueba de integración: cómo es</h2>
+  <div class="body-grid">
+    <pre><code><span class="tok-t">@SpringBootTest</span>
+<span class="tok-t">@AutoConfigureMockMvc</span>
+<span class="tok-t">@Testcontainers</span>
+<span class="tok-k">class</span> ListaControllerIT {
+    <span class="tok-t">@Container</span>
+    <span class="tok-k">static</span> PostgreSQLContainer postgres =
+        <span class="tok-k">new</span> PostgreSQLContainer(DockerImageName.parse(<span class="tok-s">"postgres:17"</span>));
+    <span class="tok-t">@DynamicPropertySource</span>
+    <span class="tok-k">static</span> <span class="tok-k">void</span> propiedadesDeConexion(DynamicPropertyRegistry registry) {
+        registry.add(<span class="tok-s">"spring.datasource.url"</span>, postgres::getJdbcUrl);
+        registry.add(<span class="tok-s">"spring.datasource.username"</span>, postgres::getUsername);
+        registry.add(<span class="tok-s">"spring.datasource.password"</span>, postgres::getPassword);
+    }
+
+    <span class="tok-t">@Test</span>
+    <span class="tok-k">void</span> accederAListaAjena_devuelve403() <span class="tok-k">throws</span> Exception {
+        <span class="tok-k">String</span> tokenAna = registrarYLoguear(<span class="tok-s">"ana.duena@test.com"</span>, <span class="tok-s">"12345678"</span>);
+        <span class="tok-k">long</span> listaId = crearLista(tokenAna, <span class="tok-s">"Lista de ana"</span>);
+        <span class="tok-k">String</span> tokenBob = registrarYLoguear(<span class="tok-s">"bob.intruso@test.com"</span>, <span class="tok-s">"12345678"</span>);
+
+        mockMvc.perform(get(<span class="tok-s">"/api/listas/{id}"</span>, listaId)
+                .header(<span class="tok-s">"Authorization"</span>, <span class="tok-s">"Bearer "</span> + tokenBob))
+            .andExpect(status().isForbidden());
+    }
+}</code></pre>
+    <div class="col">
+      <ol class="steps-list">
+        <li><span><b>Testcontainers</b> arranca un PostgreSQL real en Docker y lo destruye al terminar.</span></li>
+        <li><span><b>Flyway</b> aplica las migraciones <code>V1</code> a <code>V6</code> sobre esa base limpia.</span></li>
+        <li><span><b>MockMvc</b> envía la solicitud por todo el camino: filtro JWT, seguridad, Controller, Service, JPA y base.</span></li>
+        <li><span><b>Se verifica</b> la respuesta: acá, <code>403</code>.</span></li>
+      </ol>
+      <div class="theory"><ul>
+        <li>Necesita <strong>Docker abierto</strong>. No hay simulaciones: por eso encuentra errores que una unitaria no ve.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Pruebas y cobertura</span><span class="objpill">Consigna 5.3</span></div>
+  <h2>Nomenclatura: cómo se llaman las pruebas</h2>
+  <table>
+    <tr><th>Qué se nombra</th><th>Convención</th><th>Ejemplo</th></tr>
+    <tr><td>Clase unitaria</td><td><code>&lt;ClaseProbada&gt;Test</code></td><td><code>ListaServiceImplTest</code></td></tr>
+    <tr><td>Clase de integración</td><td><code>&lt;Recurso&gt;IT</code></td><td><code>ListaControllerIT</code></td></tr>
+    <tr><td>Paquete</td><td>El mismo que la clase probada, bajo <code>src/test/java</code></td><td><code>service</code> con <code>service</code></td></tr>
+    <tr><td>Método</td><td><code>operación_escenario_resultado</code></td><td><code>obtener_listaAjena_lanzaAccesoDenegado</code></td></tr>
+  </table>
+  <div class="body-grid">
+    <pre><code><span class="tok-m">// operación _ escenario _ resultado</span>
+obtener_listaPropia_devuelveLaLista
+obtener_listaAjena_lanzaAccesoDenegado
+validar_tokenVencido_lanzaExcepcion
+login_conCredencialesInvalidas_devuelve401</code></pre>
+    <div class="col theory">
+      <ul>
+        <li><strong>El sufijo decide quién la ejecuta</strong>: <code>*Test</code> la corre Surefire (<code>./mvnw test</code>) y <code>*IT</code> la corre Failsafe (<code>./mvnw verify</code>). No es cosmético.</li>
+        <li>El nombre se lee como una frase y Maven lo imprime cuando falla: dice <strong>qué regla se rompió</strong> sin abrir el código.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Pruebas y cobertura</span><span class="objpill">Consigna 5.1 y 5.2</span></div>
+  <h2>¿Qué casos probamos en el TP3?</h2>
+  <div class="body-grid">
+    <div class="col">
+      <table>
+        <tr><th>Unitarias (5.1)</th><th>Qué comprueban</th></tr>
+        <tr><td><code>ListaServiceImpl</code></td><td>La lista creada queda a nombre de quien está autenticado; dueño, ajeno y admin</td></tr>
+        <tr><td><code>UsuarioServiceImpl</code></td><td>La contraseña <strong>nunca</strong> se guarda en texto plano; email duplicado</td></tr>
+        <tr><td><code>JwtService</code> y filtro</td><td>Token válido, vencido, de otro secreto o alterado; sin token no autentica</td></tr>
+        <tr><td><code>AuthServiceImpl</code></td><td>Login válido e inválido, sin revelar si el email existe</td></tr>
+      </table>
+    </div>
+    <div class="col">
+      <table>
+        <tr><th>Integración (5.2)</th><th>Esperado</th></tr>
+        <tr><td>Login válido</td><td>200 con un token</td></tr>
+        <tr><td>Login inválido</td><td>401</td></tr>
+        <tr><td><code>/api/listas</code> sin token</td><td>401</td></tr>
+        <tr><td>Lista propia</td><td>200</td></tr>
+        <tr><td>Lista ajena</td><td>403</td></tr>
+        <tr><td><code>ADMIN</code> sobre lista ajena</td><td>200</td></tr>
+        <tr><td>Registro con <code>"rol":"ADMIN"</code></td><td>Queda como <code>USER</code></td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Pruebas y cobertura</span><span class="objpill">Consigna 5 y 6</span></div>
+  <h2>¿Cómo se ejecutan las pruebas? Paso a paso</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span><b>Abrí una terminal</b> en la carpeta del proyecto (la que tiene el <code>pom.xml</code>). Para las de integración, <b>Docker Desktop tiene que estar abierto</b>.</span></li>
+      <li><span><b>Solo las unitarias</b> (rápido, sin Docker): <code>./mvnw clean test</code></span></li>
+      <li><span><b>Todo</b>: unitarias, integración, reporte y umbral: <code>./mvnw clean verify</code></span></li>
+      <li><span><b>Leé el final de la salida</b>: la línea <code>Tests run:</code> y después <code>BUILD SUCCESS</code> o <code>BUILD FAILURE</code>.</span></li>
+    </ol>
+    <div class="col">
+      <table>
+        <tr><th>Sufijo</th><th>Lo ejecuta</th><th>Con el comando</th></tr>
+        <tr><td><code>*Test</code></td><td>Surefire</td><td><code>test</code> y <code>verify</code></td></tr>
+        <tr><td><code>*IT</code></td><td>Failsafe</td><td>solo <code>verify</code></td></tr>
+      </table>
+      <div class="evidence">
+        <span class="tag">Todo bien · ./mvnw clean test</span>
+        <code class="http-2xx">Tests run: 29, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS</code>
+        <span class="tag">Algo falló · ejemplo (simplificado)</span>
+        <code class="http-400">[ERROR] ListaServiceImplTest
+[ERROR]   .obtener_listaAjena_lanzaAccesoDenegado
+BUILD FAILURE</code>
+      </div>
+      <div class="theory"><ul>
+        <li><code>mvn test</code> <strong>no</strong> corre las <code>*IT</code>: para ellas, <code>verify</code>. En Windows, si <code>./mvnw</code> no responde, usá <code>.\mvnw.cmd</code>.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Cobertura</span><span class="objpill">JaCoCo 1 de 6</span></div>
+  <h2>¿Qué es JaCoCo y cómo se configura?</h2>
+  <div class="body-grid">
+    <pre><code><span class="tok-m">&lt;!-- pom.xml: jacoco-maven-plugin 0.8.15 --&gt;</span>
+<span class="tok-k">&lt;execution</span>&gt;
+    <span class="tok-k">&lt;id</span>&gt;preparar-agente<span class="tok-k">&lt;/id</span>&gt;
+    <span class="tok-k">&lt;goals</span>&gt;<span class="tok-k">&lt;goal</span>&gt;prepare-agent<span class="tok-k">&lt;/goal</span>&gt;<span class="tok-k">&lt;/goals</span>&gt;
+<span class="tok-k">&lt;/execution</span>&gt;
+<span class="tok-k">&lt;execution</span>&gt;
+    <span class="tok-k">&lt;id</span>&gt;reporte<span class="tok-k">&lt;/id</span>&gt;
+    <span class="tok-k">&lt;phase</span>&gt;verify<span class="tok-k">&lt;/phase</span>&gt;
+    <span class="tok-k">&lt;goals</span>&gt;<span class="tok-k">&lt;goal</span>&gt;report<span class="tok-k">&lt;/goal</span>&gt;<span class="tok-k">&lt;/goals</span>&gt;
+<span class="tok-k">&lt;/execution</span>&gt;</code></pre>
+    <div class="col theory">
+      <div class="concepts">
+        <div class="concept-item">
+          <span class="k">Qué es</span>
+          <span class="v">Una herramienta que <strong>observa las pruebas</strong> mientras corren y anota qué líneas del código se ejecutaron. Con eso arma un reporte: la <strong>cobertura</strong>.</span>
+        </div>
+      </div>
+      <div class="evidence">
+        <span class="tag">Qué queda en target/ después de verify</span>
+        <code>jacoco.exec                  <span class="tok-m">// datos crudos</span>
+site/jacoco/index.html        <span class="tok-m">// abrir en el navegador</span></code>
+      </div>
+      <ul>
+        <li><code>prepare-agent</code> actúa <strong>antes</strong> de las pruebas y <code>report</code> <strong>después</strong>: por eso el reporte aparece al final de <code>verify</code>.</li>
+        <li>Mide las unitarias <strong>y</strong> las de integración en un único archivo.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Cobertura</span><span class="objpill">JaCoCo 2 de 6</span></div>
+  <h2>¿Cómo se ejecuta JaCoCo? Paso a paso</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span><b>Generalo</b> con <code>./mvnw clean verify</code> (Docker abierto): corre todas las pruebas y arma el reporte al final.</span></li>
+      <li><span><b>Confirmá en la salida</b> que pasó por <code>jacoco:report</code> y que no hay <code>BUILD FAILURE</code>.</span></li>
+      <li><span><b>Abrí el archivo</b> <code>target/site/jacoco/index.html</code>: doble clic en el explorador o, en PowerShell, <code>start target\site\jacoco\index.html</code>.</span></li>
+      <li><span><b>Mirá la fila Total</b>, la última de la tabla: es el número del proyecto.</span></li>
+    </ol>
+    <div class="col theory">
+      <table>
+        <tr><th>Cómo se generó</th><th>Qué se midió</th><th>Total</th></tr>
+        <tr><td><code>clean test jacoco:report</code></td><td>Solo unitarias</td><td>≈ 30 %</td></tr>
+        <tr><td><code>clean verify</code></td><td>Unitarias e integración</td><td>≈ 63 %</td></tr>
+      </table>
+      <ul>
+        <li><strong>El reporte mide lo que se ejecutó</strong>, no lo que existe. Si el total no es el esperado, mirá primero qué pruebas corrieron.</li>
+        <li>Para saber si corrieron las de integración: tiene que existir la carpeta <code>target/failsafe-reports</code>. Sin Docker, no corren.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Cobertura</span><span class="objpill">JaCoCo 3 de 6</span></div>
+  <h2>¿Cómo se lee el reporte? Cuatro clics</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span><b>Total</b>: la fila de abajo de <code>index.html</code>. El umbral mira la columna <b>Lines</b>.</span></li>
+      <li><span><b>Un paquete</b>, por ejemplo <code>com.example.demo.service</code>: una fila por clase.</span></li>
+      <li><span><b>Una clase</b>, por ejemplo <code>ListaServiceImpl</code>: una fila por método.</span></li>
+      <li><span><b>Un método</b>: el código fuente pintado de colores. Ahí se ve qué falta probar.</span></li>
+    </ol>
+    <div class="col theory">
+      <div class="concepts">
+        <div class="concept-item">
+          <span class="k">Cada columna: lo que falta y el porcentaje</span>
+          <span class="v"><b>Missed</b> es lo que ninguna prueba ejecutó y <b>Cov.</b> el porcentaje cubierto. La barra es <b>roja</b> en lo que falta y <b>verde</b> en lo cubierto.</span>
+        </div>
+      </div>
+      <ul>
+        <li><span class="sw sw-g"></span><strong>Verde</strong>: la línea se ejecutó.</li>
+        <li><span class="sw sw-y"></span><strong>Amarillo</strong>: se ejecutó, pero un <code>if</code> solo se probó por un lado.</li>
+        <li><span class="sw sw-r"></span><strong>Rojo</strong>: ninguna prueba llegó hasta esa línea.</li>
+        <li>Miramos <b>Lines</b> (lo que mide el umbral) y <b>Branches</b> (los <code>if</code>).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Cobertura</span><span class="objpill">JaCoCo 4 de 6</span></div>
+  <h2>¿Qué significa cada columna del reporte?</h2>
+  <table>
+    <tr><th>Columna</th><th>Qué cuenta</th></tr>
+    <tr><td><b>Element</b></td><td>El paquete. Con un clic se abre la clase y después el método.</td></tr>
+    <tr><td><b>Instructions</b></td><td>Lo más fino del código compilado. <b>Missed</b>: ninguna prueba lo ejecutó. <b>Cov.</b>: el porcentaje ejecutado.</td></tr>
+    <tr><td><b>Branches</b></td><td>Los caminos de cada <code>if</code>: se prueba el verdadero y el falso. <code>n/a</code>: no hay <code>if</code>.</td></tr>
+    <tr><td><b>Cxty</b></td><td>Cuántos caminos distintos tiene el código. <b>Missed</b>: los que faltan probar. El otro número es el total.</td></tr>
+    <tr><td><b>Lines</b></td><td>Líneas de código. <b>Missed</b>: sin ejecutar. El otro número es el total. <strong>La que usa el umbral.</strong></td></tr>
+    <tr><td><b>Methods</b></td><td>Métodos que ninguna prueba llamó, sobre el total.</td></tr>
+    <tr><td><b>Classes</b></td><td>Clases sin ninguna línea ejecutada, sobre el total.</td></tr>
+  </table>
+  <div class="body-grid">
+    <div class="evidence">
+      <span class="tag">Cómo leer una fila · reporte local</span>
+      <code>service  Missed 42 · Lines 102
+         <span class="tok-m">// 60 de 102 ejecutadas (≈ 59 %)</span>
+Total    937 of 1.716
+         <span class="tok-m">// 45 % cubierto</span></code>
+    </div>
+    <div class="col theory"><ul>
+      <li><strong>La barra</strong>: <span class="sw sw-r"></span>roja es lo que falta y <span class="sw sw-g"></span>verde lo cubierto; su largo es proporcional al tamaño del paquete.</li>
+      <li>Para empezar alcanza con <b>Lines</b> y <b>Branches</b>.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Cobertura</span><span class="objpill">JaCoCo 5 de 6</span></div>
+  <h2>¿Qué información nos da? Tres preguntas</h2>
+  <div class="body-grid">
+    <div class="col">
+      <div class="covbox">
+        <span class="tag">Líneas cubiertas por paquete · ejemplo de la solución (valores aproximados)</span>
+        <div class="covrow"><span class="n">security</span><span class="bar"><i style="width:98%"></i></span><span class="p">98 %</span></div>
+        <div class="covrow"><span class="n">controller</span><span class="bar"><i style="width:63%"></i></span><span class="p">63 %</span></div>
+        <div class="covrow"><span class="n">service</span><span class="bar"><i style="width:59%"></i></span><span class="p">59 %</span></div>
+        <div class="covrow"><span class="n">repository</span><span class="bar"><i style="width:56%"></i></span><span class="p">56 %</span></div>
+        <div class="covrow"><span class="n">exception</span><span class="bar"><i style="width:41%"></i></span><span class="p">41 %</span></div>
+        <div class="covrow"><span class="n">client.dummyjson</span><span class="bar"><i style="width:11%"></i></span><span class="p">11 %</span></div>
+        <div class="covrow covrow--total"><span class="n">Total</span><span class="bar"><i style="width:63%"></i></span><span class="p">63 %</span></div>
+      </div>
+      <p class="closing-note"><span class="sw sw-g"></span>cubierto <span class="sw sw-r"></span>sin ejecutar</p>
+    </div>
+    <div class="col theory">
+      <ul>
+        <li><strong>1. ¿Llega al mínimo?</strong> Se compara la fila Total con <code>cobertura.minima</code> (60 %): con 63 % el build pasa.</li>
+        <li><strong>2. ¿Qué paquetes están flojos y por qué?</strong> <code>security</code>, lo nuevo del TP3, está al 98 %. <code>client.dummyjson</code> está al 11 %: es código del TP1 que llama a una API externa y se decide si vale la pena probarlo.</li>
+        <li><strong>3. ¿Qué hay en las líneas rojas?</strong> Se abre la clase: una regla de negocio sin probar es un pendiente; un <em>getter</em> o un <code>record</code>, no.</li>
+      </ul>
+      <div class="concepts">
+        <div class="concept-item">
+          <span class="k">Ejecutar no es verificar</span>
+          <span class="v">El reporte dice qué se ejecutó, no que esté bien: una línea verde sin una aserción que la compruebe no protege nada.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 1 · Cobertura</span><span class="objpill">JaCoCo 6 de 6 · opcional</span></div>
+  <h2>Opcional: que el build falle si la cobertura baja</h2>
+  <div class="body-grid">
+    <pre><code><span class="tok-k">&lt;execution</span>&gt;
+    <span class="tok-k">&lt;id</span>&gt;umbral-minimo<span class="tok-k">&lt;/id</span>&gt;
+    <span class="tok-k">&lt;phase</span>&gt;verify<span class="tok-k">&lt;/phase</span>&gt;
+    <span class="tok-k">&lt;goals</span>&gt;<span class="tok-k">&lt;goal</span>&gt;check<span class="tok-k">&lt;/goal</span>&gt;<span class="tok-k">&lt;/goals</span>&gt;
+    <span class="tok-k">&lt;configuration</span>&gt;
+        <span class="tok-k">&lt;rules</span>&gt;<span class="tok-k">&lt;rule</span>&gt;
+            <span class="tok-k">&lt;element</span>&gt;BUNDLE<span class="tok-k">&lt;/element</span>&gt;
+            <span class="tok-k">&lt;limits</span>&gt;<span class="tok-k">&lt;limit</span>&gt;
+                <span class="tok-k">&lt;counter</span>&gt;LINE<span class="tok-k">&lt;/counter</span>&gt;
+                <span class="tok-k">&lt;value</span>&gt;COVEREDRATIO<span class="tok-k">&lt;/value</span>&gt;
+                <span class="tok-k">&lt;minimum</span>&gt;${cobertura.minima}<span class="tok-k">&lt;/minimum</span>&gt;
+            <span class="tok-k">&lt;/limit</span>&gt;<span class="tok-k">&lt;/limits</span>&gt;
+        <span class="tok-k">&lt;/rule</span>&gt;<span class="tok-k">&lt;/rules</span>&gt;
+    <span class="tok-k">&lt;/configuration</span>&gt;
+<span class="tok-k">&lt;/execution</span>&gt;</code></pre>
+    <div class="col theory">
+      <div class="evidence">
+        <span class="tag">cobertura.minima = 0.60 → pasa</span>
+        <code class="http-2xx">All coverage checks have been met.
+BUILD SUCCESS</code>
+        <span class="tag">cobertura.minima = 0.90 → falla</span>
+        <code class="http-400">Rule violated for bundle demo:
+lines covered ratio is 0.63,
+but expected minimum is 0.90
+BUILD FAILURE</code>
+      </div>
+      <ul>
+        <li><code>check</code> corre en <code>verify</code>: si la cobertura de líneas baja del mínimo, el build falla y el CI queda en rojo. El mínimo es la propiedad <code>cobertura.minima</code> del <code>pom.xml</code>.</li>
+        <li>Un umbral razonable (60 %) frena la regresión sin empujar a escribir pruebas vacías solo para llegar al número.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 2 · Integración continua</span><span class="objpill">Consigna 6</span></div>
+  <h2>¿Qué es la integración continua (CI)?</h2>
+  <div class="body-grid">
+    <div class="diagram-wrap">
+      <svg class="diagram" viewBox="0 0 640 260" role="img" aria-label="Un push dispara un runner limpio que compila y ejecuta las pruebas; el resultado es verde o rojo">
+        <defs>
+          <marker id="tp3ci-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--tp3ci-ink-muted)"></path>
+          </marker>
+        </defs>
+        <rect class="dbox-fav" x="10" y="30" width="170" height="50" rx="7"></rect>
+        <text x="95" y="60" class="dtext" text-anchor="middle">push / pull request</text>
+
+        <line x1="180" y1="55" x2="225" y2="55" class="dline" marker-end="url(#tp3ci-arrow)"></line>
+
+        <rect class="dbox" x="230" y="30" width="180" height="50" rx="7"></rect>
+        <text x="320" y="52" class="dtext" text-anchor="middle">runner limpio</text>
+        <text x="320" y="70" class="dtext-lane" text-anchor="middle">ubuntu-latest + Docker</text>
+
+        <line x1="410" y1="55" x2="455" y2="55" class="dline" marker-end="url(#tp3ci-arrow)"></line>
+
+        <rect class="dbox" x="460" y="30" width="170" height="50" rx="7"></rect>
+        <text x="545" y="60" class="dtext" text-anchor="middle">./mvnw verify</text>
+
+        <line x1="545" y1="80" x2="545" y2="125" class="dline" marker-end="url(#tp3ci-arrow)"></line>
+
+        <rect class="dbox-fav" x="460" y="130" width="170" height="44" rx="7"></rect>
+        <text x="545" y="157" class="dtext" text-anchor="middle">verde: todo pasó</text>
+        <rect class="dbox" x="230" y="130" width="180" height="44" rx="7"></rect>
+        <text x="320" y="157" class="dtext" text-anchor="middle">rojo: con el detalle</text>
+        <line x1="460" y1="152" x2="415" y2="152" class="dline" marker-end="url(#tp3ci-arrow)" stroke-dasharray="4 4"></line>
+
+        <text x="320" y="225" class="dtext-shared" text-anchor="middle">El mismo recorrido para cada cambio, sin depender de la computadora de nadie.</text>
+      </svg>
+    </div>
+    <div class="col theory">
+      <ul>
+        <li><strong>Sin CI</strong>: cada persona prueba en su máquina, con su base y su configuración. Pueden pasar días hasta descubrir que dos cambios no funcionan juntos.</li>
+        <li><strong>Con CI</strong>: cada <code>push</code> dispara el mismo recorrido en un entorno limpio y devuelve una señal simple: <strong>verde</strong> o <strong>rojo</strong>.</li>
+        <li>En el TP3 verifica cuatro cosas: que <strong>compila</strong>, que pasan las <strong>unitarias</strong>, que pasan las de <strong>integración</strong> y que la <strong>cobertura</strong> llega al mínimo.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 2 · Integración continua</span><span class="objpill">Consigna 6.1</span></div>
+  <h2>Armar el ci.yml, paso a paso (1 de 2): el esqueleto</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span><b>Creá el archivo</b> <code>.github/workflows/ci.yml</code>, en la raíz del repo (junto al <code>pom.xml</code>). Es un archivo más del proyecto: se edita en VS Code.</span></li>
+      <li><span><b>Nombre y disparador</b>: <code>name</code> y <code>on</code>. Acá corre en cada <code>push</code> y en cada <em>pull request</em>.</span></li>
+      <li><span><b>Un job</b>: dentro de <code>jobs</code>, uno llamado <code>verificar</code>. <code>runs-on: ubuntu-latest</code> pide una máquina limpia, que ya trae Docker.</span></li>
+      <li><span><b>Dos pasos de preparación</b>: <code>checkout</code> baja el código y <code>setup-java</code> instala Java 25, la misma versión del <code>pom.xml</code>, con caché de Maven.</span></li>
+    </ol>
+    <pre><code><span class="tok-k">name</span>: CI
+
+<span class="tok-k">on</span>:
+<span class="tok-k">  push</span>:
+<span class="tok-k">  pull_request</span>:
+
+<span class="tok-k">jobs</span>:
+<span class="tok-k">  verificar</span>:
+<span class="tok-k">    name</span>: Compilar y probar
+<span class="tok-k">    runs-on</span>: ubuntu-latest
+<span class="tok-k">    steps</span>:
+<span class="tok-k">      - name</span>: Descargar el código
+<span class="tok-k">        uses</span>: actions/checkout@v6
+
+<span class="tok-k">      - name</span>: Instalar Java 25
+<span class="tok-k">        uses</span>: actions/setup-java@v4
+<span class="tok-k">        with</span>:
+<span class="tok-k">          distribution</span>: temurin
+<span class="tok-k">          java-version</span>: <span class="tok-s">'25'</span>
+<span class="tok-k">          cache</span>: maven</code></pre>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 2 · Integración continua</span><span class="objpill">Consigna 6.1</span></div>
+  <h2>Armar el ci.yml, paso a paso (2 de 2): las pruebas</h2>
+  <div class="body-grid">
+    <div class="col">
+      <ol class="steps-list">
+        <li><span><b>Un paso por cada cosa que querés verificar</b>, con <code>run: ./mvnw …</code>. Así se ve en cuál falla.</span></li>
+        <li><span><b>Guardá lo que quieras revisar</b> con <code>upload-artifact</code>. <code>if: always()</code> lo sube aunque algo falle.</span></li>
+        <li><span><b>Opcional</b>: un paso que escribe el total de cobertura en el resumen de la ejecución.</span></li>
+        <li><span><b>Commit y push</b>: GitHub detecta el archivo y lo ejecuta solo. No hay nada que instalar ni activar.</span></li>
+      </ol>
+      <div class="theory"><ul>
+        <li>El paso 3 repite las unitarias y suma las de integración (Failsafe, <code>*IT</code>) y el reporte y umbral de JaCoCo: por eso el reporte se genera ahí.</li>
+      </ul></div>
+    </div>
+    <pre><code><span class="tok-k">      - name</span>: 1 · Compilar el proyecto y las pruebas
+<span class="tok-k">        run</span>: ./mvnw --batch-mode test-compile
+
+<span class="tok-k">      - name</span>: 2 · Pruebas unitarias
+<span class="tok-k">        run</span>: ./mvnw --batch-mode test
+
+<span class="tok-k">      - name</span>: 3 · Pruebas de integración y cobertura
+<span class="tok-k">        run</span>: ./mvnw --batch-mode verify
+
+<span class="tok-k">      - name</span>: Guardar el reporte de cobertura
+<span class="tok-k">        if</span>: always()
+<span class="tok-k">        uses</span>: actions/upload-artifact@v4
+<span class="tok-k">        with</span>:
+<span class="tok-k">          name</span>: reporte-de-cobertura
+<span class="tok-k">          path</span>: target/site/jacoco</code></pre>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 2 · Integración continua</span><span class="objpill">Consigna 6</span></div>
+  <h2>¿Cómo se ejecuta el CI? Paso a paso</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span><b>Publicá el repositorio</b> desde GitHub Desktop (<i>Publish repository</i>, puede ser privado). El archivo <code>ci.yml</code> viaja en ese primer envío.</span></li>
+      <li><span>En <b>github.com</b>, abrí el repo → pestaña <b>Actions</b>. Ya hay una ejecución de <b>CI</b>: arrancó sola.</span></li>
+      <li><span><b>Entrá a la ejecución</b> → job <b>Compilar y probar</b>: cada paso (<b>1 · Compilar</b>, <b>2 · Pruebas unitarias</b>, <b>3 · Pruebas de integración y cobertura</b>) se despliega con su registro.</span></li>
+      <li><span>Si hay una ✗, <b>abrí ese paso</b>: ahí está la prueba que falló, igual que en tu terminal.</span></li>
+      <li><span>El resumen de la ejecución muestra el <b>total de cobertura</b>. Abajo, en <b>Artifacts</b>: descargá <code>reporte-de-cobertura</code>, un zip con el <code>index.html</code> de JaCoCo.</span></li>
+    </ol>
+    <div class="col">
+      <div class="evidence">
+        <span class="tag">Recorrido de clics</span>
+        <code>Repo → Actions → CI
+→ Compilar y probar
+→ paso con ✗ → registro</code>
+        <span class="tag">Estados de una ejecución</span>
+        <code><span class="tok-m">●</span> amarillo   en curso
+<span class="http-2xx">✓ verde</span>      todo pasó
+<span class="http-400">✗ rojo</span>       algo falló</code>
+      </div>
+      <div class="theory"><ul>
+        <li>No hay botón de "ejecutar": <strong>cada <code>push</code> o <em>pull request</em> dispara una ejecución nueva</strong>.</li>
+        <li><b>Re-run jobs</b>, arriba a la derecha, repite la ejecución sin hacer otro commit.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 2 · Integración continua</span><span class="objpill">Consigna 6.2</span></div>
+  <h2>Cuando el CI sale rojo: leerlo y arreglarlo</h2>
+  <div class="body-grid">
+    <div class="col theory">
+      <div class="concepts">
+        <div class="concept-item">
+          <span class="k">Pasa en mi máquina, falla en el CI</span>
+          <span class="v"><code>DemoApplicationTests</code>, la prueba que genera Spring Initializr, levanta toda la aplicación contra la base de <code>application.properties</code>: <code>localhost:5432</code>. En tu equipo hay un PostgreSQL; en el runner limpio no, y el contexto no arranca.</span>
+        </div>
+      </div>
+      <ul>
+        <li>El arreglo: toda prueba que cargue Spring obtiene su base de Testcontainers, o se elimina si no aporta. Acá se elimina: <code>ListaControllerIT</code> ya carga el contexto completo contra su propia base.</li>
+        <li>Si el paso de Maven falla con <code>./mvnw: Permission denied</code>: <code>git update-index --chmod=+x mvnw</code> y subí el cambio.</li>
+      </ul>
+    </div>
+    <ol class="steps-list">
+      <li><span><b>Primer envío</b> con el pipeline y <code>DemoApplicationTests</code> todavía en el proyecto → Actions: <b>rojo</b>.</span></li>
+      <li><span><b>Abrí el paso fallido</b>: el registro dice que la aplicación no pudo conectarse a <code>localhost:5432</code>.</span></li>
+      <li><span><b>Enviá el arreglo</b>, la versión sin esa prueba → <b>verde</b>.</span></li>
+      <li><span><b>Consigna 6.2</b>: cambiá <code>isForbidden()</code> por <code>isOk()</code> en <code>accederAListaAjena_devuelve403</code> y enviá → <b>rojo</b>. Revertí → <b>verde</b>.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 3 · Despliegue automático</span><span class="objpill">Consigna 7</span></div>
+  <h2>¿Cómo funciona? Del push a la URL pública</h2>
+  <div class="body-grid">
+    <div class="diagram-wrap">
+      <svg class="diagram" viewBox="0 0 400 300" role="img" aria-label="Un push dispara GitHub Actions; si el chequeo pasa, Render despliega">
+        <defs>
+          <marker id="tp3ci-arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--tp3ci-ink-muted)"></path>
+          </marker>
+        </defs>
+        <rect class="dbox-fav" x="100" y="10" width="200" height="40" rx="7"></rect>
+        <text x="200" y="35" class="dtext" text-anchor="middle">git push a main</text>
+        <line x1="200" y1="50" x2="200" y2="80" class="dline" marker-end="url(#tp3ci-arrow2)"></line>
+
+        <rect class="dbox" x="100" y="85" width="200" height="40" rx="7"></rect>
+        <text x="200" y="110" class="dtext" text-anchor="middle">GitHub Actions: verify</text>
+        <line x1="200" y1="125" x2="200" y2="155" class="dline" marker-end="url(#tp3ci-arrow2)"></line>
+
+        <rect class="dbox" x="100" y="160" width="200" height="40" rx="7"></rect>
+        <text x="200" y="185" class="dtext" text-anchor="middle">chequeo: verde o rojo</text>
+        <line x1="200" y1="200" x2="200" y2="230" class="dline" marker-end="url(#tp3ci-arrow2)"></line>
+        <text x="210" y="220" class="dtext-lane">solo si pasa</text>
+
+        <rect class="dbox-fav" x="100" y="235" width="200" height="50" rx="7"></rect>
+        <text x="200" y="257" class="dtext" text-anchor="middle">Render: build, arranque</text>
+        <text x="200" y="274" class="dtext-lane" text-anchor="middle">y cambio de tráfico</text>
+      </svg>
+    </div>
+    <div class="col theory">
+      <ul>
+        <li><strong>Un CI en verde no publica nada solo</strong>: hay que conectarlo con la plataforma. Render mira ese mismo chequeo de GitHub.</li>
+        <li><strong>Si pasa</strong>: Render construye la imagen con el <code>Dockerfile</code>, arranca la instancia nueva, espera que <code>/health</code> responda y recién entonces le pasa el tráfico.</li>
+        <li><strong>Si falla</strong> el CI o el arranque: no se publica nada y la versión anterior sigue en pie.</li>
+        <li>Nadie copia archivos ni aprueba a mano: es <strong>despliegue continuo</strong>. Un <em>pull request</em> se prueba pero no se publica: Render solo mira <code>main</code>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 3 · Despliegue automático</span><span class="objpill">Consigna 7.1</span></div>
+  <h2>Preparar la aplicación: Dockerfile y variables</h2>
+  <div class="body-grid">
+    <pre><code><span class="tok-m"># Etapa 1: compilar el JAR (las pruebas ya corrieron en la CI)</span>
+<span class="tok-k">FROM</span> eclipse-temurin:25-jdk <span class="tok-k">AS</span> build
+<span class="tok-k">WORKDIR</span> /app
+<span class="tok-k">COPY</span> . .
+<span class="tok-k">RUN</span> ./mvnw -B -DskipTests package
+
+<span class="tok-m"># Etapa 2: imagen final, solo con el JRE y el JAR</span>
+<span class="tok-k">FROM</span> eclipse-temurin:25-jre
+<span class="tok-k">WORKDIR</span> /app
+<span class="tok-k">RUN</span> groupadd --system app &amp;&amp; useradd --system --gid app app
+<span class="tok-k">COPY</span> --from=build /app/target/*.jar app.jar
+<span class="tok-k">USER</span> app
+<span class="tok-k">ENTRYPOINT</span> [<span class="tok-s">"java"</span>, <span class="tok-s">"-XX:MaxRAMPercentage=75.0"</span>, <span class="tok-s">"-jar"</span>, <span class="tok-s">"app.jar"</span>]</code></pre>
+    <div class="col theory">
+      <table>
+        <tr><th>Variable</th><th>Para qué</th></tr>
+        <tr><td><code>PORT</code></td><td>Puerto que asigna Render (por defecto <code>10000</code>); <code>server.port=${PORT:8080}</code></td></tr>
+        <tr><td><code>DB_URL</code></td><td>Base remota, en formato JDBC</td></tr>
+        <tr><td><code>DB_USERNAME</code>, <code>DB_PASSWORD</code></td><td>Credenciales de la base</td></tr>
+        <tr><td><code>JWT_SECRETO</code></td><td>Clave para firmar tokens</td></tr>
+      </table>
+      <ul>
+        <li>El <code>${VARIABLE:valorPorDefecto}</code> de <code>application.properties</code> deja que el proyecto siga andando en local y que la plataforma lo reconfigure sin tocar el código.</li>
+        <li>Render ejecuta el <code>Dockerfile</code> del repo: así la versión de Java la fijamos nosotros. La app debe escuchar en <code>0.0.0.0</code> y en <code>PORT</code>, y Spring Boot ya lo hace.</li>
+        <li>La imagen no lleva secretos: el <code>JWT_SECRETO</code> de ejemplo es solo para desarrollo.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 3 · Despliegue automático</span><span class="objpill">Consigna 7.1</span></div>
+  <h2>Armar el render.yaml, paso a paso (1 de 2): el servicio web</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span><b>Creá el archivo</b> <code>render.yaml</code> en la raíz del repo, junto al <code>Dockerfile</code>.</span></li>
+      <li><span><b>Declará el servicio web</b>: <code>type: web</code>, un <code>name</code> y <code>plan: free</code>.</span></li>
+      <li><span><b>Decile cómo construirlo</b>: <code>runtime: docker</code> y <code>dockerfilePath</code>. Render usa nuestro <code>Dockerfile</code>.</span></li>
+      <li><span><b>Chequeo de salud</b>: <code>healthCheckPath: /health</code>. La versión nueva recibe tráfico recién cuando esa ruta responde.</span></li>
+      <li><span><b>La línea que automatiza todo</b>: <code>autoDeployTrigger: checksPass</code> despliega solo si el CI de GitHub pasa. Otros valores: <code>commit</code> (siempre) y <code>off</code>.</span></li>
+    </ol>
+    <pre><code><span class="tok-k">services</span>:
+<span class="tok-k">  - type</span>: web
+<span class="tok-k">    name</span>: web2-demo
+<span class="tok-k">    runtime</span>: docker
+<span class="tok-k">    plan</span>: free
+<span class="tok-k">    dockerfilePath</span>: ./Dockerfile
+<span class="tok-k">    healthCheckPath</span>: /health
+<span class="tok-k">    autoDeployTrigger</span>: checksPass</code></pre>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 3 · Despliegue automático</span><span class="objpill">Consigna 7.1</span></div>
+  <h2>Armar el render.yaml, paso a paso (2 de 2): variables y base de datos</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span><b>Variables de entorno</b> en <code>envVars</code>: las que la aplicación lee (<code>DB_URL</code>, <code>DB_USERNAME</code>, <code>DB_PASSWORD</code>, <code>JWT_SECRETO</code>).</span></li>
+      <li><span><code>sync: false</code> en <code>DB_URL</code>: el valor se pide una sola vez, al crear el Blueprint.</span></li>
+      <li><span><code>fromDatabase</code> en usuario y clave: salen de la base declarada abajo y no se escriben en ningún archivo.</span></li>
+      <li><span><code>generateValue: true</code> en <code>JWT_SECRETO</code>: Render inventa una clave aleatoria.</span></li>
+      <li><span><b>La base</b>, en <code>databases</code>: PostgreSQL descrita como código y versionada con la aplicación.</span></li>
+    </ol>
+    <pre><code><span class="tok-k">    envVars</span>:
+<span class="tok-k">      - key</span>: DB_URL
+<span class="tok-k">        sync</span>: false
+<span class="tok-k">      - key</span>: DB_USERNAME
+<span class="tok-k">        fromDatabase</span>:
+<span class="tok-k">          name</span>: web2-db
+<span class="tok-k">          property</span>: user
+      <span class="tok-m"># DB_PASSWORD: igual, con property: password</span>
+<span class="tok-k">      - key</span>: JWT_SECRETO
+<span class="tok-k">        generateValue</span>: true
+
+<span class="tok-k">databases</span>:
+<span class="tok-k">  - name</span>: web2-db
+<span class="tok-k">    plan</span>: free
+<span class="tok-k">    databaseName</span>: web2
+<span class="tok-k">    user</span>: web2</code></pre>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 3 · Render, paso 1 de 4</span><span class="objpill">Consigna 7.1</span></div>
+  <h2>Crear el Blueprint en Render</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span><b>Antes</b>: el CI tiene que estar en verde en <code>main</code>. Render espera ese chequeo para desplegar.</span></li>
+      <li><span>En <b>render.com</b>, entrá con tu cuenta de GitHub → <b>New → Blueprint</b>.</span></li>
+      <li><span><b>Conectá GitHub</b>: autorizá a Render y elegí el repositorio (sirve con repos privados). Rama: <code>main</code>.</span></li>
+      <li><span>Render lee <code>render.yaml</code> y lista lo que va a crear. Pide <code>DB_URL</code>: escribí <code>pendiente</code> y confirmá con <b>Deploy Blueprint</b>.</span></li>
+      <li><span>Esperá: se crean la base y el servicio. El panel muestra <b>Failed deploy</b> en rojo, y es lo esperado: el primer despliegue todavía no sabe dónde está la base.</span></li>
+    </ol>
+    <div class="col">
+      <div class="evidence">
+        <span class="tag">Qué crea el Blueprint</span>
+        <code>web2-db     PostgreSQL (plan free)
+web2-demo   Web Service (Docker)</code>
+        <span class="tag">Variables de entorno</span>
+        <code>DB_USERNAME   <span class="tok-m">// sale de la base</span>
+DB_PASSWORD   <span class="tok-m">// sale de la base</span>
+JWT_SECRETO   <span class="tok-m">// la genera Render</span>
+DB_URL        <span class="tok-k">// la completás vos, después</span></code>
+      </div>
+      <div class="theory"><ul>
+        <li><strong>Dos recursos, no uno</strong>: <code>web2-demo</code> es la aplicación y <code>web2-db</code> es su base PostgreSQL. Render los lista juntos y los dos tienen que figurar en marcha (la base como <em>Available</em>).</li>
+        <li><strong>Por qué <code>DB_URL</code> queda para después</strong>: <code>fromDatabase</code> entrega usuario y clave, pero no el nombre de host, que recién existe cuando la base ya está creada.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 3 · Render, paso 2 de 4</span><span class="objpill">Consigna 7.1</span></div>
+  <h2>Completar DB_URL y ver la aplicación en línea</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span>Abrí la base <b>web2-db</b> → pestaña <b>Info</b> → anotá el <b>Hostname</b> interno (<code>dpg-…-a</code>) y el campo <b>Database</b>.</span></li>
+      <li><span><b>Armá la URL</b> en formato JDBC con esos dos datos (a la derecha).</span></li>
+      <li><span>En el servicio <b>web2-demo</b> → <b>Environment</b> → editá <code>DB_URL</code> → guardá y pedí un despliegue nuevo (<b>Save, rebuild, and deploy</b>).</span></li>
+      <li><span>Mirá <b>Deploys</b> y <b>Logs</b>: Flyway aplica <code>V1</code> a <code>V6</code>, la aplicación arranca y el estado pasa de <b>Failed</b> a <b>Live</b>.</span></li>
+      <li><span><b>Probá</b> la URL pública que figura arriba en la página del servicio (dos diapositivas más adelante).</span></li>
+    </ol>
+    <div class="col">
+      <div class="evidence">
+        <span class="tag">DB_URL en formato JDBC</span>
+        <code>jdbc:postgresql://HOSTNAME:5432/DATABASE?sslmode=require</code>
+      </div>
+      <div class="theory"><ul>
+        <li><strong>El nombre de la base no es <code>web2</code></strong>: Render le agrega un sufijo y queda, por ejemplo, <code>web2_s4fo</code>. Usá el que muestra <b>Database</b>.</li>
+        <li>La URL que muestra Render empieza con <code>postgresql://</code> y trae usuario y clave: no sirve tal cual para JDBC. Por eso se arma a mano y el usuario y la clave van en variables aparte.</li>
+        <li>El host <strong>interno</strong> solo se alcanza desde servicios de Render de la misma región: es el recomendado. Desde tu PC se usa la URL <strong>externa</strong>, que exige <code>sslmode=require</code>.</li>
+              </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 3 · Render, paso 3 de 4</span><span class="objpill">Consigna 7.2</span></div>
+  <h2>Leer el despliegue: de Failed a Live</h2>
+  <div class="body-grid">
+    <div class="col">
+      <div class="evidence">
+        <span class="tag">Servicio → Deploys → el despliegue</span>
+        <code>Status    Deploy succeeded | Live
+Duration  2m57s
+Trigger   Manually deployed by you via Dashboard
+Source    b356cba   <span class="tok-m">// el commit que quedó en línea</span></code>
+      </div>
+      <div class="evidence">
+        <span class="tag">Final del log (más arriba: Flyway y el arranque)</span>
+        <code>==> Your service is live
+==> Available at your primary URL
+    https://TU-SERVICIO.onrender.com</code>
+      </div>
+    </div>
+    <div class="col theory">
+      <table>
+        <tr><th>Qué ves</th><th>Qué significa o qué mirar</th></tr>
+        <tr><td><b>Failed deploy</b> recién creado el Blueprint</td><td>Esperado: falta la <code>DB_URL</code> real</td></tr>
+        <tr><td>Falla el build</td><td>Log de construcción: no compila o Java distinto</td></tr>
+        <tr><td>Arranca y cae enseguida</td><td>Primer error del log: <code>DB_URL</code> mal escrita o conexión rechazada</td></tr>
+        <tr><td>Cae en la migración</td><td>Log de Flyway: SQL inválido o migración editada</td></tr>
+      </table>
+      <ul>
+        <li><b>Trigger</b> dice quién pidió el despliegue: <em>Manually deployed</em> es un clic tuyo; en el automático lo dispara un commit. <b>Source</b> es el commit que quedó en línea.</li>
+        <li><strong>Plan gratuito</strong>: la app se apaga tras 15 minutos sin tráfico (la primera respuesta tarda cerca de un minuto) y la base expira a los 30 días.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 3 · Render, paso 4 de 4</span><span class="objpill">Consigna 7.2</span></div>
+  <h2>Probar la API desplegada: curl y Swagger</h2>
+  <div class="body-grid">
+    <div class="col">
+      <div class="evidence">
+        <span class="tag">Desde la terminal · en PowerShell: curl.exe -i URL</span>
+        <code class="http-2xx">GET /health                       → 200</code>
+        <code class="http-400">GET /                             → 401</code>
+        <code class="http-2xx">GET /api/productos                → 200</code>
+        <code class="http-400">GET /api/listas (sin token)       → 401</code>
+        <code class="http-2xx">GET /api/listas (token válido)    → 200</code>
+      </div>
+      <div class="theory"><ul>
+        <li><strong>El 401 en la raíz no es una falla</strong>: <code>SecurityConfig</code> solo deja públicas <code>/api/auth/**</code>, <code>/api/productos/**</code>, <code>/health</code>, <code>/ping</code> y Swagger. Todo lo demás pide token.</li>
+        <li><b>Probalo ahora</b> (servicio de la cátedra; si estaba dormido, tarda cerca de un minuto): <a href="https://web2-demo.onrender.com/health" target="_blank" rel="noopener">/health</a> · <a href="https://web2-demo.onrender.com/api/productos" target="_blank" rel="noopener">/api/productos</a> · <a href="https://web2-demo.onrender.com/api/listas" target="_blank" rel="noopener">/api/listas</a> (da 401: es lo correcto).</li>
+      </ul></div>
+    </div>
+    <ol class="steps-list">
+      <li><span><b>Swagger</b>: abrí <a href="https://web2-demo.onrender.com/swagger-ui/index.html" target="_blank" rel="noopener">web2-demo.onrender.com/swagger-ui/index.html</a> (en tu servicio, cambiá el nombre). Ojo: <code>/swagger-ui.html</code> no está abierta y da 401.</span></li>
+      <li><span><code>POST /api/auth/registro</code> → <b>Try it out</b> → cuerpo con <code>email</code> y <code>password</code> (8 caracteres o más) → <b>Execute</b>.</span></li>
+      <li><span><code>POST /api/auth/login</code> con el mismo cuerpo. Copiá el <code>token</code> de la respuesta.</span></li>
+      <li><span>Botón <b>Authorize</b> (el candado): pegá el token <b>sin</b> la palabra <code>Bearer</code>.</span></li>
+      <li><span><code>POST /api/listas</code> con un <code>nombre</code> y después <code>GET /api/listas</code>: responden sin 401. La lista quedó guardada en PostgreSQL.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 4 · Prueba integral en vivo</span><span class="objpill">Cierre de la clase</span></div>
+  <h2>Qué vamos a mostrar, en tres actos</h2>
+  <table>
+    <tr><th>Acto</th><th>Qué hacemos</th><th>Dónde se ve</th></tr>
+    <tr><td><b>1 · El cambio</b></td><td>Agregamos <code>version</code> a <code>/health</code> y una prueba unitaria que lo comprueba</td><td>Editor y terminal</td></tr>
+    <tr><td><b>2 · El CI</b></td><td><code>git push</code> a <code>main</code> y seguimos la ejecución</td><td>GitHub → Actions</td></tr>
+    <tr><td><b>3 · Render</b></td><td>Aparece un despliegue nuevo, disparado por el commit, y probamos la URL pública</td><td>Render → Deploys, y el navegador</td></tr>
+    <tr><td><b>Variante roja</b></td><td>Rompemos la prueba a propósito: el CI se pone rojo y Render <strong>no</strong> publica. Revertimos</td><td>Actions y Deploys</td></tr>
+  </table>
+  <p class="lead">Resultado esperado: <code>/health</code> pasa de <code>{"status":"ok","service":"demo"}</code> a incluir también <code>"version":"v2"</code>, sin que nadie toque Render.</p>
+  <p class="closing-note"><strong>Antes de empezar</strong>: repo actualizado (<i>Fetch origin</i> / <i>Pull</i>), servicio <b>Live</b> en Render y tres pestañas abiertas: el editor, <b>Actions</b> y <b>Deploys</b>. Tiempos de referencia: el CI tarda un par de minutos y el primer despliegue nuestro tardó 2 min 57 s.</p>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 4 · Prueba integral en vivo</span><span class="objpill">Acto 1 de 3</span></div>
+  <h2>Acto 1: hacer el cambio en el repo</h2>
+  <div class="body-grid">
+    <pre><code><span class="tok-m">// HealthController.health(): una línea nueva</span>
+response.put(<span class="tok-s">"status"</span>, <span class="tok-s">"ok"</span>);
+response.put(<span class="tok-s">"service"</span>, <span class="tok-s">"demo"</span>);
+response.put(<span class="tok-s">"version"</span>, <span class="tok-s">"v2"</span>);   <span class="tok-m">// nuevo</span>
+
+<span class="tok-m">// src/test/java/.../controller/HealthControllerTest.java (nueva)</span>
+<span class="tok-k">class</span> HealthControllerTest {
+
+    <span class="tok-t">@Test</span>
+    <span class="tok-k">void</span> health_devuelveStatusServiceYVersion() {
+        Map&lt;<span class="tok-k">String</span>, <span class="tok-k">String</span>&gt; respuesta = <span class="tok-k">new</span> HealthController().health();
+
+        assertThat(respuesta)
+            .containsEntry(<span class="tok-s">"status"</span>, <span class="tok-s">"ok"</span>)
+            .containsEntry(<span class="tok-s">"service"</span>, <span class="tok-s">"demo"</span>)
+            .containsEntry(<span class="tok-s">"version"</span>, <span class="tok-s">"v2"</span>);
+    }
+}</code></pre>
+    <div class="col">
+      <ol class="steps-list">
+        <li><span><b>Editá</b> <code>HealthController</code> y agregá el campo <code>version</code>.</span></li>
+        <li><span><b>Creá</b> <code>HealthControllerTest</code> en <code>src/test/java</code>, en el mismo paquete. Es una unitaria: sin Spring ni Docker.</span></li>
+        <li><span><b>Probala</b> en tu máquina: <code>./mvnw clean test</code> → <code>Tests run: 30</code> y <code>BUILD SUCCESS</code>.</span></li>
+        <li><span><b>Commit y push a <code>main</code></b>: en GitHub Desktop, <i>Commit to main</i> y después <i>Push origin</i>.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 4 · Prueba integral en vivo</span><span class="objpill">Acto 2 de 3</span></div>
+  <h2>Acto 2: ver el CI en GitHub</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span>En GitHub → pestaña <b>Actions</b>: hay una ejecución nueva con el mensaje de tu commit, en <b>amarillo</b> (en curso).</span></li>
+      <li><span>Entrá → job <b>Compilar y probar</b>: los pasos <b>2 · Pruebas unitarias</b> y <b>3 · Pruebas de integración y cobertura</b> se ponen en verde uno tras otro. En el segundo aparece <code>ListaControllerIT</code>.</span></li>
+      <li><span>Termina en <b>verde</b> ✓. El resumen muestra el <b>total de cobertura</b> y, abajo, en <b>Artifacts</b>, queda <code>reporte-de-cobertura</code>.</span></li>
+      <li><span>Ese ✓ es la señal que <b>Render está esperando</b>.</span></li>
+    </ol>
+    <div class="col">
+      <div class="evidence">
+        <span class="tag">En el registro del paso 3 (./mvnw verify)</span>
+        <code class="http-2xx">Tests run: 30, Failures: 0, Errors: 0   <span class="tok-m">// unitarias</span>
+Tests run: 10, Failures: 0, Errors: 0   <span class="tok-m">// integración</span>
+BUILD SUCCESS</code>
+      </div>
+      <div class="theory"><ul>
+        <li>Pasa lo mismo que en tu máquina, pero en un entorno limpio y sin tu PostgreSQL local.</li>
+        <li>Si algo se pone rojo, abrí el paso con ✗: ahí está la prueba que falló.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 4 · Prueba integral en vivo</span><span class="objpill">Acto 3 de 3</span></div>
+  <h2>Acto 3: ver el cambio en Render</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span>En Render → <b>web2-demo</b> → <b>Deploys</b>: aparece un despliegue nuevo en curso. Su <b>Trigger</b> es el commit, no <em>Manually deployed</em>.</span></li>
+      <li><span>Abrí <b>Logs</b>: se construye la imagen, arranca Spring Boot y, al final, <code>Your service is live</code>.</span></li>
+      <li><span>Estado <b>Live</b>: <b>Source</b> muestra el commit que acabás de subir.</span></li>
+      <li><span><b>Probá</b> la URL pública: <code>/health</code> ahora devuelve también <code>version</code>.</span></li>
+    </ol>
+    <div class="col">
+      <div class="evidence">
+        <span class="tag">GET /health</span>
+        <code>Antes   {"status":"ok","service":"demo"}
+<span class="http-2xx">Ahora   {"status":"ok","service":"demo","version":"v2"}</span></code>
+      </div>
+      <div class="theory"><ul>
+        <li><strong>Nadie tocó Render</strong>: se enteró del commit por GitHub y esperó el chequeo en verde.</li>
+        <li>Probalo ahora: <a href="https://web2-demo.onrender.com/health" target="_blank" rel="noopener">web2-demo.onrender.com/health</a> (servicio de la cátedra; si estaba dormido, tarda cerca de un minuto).</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Bloque 4 · Prueba integral en vivo</span><span class="objpill">Variante roja</span></div>
+  <h2>Si una prueba falla, no se publica</h2>
+  <div class="body-grid">
+    <ol class="steps-list">
+      <li><span><b>Rompé una prueba</b>: en <code>HealthControllerTest</code> cambiá <code>"v2"</code> por <code>"v3"</code>. No toques el controlador.</span></li>
+      <li><span><b>Commit y push</b> a <code>main</code> → en <b>Actions</b>: ✗ <b>rojo</b>, con <code>HealthControllerTest</code> en el registro.</span></li>
+      <li><span>En Render → <b>Deploys</b>: <b>no</b> aparece un despliegue nuevo. La versión anterior sigue <b>Live</b>.</span></li>
+      <li><span><b>Revertí</b> el commit y subilo → <b>verde</b> → Render vuelve a desplegar.</span></li>
+    </ol>
+    <div class="col">
+      <div class="evidence">
+        <span class="tag">autoDeployTrigger: checksPass</span>
+        <code><span class="http-400">✗ CI rojo</span>    → Render no despliega
+<span class="http-2xx">✓ CI verde</span>   → Render despliega</code>
+      </div>
+      <div class="theory"><ul>
+        <li>Es la razón de ser del pipeline: <strong>lo que se publica es lo que pasó las pruebas</strong>.</li>
+        <li>Es también la consigna 6.2: confirmar que el workflow falla al romper un test y vuelve a pasar al arreglarlo.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Cierre · Entrega del TP3</span><span class="objpill">Evidencia esperada</span></div>
+  <h2>Qué entregás y de dónde lo sacás</h2>
+  <table>
+    <tr><th>Evidencia</th><th>De dónde sale</th></tr>
+    <tr><td>Suite en verde, local y en CI</td><td><code>./mvnw clean verify</code> y la pestaña <b>Actions</b></td></tr>
+    <tr><td>Link a una corrida exitosa del workflow</td><td>Actions → la ejecución con ✓ → copiar la URL</td></tr>
+    <tr><td>URL pública y <code>GET /health</code> con <code>200</code></td><td>Navegador o <code>curl.exe -i URL/health</code></td></tr>
+    <tr><td>Endpoint protegido: <code>401</code> sin token y <code>200</code> con token</td><td>Swagger (<b>Authorize</b>) o <code>curl.exe</code></td></tr>
+    <tr><td>Migraciones corridas en la base remota y servicio sin errores</td><td>Render → <b>Logs</b> (líneas de Flyway y <code>Your service is live</code>)</td></tr>
+    <tr><td><code>README</code> actualizado</td><td>Cómo correr los tests, cómo leer el CI, los pasos de despliegue y dónde vive la autorización</td></tr>
+  </table>
+  <p class="closing-note">Teoría de apoyo: unidad 3 del sitio de la materia, apuntes <em>Pruebas e integración continua</em> y <em>Despliegue y diagnóstico</em>.</p>
+</section>
+
+<section class="slide">
+  <div class="eyebrow-row"><span class="eyebrow">Anexo · alternativa</span><span class="objpill">Opcional</span></div>
+  <h2>checksPass o deploy hook: dos formas de lo mismo</h2>
+  <div class="body-grid">
+    <pre><code><span class="tok-k">  desplegar</span>:
+<span class="tok-k">    needs</span>: verificar
+<span class="tok-k">    if</span>: github.ref == <span class="tok-s">'refs/heads/main'</span> &amp;&amp; github.event_name == <span class="tok-s">'push'</span>
+<span class="tok-k">    runs-on</span>: ubuntu-latest
+<span class="tok-k">    steps</span>:
+<span class="tok-k">      - name</span>: Pedir el despliegue a Render
+<span class="tok-k">        run</span>: curl --fail -X POST <span class="tok-s">"${{ secrets.RENDER_DEPLOY_HOOK_URL }}"</span></code></pre>
+    <div class="col theory">
+      <table style="table-layout:fixed">
+        <tr><th></th><th><code>checksPass</code></th><th>Deploy hook</th></tr>
+        <tr><td>Dónde vive la regla</td><td>En <code>render.yaml</code></td><td>En el workflow (<code>needs</code> + <code>if</code>)</td></tr>
+        <tr><td>Secretos extra</td><td>Ninguno</td><td><code>RENDER_DEPLOY_HOOK_URL</code></td></tr>
+        <tr><td><code>autoDeployTrigger</code></td><td><code>checksPass</code></td><td><code>off</code></td></tr>
+        <tr><td>Se ve en</td><td>Panel de Render</td><td>La pestaña Actions</td></tr>
+      </table>
+      <ul>
+        <li>El <strong>deploy hook</strong> es una URL secreta del servicio (<strong>Settings</strong>): un <code>POST</code> inicia el despliegue.</li>
+        <li>Con el hook, <code>needs: verificar</code> garantiza el orden y <code>if</code> limita el despliegue a <code>main</code>. Hay que dejar <code>autoDeployTrigger: off</code> para no desplegar dos veces.</li>
+        <li>Nosotros usamos <code>checksPass</code>: hay menos que configurar y la plataforma ya sabe leer el chequeo de GitHub.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  <div class="chrome-bottom">
+    <button class="navbtn" id="tp3ci-prev" aria-label="Diapositiva anterior">‹</button>
+    <div class="counter"><b id="tp3ci-cur">1</b> / <span id="tp3ci-total">36</span></div>
+    <button class="navbtn" id="tp3ci-next" aria-label="Diapositiva siguiente">›</button>
+  </div>
+</div>
+</div><script type="module">(function(){var e=document.getElementById(`tp3ci-deck`),t=Array.prototype.slice.call(e.querySelectorAll(`.slide`)),n=t.length,r=0,i=document.getElementById(`tp3ci-progress`),a=document.getElementById(`tp3ci-cur`),o=document.getElementById(`tp3ci-total`);o.textContent=n;function s(){t.forEach(function(e,t){e.classList.toggle(`active`,t===r)}),a.textContent=r+1,i.style.width=(r+1)/n*100+`%`,t[r].scrollTop=0}function c(e){r=Math.max(0,Math.min(n-1,r+e)),s()}document.getElementById(`tp3ci-prev`).addEventListener(`click`,function(){c(-1)}),document.getElementById(`tp3ci-next`).addEventListener(`click`,function(){c(1)}),e.addEventListener(`keydown`,function(e){(e.key===`ArrowRight`||e.key===` `||e.key===`PageDown`)&&(e.preventDefault(),c(1)),(e.key===`ArrowLeft`||e.key===`PageUp`)&&(e.preventDefault(),c(-1))}),s()})();</script>
+<p><em>Usá las flechas ‹ › (hacé clic en la diapositiva primero para que capture el teclado) o las teclas de flecha para navegar.</em></p></div><footer class="sl-flex astro-xhxjzfa7"><div class="meta sl-flex astro-xhxjzfa7"></div><div class="pagination-links print:hidden astro-jgq3vlii" dir="ltr"></div></footer></div></div></main></div></div></div></div></body></html>
