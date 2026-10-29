@@ -67,6 +67,8 @@ La autorización por propiedad vive en `ListaServiceImpl.buscarAutorizada`, comp
 
 Swagger incluye el esquema `bearerAuth`, el botón Authorize, endpoints auth y respuestas 401/403. Pegá el JWT sin el prefijo Bearer en Authorize.
 
+[Guía paso a paso para probar en Swagger y defender el TP3](docs/GUIA-DEFENSA-TP3.md), incluida la condición de alojamiento gratuito y la diferencia con el despliegue elegido.
+
 ## Migraciones y datos previos
 
 V1–V4 permanecen intactas. V5 crea `usuarios`; V6 agrega la FK de usuario a listas y su índice. Las listas de TP2 se conservan con `usuario_id = NULL` y solo ADMIN puede acceder a ellas. Cualquier asignación posterior de esas listas debe ser una decisión explícita del operador. No se borran ni se reasignan datos existentes automáticamente.
