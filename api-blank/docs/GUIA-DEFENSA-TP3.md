@@ -8,14 +8,14 @@ La [consigna relevada y guardada en el repositorio](../../TP3-consigna.md), secc
 
 Por lo tanto, **sí hay una condición explícita de gratuidad**. Render es un ejemplo; no exige una cuenta de Render en particular. [Fuente original](https://unvime-web-2.matiendres.workers.dev/practicos/tp3/). La página original no pudo consultarse de nuevo con el navegador de búsqueda al preparar este informe; la cita procede de la copia guardada durante el relevamiento.
 
-Se eligió Cloudflare Containers después de que el usuario indicara que ya tenía Workers Paid. La API Java está en ese producto y PostgreSQL en el equipo remoto del usuario. **Tener una suscripción paga previamente no convierte esta solución en un proveedor gratuito**. El funcionamiento técnico está demostrado, pero este punto requiere aceptación de la cátedra o una experiencia adicional de despliegue en un proveedor gratuito que cumpla la condición. No se realizó esa experiencia adicional. Tampoco se afirma que el despliegue actual sea gratuito o no genere consumo adicional.
+Se eligió primero Cloudflare Containers después de que el usuario indicara que ya tenía Workers Paid. **Tener una suscripción paga previamente no convierte esa solución en un proveedor gratuito**. Luego se agregó una [segunda publicación en Vercel Hobby](../../deployment/vercel/README.md), conservando Cloudflare: el plan gratuito se confirmó por API y el recorrido público de registro, login y permisos pasó. PostgreSQL sigue en el equipo del usuario mediante Tunnel; no es una base administrada contratada en Vercel. Para defender la gratuidad del alojamiento se presenta la evidencia de Vercel, no el plan pago de Cloudflare.
 
 La consigna permite apagar el despliegue después de obtener evidencia. No se modificó el alojamiento al redactar este informe.
 
 ## 2. Preparar la demostración
 
 1. Asegurarse de que el equipo que aloja PostgreSQL esté encendido, conectado y con PostgreSQL y `web2-tp3-tunnel.service` activos.
-2. Abrir [Swagger público](https://web2-practica-tp3.nicotrib699.workers.dev/swagger-ui/index.html).
+2. Abrir [Swagger en Vercel Hobby](https://web2-practica-tp3.vercel.app/swagger-ui/index.html), o el [Swagger conservado en Cloudflare](https://web2-practica-tp3.nicotrib699.workers.dev/swagger-ui/index.html). Completar el recorrido en una misma URL: las dos publicaciones usan claves de firma distintas y sus tokens no son intercambiables.
 3. Esperar el arranque si el contenedor estaba dormido. No confundir una demora inicial con un error de permisos.
 4. En cada operación: abrirla, pulsar **Try it out**, completar los campos y pulsar **Execute**.
 5. Leer **Server response → Code y Response body**. La tabla de respuestas documentadas y `Example Value` no demuestran una ejecución real.
@@ -169,4 +169,4 @@ Hay dos credenciales distintas: el **JWT del usuario** controla el acceso a list
 
 La verificación anterior registró **58 unitarias, 24 integraciones y 5 pruebas del Worker: 87 en total**, con [CI final exitoso](https://github.com/Niquinhoo/Web2Practica/actions/runs/40820858514). El [informe de evidencia](EVIDENCIA-TP3.md) incluye capturas y resultados HTTP públicos. Este documento no agrega una nueva ejecución de esas pruebas.
 
-No hay refresh tokens ni revocación inmediata de JWT; una modificación de rol no invalida los tokens ya emitidos. La disponibilidad depende del equipo remoto y del Tunnel; el token de Access se emitió con 30 días de vigencia y requiere renovación. El alojamiento elegido usa Workers Paid y queda pendiente la aceptación académica de esa diferencia con el requisito gratuito.
+No hay refresh tokens ni revocación inmediata de JWT; una modificación de rol no invalida los tokens ya emitidos. La disponibilidad depende del equipo remoto y del Tunnel; el token de Access se emitió con 30 días de vigencia y requiere renovación. Cloudflare usa Workers Paid; la segunda publicación documentada en Vercel usa Hobby gratuito con PostgreSQL propio.

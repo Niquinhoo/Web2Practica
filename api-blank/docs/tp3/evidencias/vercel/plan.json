@@ -1,0 +1,8 @@
+{
+  "fechaUtc": "2026-10-29T05:18:51.8682883Z",
+  "equipo": "niquinhoos-projects",
+  "plan": "hobby",
+  "estado": "active",
+  "trial": null,
+  "fuente": "Vercel API GET /v2/teams/{teamId} mediante CLI autenticado"
+}

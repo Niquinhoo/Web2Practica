@@ -1,0 +1,13 @@
+{
+  "url": "https://web2-practica-tp3.vercel.app",
+  "fechaUtc": "2026-10-29T05:23:12.7139122Z",
+  "health": 200,
+  "sinToken": 401,
+  "registro": 201,
+  "login": 200,
+  "listaPropia": 200,
+  "listaAjena": 403,
+  "favoritoAjeno": 403,
+  "limpiezaRecursos": 204,
+  "usuariosDePrueba": "tp3-smoke-c0a567a439834755ab09c6b1604c59fd-*"
+}

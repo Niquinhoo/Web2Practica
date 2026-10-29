@@ -1,0 +1,22 @@
+{
+  "fechaUtc": "2026-10-29T05:25:27.071Z",
+  "deploymentId": "dpl_BBn32Wt21tKgCn6NpCJLgRa6ythP",
+  "sourceCommit": "9c8be6510b5b45423a982cbb025445aad021eb58",
+  "region": "gru1",
+  "postgresVersionObservada": "18.6",
+  "flywayVersionObservada": 6,
+  "flywayMensaje": "Current version of schema public: 6",
+  "arranquesSpringSegundosObservados": [13.32, 13.398, 13.36, 14.335, 15.298],
+  "consultaErrores": {
+    "desdeUtc": "2026-10-29T05:10:27.071Z",
+    "hastaUtc": "2026-10-29T05:25:27.071Z",
+    "niveles": ["error", "fatal"],
+    "resultado": "Sin registros para ese despliegue y ventana"
+  },
+  "incidentePrevio": {
+    "deploymentId": "dpl_82rWSF8xBMwno1PUZH6RiJEjXEg1",
+    "resultadoHealth": 500,
+    "causaObservada": "Timeout de arranque de aproximadamente 28 segundos antes de escuchar en 8080",
+    "ajuste": "JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1; region gru1"
+  }
+}

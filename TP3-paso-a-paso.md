@@ -84,3 +84,9 @@ Se probaron health, registro, login, accesos propios y ajenos desde la URL públ
 ```
 
 Las capturas, resultados y enlaces están en [EVIDENCIA-TP3](api-blank/docs/EVIDENCIA-TP3.md). No se agregaron refresh tokens, OAuth/OIDC, revocación inmediata ni el umbral opcional de JaCoCo.
+
+## 11. Agregar la experiencia de alojamiento gratuito
+
+Se conservó Cloudflare y se publicó también la misma imagen en Vercel Hobby. El plan se verificó por API, sin trial ni cambio a un plan pago. PostgreSQL continúa en el equipo remoto por el mismo Tunnel, con una clave JWT distinta para cada publicación.
+
+El primer arranque superó el timeout observado de Vercel. Se configuró `JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1` y región `gru1` para reducir la latencia hacia la base. Los arranques observados quedaron en 13–15 segundos y el smoke HTTP completo pasó en la URL pública. [Pasos, configuración, incidentes y evidencia](deployment/vercel/README.md). [Guía para probar y defender desde Swagger](api-blank/docs/GUIA-DEFENSA-TP3.md).

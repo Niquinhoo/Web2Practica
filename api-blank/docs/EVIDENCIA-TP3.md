@@ -54,6 +54,14 @@ El script crea dos usuarios con identificadores únicos y contraseñas aleatoria
 
 El primer intento de despliegue detectó que esta cuenta exige la política `durable-object`. Se reemplazó el helper anterior por la API nativa de Durable Objects, usando un único nombre de instancia, readiness compartido entre solicitudes y timeout para el arranque de la JVM. La aplicación publicada conservó Java/Spring y el PostgreSQL remoto. Los secretos no están incluidos en el repositorio.
 
-## Límites conocidos
+## Segundo despliegue gratuito: Vercel Hobby
 
-JWT sin revocación inmediata: cambio de rol o baja de cuenta no invalida tokens ya emitidos hasta su vencimiento. Las listas legadas sin dueño solo son accesibles para ADMIN. La disponibilidad de PostgreSQL depende de que el equipo remoto y su Tunnel estén encendidos. Cloudflare Containers usa Workers Paid por elección del usuario; revisar con la cátedra la condición de proveedor gratuito. No se agregaron refresh tokens, OAuth ni un umbral opcional de JaCoCo.
+El 29 de octubre se publicó además la misma API Java en [Vercel](https://web2-practica-tp3.vercel.app/health), con [Swagger propio](https://web2-practica-tp3.vercel.app/swagger-ui/index.html), sin retirar Cloudflare. La [consulta de plan](tp3/evidencias/vercel/plan.json) confirmó `hobby`, activo y sin trial. PostgreSQL sigue en el equipo del usuario y se alcanza por Access/Tunnel; no se contrató una base administrada en Vercel.
+
+La [guía reproducible](../../deployment/vercel/README.md) documenta creación del proyecto, secretos, publicación manual desde `tp3`, el timeout del primer intento y su resolución con ajuste de JVM y región `gru1`. Despliegue verificado: `dpl_BBn32Wt21tKgCn6NpCJLgRa6ythP`, fuente `9c8be6510b5b45423a982cbb025445aad021eb58`. Los [logs resumidos](tp3/evidencias/vercel/runtime.json) muestran PostgreSQL 18.6, esquema v6 y arranques de Spring de 13–15 segundos; la consulta de error/fatal para ese despliegue no devolvió registros en la ventana indicada.
+
+Se ejecutó nuevamente el [smoke HTTP completo en Vercel](tp3/evidencias/vercel/http-publico.json): health 200, sin token 401, registro 201, login 200, lista propia 200, lista/favorito ajenos 403 y limpieza 204. Capturas reales: [health](tp3/evidencias/vercel/health-200.jpg), [401 sin JWT](tp3/evidencias/vercel/listas-401.jpg), [200 con JWT](tp3/evidencias/vercel/listas-200.jpg). El cambio no modifica código Java ni la imagen de Cloudflare.
+
+## Límites de ambos despliegues
+
+JWT sin revocación inmediata: cambio de rol o baja de cuenta no invalida tokens ya emitidos hasta su vencimiento. Las listas legadas sin dueño solo son accesibles para ADMIN. La disponibilidad de PostgreSQL depende de que el equipo remoto y su Tunnel estén encendidos. Cloudflare Containers conserva Workers Paid; Vercel Hobby aporta la experiencia adicional de alojamiento gratuito, con cuotas y runtime de contenedores beta. No se agregaron refresh tokens, OAuth ni un umbral opcional de JaCoCo. No se realizaron pruebas de carga.

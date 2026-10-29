@@ -92,4 +92,6 @@ Ver [matriz de pruebas y evidencia](docs/EVIDENCIA-TP3.md). Reportes: `target/su
 
 [Despliegue Cloudflare Containers, secretos, túnel y diagnóstico](../deployment/cloudflare/README.md). La imagen ejecuta con usuario sin privilegios. La publicación se realiza con `cf deploy` después de comprobar CI en verde; las credenciales de la aplicación se cargan como secretos del Worker.
 
+[Segundo despliegue Vercel Hobby con la misma base por Tunnel](../deployment/vercel/README.md): plan gratuito confirmado, pasos, ajuste de JVM y evidencia HTTP. [Swagger en Vercel](https://web2-practica-tp3.vercel.app/swagger-ui/index.html). Cloudflare se conserva.
+
 Documentación histórica: [TP1](docs/EVIDENCIA-TP1.md), [TP2](docs/EVIDENCIA-TP2.md).
