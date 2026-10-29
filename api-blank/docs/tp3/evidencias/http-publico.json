@@ -1,0 +1,13 @@
+{
+  "url": "https://web2-practica-tp3.nicotrib699.workers.dev",
+  "fechaUtc": "2026-10-29T04:36:18.5742445Z",
+  "health": 200,
+  "sinToken": 401,
+  "registro": 201,
+  "login": 200,
+  "listaPropia": 200,
+  "listaAjena": 403,
+  "favoritoAjeno": 403,
+  "limpiezaRecursos": 204,
+  "usuariosDePrueba": "tp3-smoke-478602d91b5541ed83ceb67de33d77f3-*"
+}

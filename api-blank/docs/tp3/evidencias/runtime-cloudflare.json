@@ -1,0 +1,10 @@
+{
+  "worker": "web2-practica-tp3",
+  "eventosRevisados": 62,
+  "niveles": {
+    "info": 62
+  },
+  "resultados": {
+    "ok": 62
+  }
+}

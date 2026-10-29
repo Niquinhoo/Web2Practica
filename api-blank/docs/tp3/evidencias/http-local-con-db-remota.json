@@ -1,0 +1,13 @@
+{
+  "url": "http://127.0.0.1:18080",
+  "fechaUtc": "2026-10-29T04:21:46.8860544Z",
+  "health": 200,
+  "sinToken": 401,
+  "registro": 201,
+  "login": 200,
+  "listaPropia": 200,
+  "listaAjena": 403,
+  "favoritoAjeno": 403,
+  "limpiezaRecursos": 204,
+  "usuariosDePrueba": "tp3-smoke-86e254fd3e1f49b89ce659afe44077f0-*"
+}

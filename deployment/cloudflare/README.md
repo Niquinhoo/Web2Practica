@@ -30,7 +30,7 @@ npm run deploy
 
 `npm run deploy` lee `.secrets/production.json`, ignorado por Git. El archivo debe contener `DATABASE_URL`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `JWT_SECRETO`, `PG_TUNNEL_HOSTNAME`, `TUNNEL_SERVICE_TOKEN_ID` y `TUNNEL_SERVICE_TOKEN_SECRET`. Los valores se publican como secretos del Worker y se pasan al contenedor al iniciarlo. No se incluyen tokens o contraseñas en la imagen ni en la configuración versionada.
 
-`DATABASE_URL` apunta a `jdbc:postgresql://127.0.0.1:15432/webii_tp3?sslmode=disable`. El token de Access solo permite este hostname, mediante una política de tipo Service Auth. Tiene vencimiento: renovarlo o rotarlo antes de expirar y actualizar los secretos del Worker. Nunca usar una regla Bypass para esta base.
+`DATABASE_URL` apunta a `jdbc:postgresql://127.0.0.1:15432/webii_tp3?sslmode=disable`. El token de Access solo permite este hostname, mediante una política de tipo Service Auth. Se emitió con una vigencia de 30 días: renovarlo o rotarlo antes de expirar y actualizar los secretos del Worker. Nunca usar una regla Bypass para esta base.
 
 ## Verificar y diagnosticar
 

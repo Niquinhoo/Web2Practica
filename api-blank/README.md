@@ -88,6 +88,6 @@ Ver [matriz de pruebas y evidencia](docs/EVIDENCIA-TP3.md). Reportes: `target/su
 
 `.github/workflows/ci.yml` corre `./mvnw --batch-mode verify` en pushes a `tp3` y las ramas anteriores, y en pull requests. Usa Docker del runner mediante Testcontainers, sin servicio PostgreSQL redundante. Publica los reportes aun si una prueba falla. En GitHub, abrir Actions → Java CI → job → paso de Maven para encontrar la clase/aserción que falló.
 
-[Despliegue Cloudflare Containers, secretos, túnel y diagnóstico](../../deployment/cloudflare/README.md). La imagen ejecuta con usuario sin privilegios. La publicación se realiza con `cf deploy` después de comprobar CI en verde; las credenciales de la aplicación se cargan como secretos del Worker.
+[Despliegue Cloudflare Containers, secretos, túnel y diagnóstico](../deployment/cloudflare/README.md). La imagen ejecuta con usuario sin privilegios. La publicación se realiza con `cf deploy` después de comprobar CI en verde; las credenciales de la aplicación se cargan como secretos del Worker.
 
 Documentación histórica: [TP1](docs/EVIDENCIA-TP1.md), [TP2](docs/EVIDENCIA-TP2.md).
