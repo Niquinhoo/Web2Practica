@@ -16,7 +16,7 @@ class UsuarioServiceImplTest {
         var usuario = service.registrar("USER@example.com", "Una-clave-123");
         assertThat(usuario.passwordHash()).isNotEqualTo("Una-clave-123");
         assertThat(encoder.matches("Una-clave-123", usuario.passwordHash())).isTrue();
-        assertThat(usuario.rol()).isEqualTo(Rol.ADMIN); // Fallo controlado para comprobar CI; se revierte en el siguiente commit.
+        assertThat(usuario.rol()).isEqualTo(Rol.USER);
     }
     @Test void registrar_emailRepetido_noEscribe() {
         when(repository.buscarPorEmail("user@example.com")).thenReturn(Optional.of(new Usuario(1L,"user@example.com","hash",Rol.USER)));
