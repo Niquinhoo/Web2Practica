@@ -2,6 +2,8 @@
 
 Esta secuencia traduce la [consigna del TP3](./TP3-consigna.md) y los [apuntes nuevos de Unidad 3](./TP3-teoria.md) al estado actual de este repositorio.
 
+Para usar la base local ya levantada y consultar las comprobaciones realizadas, ver [PostgreSQL con Docker](./api-blank/docs/tp3/postgresql-docker.md).
+
 ## Estado inicial encontrado
 
 - La rama local `tp3` ya fue creada desde `TP2`; la página de la materia todavía anunciaba `tp3-starter` como próximo, no disponible al relevarla.
