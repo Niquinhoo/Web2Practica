@@ -52,8 +52,19 @@ class ApiIntegrationIT {
     private final JsonMapper json = JsonMapper.builder().build();
 
     @BeforeEach
-    void setup() {
-        mvc = MockMvcBuilders.webAppContextSetup(context).build();
+    void setup() throws Exception {
+        mvc = MockMvcBuilders.webAppContextSetup(context)
+                .apply(org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity()).build();
+        String email = "regresion-" + java.util.UUID.randomUUID() + "@example.com";
+        String credenciales = "{\"email\":\"" + email + "\",\"password\":\"Clave-segura-123\"}";
+        mvc.perform(post("/api/auth/registro").contentType(MediaType.APPLICATION_JSON).content(credenciales))
+                .andExpect(status().isCreated());
+        var login = mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(credenciales))
+                .andExpect(status().isOk()).andReturn();
+        String token = json.readTree(login.getResponse().getContentAsString()).get("token").asString();
+        mvc = MockMvcBuilders.webAppContextSetup(context)
+                .apply(org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity())
+                .defaultRequest(get("/").header("Authorization", "Bearer " + token)).build();
     }
 
     private long crearLista(String nombre) throws Exception {

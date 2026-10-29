@@ -31,7 +31,9 @@ public class ApiConfig {
 
     @Bean
     OpenAPI openAPI() {
-        return new OpenAPI().info(new Info().title("TP2 · Productos, favoritos y listas").version("2.0.0")
+        return new OpenAPI().components(new io.swagger.v3.oas.models.Components().addSecuritySchemes("bearerAuth",
+                new io.swagger.v3.oas.models.security.SecurityScheme().type(io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP)
+                        .scheme("bearer").bearerFormat("JWT"))).info(new Info().title("TP3 · Autenticación, listas y favoritos").version("3.0.0")
                 .description("Catálogo de DummyJSON de solo lectura. Favoritos y listas persistidos "
                         + "en PostgreSQL, migraciones Flyway y movimiento transaccional de favoritos."));
     }

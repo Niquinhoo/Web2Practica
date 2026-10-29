@@ -12,7 +12,7 @@
 	<artifactId>api-blank</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>api-blank</name>
-	<description>TP2: Productos, favoritos y listas con PostgreSQL y Flyway para Web II</description>
+	<description>TP3: Productos, favoritos y listas con PostgreSQL y Flyway para Web II</description>
 	<url>https://github.com/Niquinhoo/Web2Practica/tree/main/api-blank</url>
 	<licenses>
 		<license/>
@@ -30,6 +30,13 @@
 		<java.version>25</java.version>
 	</properties>
 	<dependencies>
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-security</artifactId></dependency>
+        <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-oauth2-resource-server</artifactId></dependency>
+        <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-oauth2-jose</artifactId></dependency>
+        <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-test</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.testcontainers</groupId><artifactId>testcontainers-junit-jupiter</artifactId><scope>test</scope></dependency>
+        <dependency><groupId>org.testcontainers</groupId><artifactId>testcontainers-postgresql</artifactId><scope>test</scope></dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -70,9 +77,13 @@
 
 	<build>
 		<plugins>
+            <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
+                <configuration><argLine>-Duser.timezone=UTC</argLine></configuration>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
+                <configuration><argLine>-Duser.timezone=UTC</argLine></configuration>
 				<executions>
 					<execution>
 						<goals><goal>integration-test</goal><goal>verify</goal></goals>

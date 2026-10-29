@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "@cloudflare/containers": "0.3.7",
+    "@cloudflare/workers-types": "5.20261029.1",
+    "cf": "1.0.0-beta.25",
+    "typescript": "7.0.2"
+  },
+  "name": "web2-practica-tp3-deploy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "build": "cf deploy --dry-run",
+    "deploy": "cf deploy --secrets-file .secrets/production.json"
+  },
+  "engines": {
+    "node": ">=24.22.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "2.0.0-beta.v.7",
+    "vite": "8.3.5"
+  }
+}

@@ -25,6 +25,10 @@ public class FavoritoRepositoryAdapter implements FavoritoRepository {
         return repository.findAll(Sort.by("id")).stream().map(this::dominio).toList();
     }
 
+    public List<Favorito> buscarPorUsuarioId(Long usuarioId) {
+        return repository.findByLista_Usuario_IdOrderByIdAsc(usuarioId).stream().map(this::dominio).toList();
+    }
+
     public Optional<Favorito> buscarPorId(Long id) {
         return repository.findById(id).map(this::dominio);
     }

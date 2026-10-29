@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface FavoritoJpaRepository extends JpaRepository<FavoritoEntity, Long> {
+    List<FavoritoEntity> findByLista_Usuario_IdOrderByIdAsc(Long usuarioId);
     List<FavoritoEntity> findByLista_IdOrderByIdAsc(Long listaId);
     boolean existsByLista_Id(Long listaId);
 

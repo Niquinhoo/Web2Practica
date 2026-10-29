@@ -9,36 +9,40 @@ import ar.edu.unvime.apiblank.favorito.FavoritoResponse;
 
 @Service
 @Transactional(readOnly = true)
-public class ListaService {
+public class ListaServiceImpl {
     private final ListaRepository repository;
     private final FavoritoRepository favoritos;
 
-    public ListaService(ListaRepository repository, FavoritoRepository favoritos) {
+    private final ar.edu.unvime.apiblank.seguridad.ContextoSeguridad seguridad;
+
+    public ListaServiceImpl(ListaRepository repository, FavoritoRepository favoritos,
+            ar.edu.unvime.apiblank.seguridad.ContextoSeguridad seguridad) {
         this.repository = repository;
         this.favoritos = favoritos;
+        this.seguridad = seguridad;
     }
 
     public List<ListaResponse> listar() {
-        return repository.buscarTodos().stream().map(this::respuesta).toList();
+        return (seguridad.esAdmin() ? repository.buscarTodos() : repository.buscarPorUsuarioId(seguridad.usuarioId())).stream().map(this::respuesta).toList();
     }
 
     public ListaResponse obtener(Long id) {
-        return respuesta(buscar(id));
+        return respuesta(buscarAutorizada(id));
     }
 
     @Transactional
     public ListaResponse crear(ListaRequest request) {
-        return respuesta(repository.crear(request.nombre().trim()));
+        return respuesta(repository.crear(request.nombre().trim(), seguridad.usuarioId()));
     }
 
     public List<FavoritoResponse> favoritos(Long id) {
-        buscar(id);
+        buscarAutorizada(id);
         return favoritos.buscarPorListaId(id).stream().map(FavoritoResponse::desde).toList();
     }
 
     @Transactional
     public void eliminar(Long id) {
-        buscar(id);
+        buscarAutorizada(id);
         if (favoritos.existenEnLista(id)) {
             throw new ConflictoException("La lista " + id + " todavía tiene favoritos");
         }
@@ -47,8 +51,8 @@ public class ListaService {
 
     @Transactional
     public void moverFavoritos(Long origenId, MoverFavoritosRequest request) {
-        buscar(origenId);
-        buscar(request.destinoId());
+        buscarAutorizada(origenId);
+        buscarAutorizada(request.destinoId());
         if (origenId.equals(request.destinoId())) {
             throw new SolicitudInvalidaException("Las listas de origen y destino deben ser distintas");
         }
@@ -56,8 +60,10 @@ public class ListaService {
         if (!repository.eliminar(origenId)) throw noEncontrada(origenId);
     }
 
-    private Lista buscar(Long id) {
-        return repository.buscarPorId(id).orElseThrow(() -> noEncontrada(id));
+    public Lista buscarAutorizada(Long id) {
+        var lista = repository.buscarPorId(id).orElseThrow(() -> noEncontrada(id));
+        seguridad.exigirPropiedad(lista.usuarioId());
+        return lista;
     }
 
     private RecursoNoEncontradoException noEncontrada(Long id) {
@@ -65,6 +71,6 @@ public class ListaService {
     }
 
     private ListaResponse respuesta(Lista lista) {
-        return new ListaResponse(lista.id(), lista.nombre());
+        return new ListaResponse(lista.id(), lista.nombre(), lista.usuarioId());
     }
 }

@@ -5,7 +5,8 @@ import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ar.edu.unvime.apiblank.lista.ListaRepository;
+import ar.edu.unvime.apiblank.lista.ListaServiceImpl;
+import ar.edu.unvime.apiblank.seguridad.ContextoSeguridad;
 import ar.edu.unvime.apiblank.error.RecursoNoEncontradoException;
 
 @Service
@@ -13,20 +14,25 @@ import ar.edu.unvime.apiblank.error.RecursoNoEncontradoException;
 public class FavoritoService {
     private final FavoritoRepository repository;
     private final Clock clock;
-    private final ListaRepository listas;
+    private final ListaServiceImpl listas;
 
-    public FavoritoService(FavoritoRepository repository, Clock clock, ListaRepository listas) {
+    private final ContextoSeguridad seguridad;
+
+    public FavoritoService(FavoritoRepository repository, Clock clock, ListaServiceImpl listas, ContextoSeguridad seguridad) {
         this.repository = repository;
         this.clock = clock;
         this.listas = listas;
+        this.seguridad = seguridad;
     }
 
     public List<FavoritoResponse> listar() {
-        return repository.buscarTodos().stream().map(this::respuesta).toList();
+        return (seguridad.esAdmin() ? repository.buscarTodos() : repository.buscarPorUsuarioId(seguridad.usuarioId())).stream().map(this::respuesta).toList();
     }
 
     public FavoritoResponse obtener(Long id) {
-        return respuesta(repository.buscarPorId(id).orElseThrow(() -> noEncontrado(id)));
+        var favorito = repository.buscarPorId(id).orElseThrow(() -> noEncontrado(id));
+        validarLista(favorito.listaId());
+        return respuesta(favorito);
     }
 
     @Transactional
@@ -45,6 +51,7 @@ public class FavoritoService {
 
     @Transactional
     public void eliminar(Long id) {
+        obtener(id);
         if (!repository.eliminar(id)) {
             throw noEncontrado(id);
         }
@@ -59,6 +66,6 @@ public class FavoritoService {
     }
 
     private void validarLista(Long id) {
-        listas.buscarPorId(id).orElseThrow(() -> new RecursoNoEncontradoException("No existe la lista " + id));
+        listas.buscarAutorizada(id);
     }
 }

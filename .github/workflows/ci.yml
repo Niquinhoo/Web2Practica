@@ -1,0 +1,37 @@
+name: Java CI
+
+on:
+  push:
+    branches: [main, TP1, TP2, tp2, tp3]
+  pull_request:
+    branches: [main, TP2, tp3]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-api-blank:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api-blank
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up Java 25
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Run unit and integration tests with Testcontainers
+        run: ./mvnw --batch-mode verify
+      - name: Publish test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            api-blank/target/surefire-reports/
+            api-blank/target/failsafe-reports/

@@ -1,51 +1,25 @@
-# Web2Practica
+# Web2Practica · TP3
 
-Repositorio para almacenar los proyectos prácticos Maven de la materia **Web II**.
+Proyecto Maven de Web II: Java 25, Spring Boot 4, PostgreSQL y Flyway, evolucionado desde `TP2` en la rama `tp3`.
 
-## Proyectos
+- [Consigna TP3](TP3-consigna.md), [teoría](TP3-teoria.md) y [plan de trabajo](TP3-paso-a-paso.md).
+- [Ejecutar API, autenticación, pruebas y variables](api-blank/README.md).
+- [Cobertura y evidencia de TP3](api-blank/docs/EVIDENCIA-TP3.md).
+- [Despliegue Cloudflare Containers y PostgreSQL por Tunnel](deployment/cloudflare/README.md).
+- [PostgreSQL local con Docker](api-blank/docs/tp3/postgresql-docker.md).
 
-| Proyecto | Descripción |
-|---|---|
-| [`api-blank`](./api-blank) | TP2: productos, favoritos y listas con PostgreSQL, JPA y Flyway; Java 25 y Spring Boot 4.1.1. Evolución del TP1 en la rama `TP2`. |
-
-Cada proyecto Maven se guarda en su propia carpeta para mantener separada la práctica del repositorio de teoría.
-
-## Requisitos generales
-
-- JDK 25.
-- Git.
-- PostgreSQL 17 (Docker Compose o instalación local).
-- Conexión a Internet para descargar dependencias de Maven la primera vez.
-
-Los proyectos incluyen Maven Wrapper, por lo que no es necesario instalar Maven globalmente.
-
-## Ejecutar `api-blank`
-
-Desde Windows PowerShell:
+Desde `api-blank`, con JDK 25 y Docker Desktop iniciado:
 
 ```powershell
-cd api-blank
-docker compose up -d --wait
-.\mvnw.cmd test
-```
-
-Para iniciar la aplicación:
-
-```powershell
+docker compose up -d --wait postgres
+$env:DATABASE_URL = 'jdbc:postgresql://127.0.0.1:55432/webii_tp2'
 .\mvnw.cmd spring-boot:run
 ```
 
-Desde Linux o macOS:
+El puerto `55432` corresponde al `.env` local documentado; el Compose usa `5432` si no se configura. La API responde en `http://localhost:8080`; Swagger está en `/swagger-ui/index.html`.
 
-```bash
-cd api-blank
-./mvnw test
-./mvnw spring-boot:run
+```powershell
+.\mvnw.cmd --batch-mode verify
 ```
 
-La aplicación queda disponible en `http://localhost:8080`.
-
-En este equipo, sin Docker: `api-blank/scripts/run-local.ps1` configura la base local y arranca
-la aplicación. Para la verificación completa, ejecutarlo con `-Verify`.
-Consultar el [README del proyecto](api-blank/README.md) para conexión, migraciones, Swagger
-y los casos de prueba del TP2.
+Las integraciones levantan un PostgreSQL temporal propio con Testcontainers; no usan la base de desarrollo. Las ramas `main`, `TP1` y `TP2` conservan sus estados anteriores.

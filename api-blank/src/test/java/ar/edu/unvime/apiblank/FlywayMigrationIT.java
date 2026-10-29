@@ -18,8 +18,14 @@ class FlywayMigrationIT {
                     + ".favoritos (producto_id, nota, fecha_alta, lista_id) VALUES (4, 'Clasificado', now(), 1)");
             var finalizada = flyway(schema, null);
             finalizada.migrate();
-            assertThat(finalizada.info().applied()).hasSize(4);
+            assertThat(finalizada.info().applied()).hasSize(6);
             assertThat(finalizada.migrate().migrationsExecuted).isZero();
+            try (var c = DriverManager.getConnection(PostgresTestDatabase.URL, PostgresTestDatabase.USER, PostgresTestDatabase.PASSWORD);
+                    var st = c.createStatement()) {
+                var legacy = st.executeQuery("SELECT count(*) FROM " + schema + ".listas WHERE usuario_id IS NULL");
+                assertThat(legacy.next()).isTrue();
+                assertThat(legacy.getInt(1)).isEqualTo(2);
+            }
             try (var connection = DriverManager.getConnection(PostgresTestDatabase.URL,
                     PostgresTestDatabase.USER, PostgresTestDatabase.PASSWORD);
                     var statement = connection.createStatement()) {

@@ -4,6 +4,8 @@ Esta secuencia traduce la [consigna del TP3](./TP3-consigna.md) y los [apuntes n
 
 Para usar la base local ya levantada y consultar las comprobaciones realizadas, ver [PostgreSQL con Docker](./api-blank/docs/tp3/postgresql-docker.md).
 
+El texto siguiente conserva el plan inicial. El estado implementado y las verificaciones están en [EVIDENCIA-TP3](api-blank/docs/EVIDENCIA-TP3.md); el despliegue elegido usa [Cloudflare Containers y Tunnel](deployment/cloudflare/README.md).
+
 ## Estado inicial encontrado
 
 - La rama local `tp3` ya fue creada desde `TP2`; la página de la materia todavía anunciaba `tp3-starter` como próximo, no disponible al relevarla.

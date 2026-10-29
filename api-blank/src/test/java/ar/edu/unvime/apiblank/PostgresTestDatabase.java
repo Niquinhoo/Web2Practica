@@ -4,12 +4,18 @@ import java.util.UUID;
 import org.springframework.test.context.DynamicPropertyRegistry;
 
 final class PostgresTestDatabase {
-    static final String URL = variable("TEST_DATABASE_URL", "jdbc:postgresql://localhost:5432/webii_tp2");
-    static final String USER = variable("TEST_DATABASE_USER", "webii_tp2");
-    static final String PASSWORD = variable("TEST_DATABASE_PASSWORD", "webii_tp2");
+    private static final org.testcontainers.postgresql.PostgreSQLContainer POSTGRES = iniciar();
+    static final String URL = POSTGRES.getJdbcUrl();
+    static final String USER = POSTGRES.getUsername();
+    static final String PASSWORD = POSTGRES.getPassword();
+    private static org.testcontainers.postgresql.PostgreSQLContainer iniciar() {
+        var postgres = new org.testcontainers.postgresql.PostgreSQLContainer("postgres:17");
+        postgres.start();
+        return postgres;
+    }
 
     static String nuevoEsquema() throws SQLException {
-        String schema = "tp2_test_" + UUID.randomUUID().toString().replace("-", "");
+        String schema = "tp3_test_" + UUID.randomUUID().toString().replace("-", "");
         ejecutar("CREATE SCHEMA " + schema);
         return schema;
     }
@@ -27,9 +33,5 @@ final class PostgresTestDatabase {
     }
     static void borrar(String schema) throws SQLException {
         ejecutar("DROP SCHEMA " + schema + " CASCADE");
-    }
-    private static String variable(String name, String defaultValue) {
-        String value = System.getenv(name);
-        return value == null || value.isBlank() ? defaultValue : value;
     }
 }

@@ -12,9 +12,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import ar.edu.unvime.apiblank.error.ApiError;
 
+@io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
+@ApiResponse(responseCode = "401", description = "Token ausente o inválido")
+@ApiResponse(responseCode = "403", description = "Recurso de otro usuario")
 @RestController
 @RequestMapping("/api/favoritos")
-@Tag(name = "Favoritos", description = "CRUD persistido en PostgreSQL; cada favorito pertenece a una lista")
+@Tag(name = "Favoritos", description = "Requiere autenticación y propiedad de la lista; ADMIN accede a todos.")
 @ApiResponse(responseCode = "409", description = "Conflicto de integridad de la lista",
         content = @Content(schema = @Schema(implementation = ApiError.class)))
 @ApiResponse(responseCode = "400", description = "Datos o ID inválidos",

@@ -6,13 +6,21 @@ import org.junit.jupiter.api.Test;
 import ar.edu.unvime.apiblank.error.*;
 import ar.edu.unvime.apiblank.favorito.FavoritoRepository;
 
-class ListaServiceTests {
+class ListaServiceImplTest {
     private final ListaRepository listas = mock(ListaRepository.class);
     private final FavoritoRepository favoritos = mock(FavoritoRepository.class);
-    private final ListaService service = new ListaService(listas, favoritos);
+    private final ar.edu.unvime.apiblank.seguridad.ContextoSeguridad seguridad = mock(ar.edu.unvime.apiblank.seguridad.ContextoSeguridad.class);
+    private final ListaServiceImpl service = new ListaServiceImpl(listas, favoritos, seguridad);
 
+    @Test
+    void crear_usuarioAutenticado_asignaPropiedad() {
+        when(seguridad.usuarioId()).thenReturn(10L);
+        when(listas.crear("Regalos", 10L)).thenReturn(new Lista(1L, "Regalos", 10L));
+        assertThat(service.crear(new ListaRequest(" Regalos ")).usuarioId()).isEqualTo(10L);
+        verify(listas).crear("Regalos", 10L);
+    }
     private void existente(Long id) {
-        when(listas.buscarPorId(id)).thenReturn(Optional.of(new Lista(id, "Lista " + id)));
+        when(listas.buscarPorId(id)).thenReturn(Optional.of(new Lista(id, "Lista " + id, 10L)));
     }
     @Test
     void noEliminaListaConFavoritos() {

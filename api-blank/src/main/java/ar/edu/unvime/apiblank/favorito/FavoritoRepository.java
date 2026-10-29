@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public interface FavoritoRepository {
     List<Favorito> buscarTodos();
+    List<Favorito> buscarPorUsuarioId(Long usuarioId);
     Optional<Favorito> buscarPorId(Long id);
     Favorito crear(Long productoId, String nota, Instant fechaAgregado, Long listaId);
     Optional<Favorito> actualizar(Long id, Long productoId, String nota, Long listaId);

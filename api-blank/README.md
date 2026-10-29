@@ -1,309 +1,93 @@
-# TP2 · Persistencia, migraciones y arquitectura hexagonal
+# API TP3 · Seguridad, pruebas e integración continua
 
-Evolución del TP1 en la rama `TP2`. API REST con Java 25, Spring Boot 4.1.1,
-Spring Data JPA/Hibernate, PostgreSQL 17, Flyway y springdoc 3.1.0.
-El catálogo de productos sigue consultando DummyJSON; solamente listas y favoritos se persisten.
+Java 25, Spring Boot 4.1.1, PostgreSQL, JPA y Flyway. El catálogo DummyJSON sigue público; listas y favoritos requieren JWT y autorización por dueño o rol `ADMIN`.
 
-[Consigna y material del TP2](docs/tp2/README.md) ·
-[Colección HTTP del TP2](docs/tp2.http) · [Evidencia de ejecución](docs/EVIDENCIA-TP2.md).
+## Ejecutar
 
-## Arranque con Docker
-
-Desde `api-blank/`, con Java 25 y Docker Compose:
+Con JDK 25 y Docker instalado, desde esta carpeta:
 
 ```powershell
-docker compose up -d --wait
-.\mvnw.cmd --batch-mode verify
+docker compose up -d --wait postgres
+$env:DATABASE_URL = 'jdbc:postgresql://127.0.0.1:55432/webii_tp2'
 .\mvnw.cmd spring-boot:run
 ```
 
-En Linux/macOS, reemplazar `.\mvnw.cmd` por `./mvnw`.
-La primera ejecución descarga dependencias Maven. La base es `webii_tp2`,
-con usuario y contraseña locales `webii_tp2`, puerto 5432.
-El contenedor usa un volumen persistente: `docker compose stop` no borra los datos.
+`55432` es el puerto configurado en el `.env` de este equipo; en un checkout nuevo se usa `5432` salvo que se configure `POSTGRES_PORT`. [Comandos y comprobaciones de PostgreSQL](docs/tp3/postgresql-docker.md).
 
-API: [http://localhost:8080](http://localhost:8080).
-[Swagger UI](http://localhost:8080/swagger-ui.html) permite probar todos los endpoints.
-[OpenAPI JSON](http://localhost:8080/v3/api-docs) y [YAML](http://localhost:8080/v3/api-docs.yaml).
+En Linux/macOS: `./mvnw spring-boot:run`. `scripts/run-local.ps1` conserva la alternativa de PostgreSQL instalado; para usarla hay que indicar los binarios y datos válidos de ese equipo. Las pruebas de integración siempre requieren Docker.
 
-Para personalizar Compose, copiar `.env.example` a `.env` y editar sus valores.
-**Spring no lee automáticamente el archivo .env**: exportar los mismos valores al proceso Java.
-Si cambia la base o el puerto, también configurar `DATABASE_URL`:
+## Variables
 
-```powershell
-$env:DATABASE_URL = 'jdbc:postgresql://localhost:5432/webii_tp2'
-$env:POSTGRES_USER = 'webii_tp2'
-$env:POSTGRES_PASSWORD = 'webii_tp2'
-.\mvnw.cmd spring-boot:run
-```
-
-## Arranque local sin Docker
-
-También sirve una instalación de PostgreSQL: crear un usuario con permiso de crear esquemas,
-crear `webii_tp2` con ese propietario y configurar las variables anteriores.
-El usuario debe poder crear tablas para que Flyway gestione el esquema.
-
-En este equipo quedaron preparados binarios de PostgreSQL 17.11 en
-`C:\Users\Public\codex-tp2-runtime\pgsql` y datos en
-`C:\Users\Public\codex-tp2-runtime\data`, escuchando en `127.0.0.1:55432`.
-El script reutiliza esa instancia, establece las variables y ejecuta Maven:
-
-```powershell
-.\scripts\run-local.ps1 -Verify
-.\scripts\run-local.ps1
-```
-
-Para usar otros binarios o un directorio de datos propio:
-
-```powershell
-.\scripts\run-local.ps1 -PostgresDirectory 'C:\postgresql\pgsql' -DataDirectory 'C:\postgresql\datos' -Port 55432
-```
-
-El script inicializa un cluster si no existe, crea `webii_tp2` si falta y deja PostgreSQL
-encendido al detener la aplicación. Acepta `-JavaDirectory` para seleccionar otro JDK 25.
-Para detener la instancia preparada en este equipo:
-
-```powershell
-& 'C:\Users\Public\codex-tp2-runtime\pgsql\bin\pg_ctl.exe' -D 'C:\Users\Public\codex-tp2-runtime\data' -w stop
-```
-
-Maven debe informar Java 25 (`.\mvnw.cmd --version`). En este equipo:
-
-```powershell
-$env:JAVA_HOME = 'C:\Program Files\Java\jdk-25.0.4'
-```
-
-Si Java muestra `Unable to establish loopback connection` y la carpeta temporal contiene
-acentos, usar una carpeta ASCII; el script local ya realiza este ajuste:
-
-```powershell
-$tp2Temp = Join-Path $env:PUBLIC 'codex-tp2-temp'
-New-Item -ItemType Directory -Force -Path $tp2Temp | Out-Null
-$env:JAVA_TOOL_OPTIONS = "$env:JAVA_TOOL_OPTIONS -Djdk.net.unixdomain.tmpdir=$tp2Temp".Trim()
-```
-
-Para ejecutar el paquete generado por `verify`:
-
-```powershell
-java -jar target/api-blank-0.0.1-SNAPSHOT.jar
-```
-
-En Windows, detener la aplicación si ejecuta ese JAR antes de volver a empaquetarlo;
-el proceso Java mantiene abierto el archivo y Maven no puede reemplazarlo.
-
-## Endpoints
-
-| Método | Ruta | Éxito | Comportamiento |
-|---|---|---|---|
-| GET | `/health` | 200 | Estado del servicio |
-| GET | `/api/productos` | 200 | Catálogo externo completo |
-| GET | `/api/productos/{id}` | 200 | Producto externo |
-| POST | `/api/favoritos` | 201 | Crear; devuelve Location |
-| GET | `/api/favoritos` | 200 | Listar por ID ascendente |
-| GET | `/api/favoritos/{id}` | 200 | Obtener favorito |
-| PUT | `/api/favoritos/{id}` | 200 | Reemplazar producto, nota y lista |
-| DELETE | `/api/favoritos/{id}` | 204 | Eliminar favorito |
-| POST | `/api/listas` | 201 | Crear; devuelve Location |
-| GET | `/api/listas` | 200 | Listar por ID ascendente |
-| GET | `/api/listas/{id}` | 200 | Obtener lista |
-| GET | `/api/listas/{id}/favoritos` | 200 | Favoritos por ID; array vacío si no tiene |
-| DELETE | `/api/listas/{id}` | 204 | Eliminar lista vacía; 409 si tiene favoritos |
-| POST | `/api/listas/{origenId}/mover-favoritos` | 204 | Mover todos al destino y eliminar origen |
-
-Crear una lista:
-
-```json
-{"nombre":"Regalos"}
-```
-
-El nombre es obligatorio, admite hasta 100 caracteres y se guarda sin espacios en los extremos.
-Se permiten nombres repetidos. El nombre “Sin clasificar” identifica la lista usada por V4,
-sin convertirla en una lista protegida: también se puede eliminar si está vacía.
-
-POST y PUT de favoritos requieren el ID de una lista existente:
-
-```json
-{"productoId":1,"nota":"Comprar para regalar","listaId":1}
-```
-
-`productoId` y `listaId` son obligatorios y positivos. La nota es opcional, admite null
-o cadena vacía y como máximo 500 caracteres. El producto se referencia por ID sin consultarlo
-al proveedor; se permiten varios favoritos sobre el mismo producto.
-
-```json
-{
-  "id":1,
-  "productoId":1,
-  "nota":"Comprar para regalar",
-  "fechaAgregado":"2026-10-06T23:00:00.123456Z",
-  "listaId":1
-}
-```
-
-El servidor genera el ID y la fecha UTC. PUT conserva ambos; omitir la nota la deja en null.
-La columna SQL se llama `fecha_alta`; el nombre público `fechaAgregado` se conserva del TP1.
-Se normaliza a microsegundos, la precisión de PostgreSQL, para que POST y GET coincidan.
-
-Mover favoritos recibe:
-
-```json
-{"destinoId":2}
-```
-
-Ambas listas deben existir (404 si alguna falta); usar la misma lista devuelve 400.
-El destino conserva sus favoritos y recibe todos los del origen, con sus IDs, notas y fechas.
-También se puede mover una lista vacía: se elimina el origen. El éxito devuelve 204 sin cuerpo.
-
-## Errores
-
-Todas las respuestas de error usan el formato del TP1:
-
-```json
-{"status":400,"mensaje":"Hay datos inválidos","campos":{"listaId":"es obligatorio"}}
-```
-
-| Código | Situación |
+| Variable | Uso |
 |---|---|
-| 400 | Validación, JSON inválido, ID de tipo incorrecto o mover a la misma lista |
-| 404 | Producto, favorito o lista inexistente |
-| 405 | Método HTTP no permitido |
-| 415 | Content-Type no soportado |
-| 409 | Lista con favoritos o conflicto de integridad referencial |
-| 500 | Error inesperado sin detalles internos |
-| 502 | Falla, timeout o contenido inválido de DummyJSON |
+| `DATABASE_URL` | URL JDBC completa; por defecto se construye con `DB_HOST`, `DB_PORT` y `POSTGRES_DB` |
+| `DB_HOST`, `DB_PORT`, `POSTGRES_DB` | Por defecto `localhost`, `5432`, `webii_tp2` |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD` | Credenciales de DB; valores locales de Compose por defecto |
+| `JWT_SECRETO` | Al menos 32 bytes; obligatorio con perfil `prod` |
+| `JWT_VIGENCIA_MINUTOS` | Vida del JWT; 30 minutos por defecto, debe ser positiva |
+| `PORT` | Puerto HTTP; 8080 por defecto |
+| `SPRING_PROFILES_ACTIVE` | `prod` en el contenedor de despliegue |
+| `PG_TUNNEL_HOSTNAME`, `TUNNEL_SERVICE_TOKEN_ID`, `TUNNEL_SERVICE_TOKEN_SECRET` | Activa el cliente TCP autenticado de Cloudflare Access dentro del contenedor |
 
-`campos` es un objeto vacío cuando el error no corresponde a un campo.
-La FK impide borrar una lista referenciada incluso si otra solicitud crea un favorito
-entre la comprobación y el borrado; el handler traduce el conflicto a 409.
+`.env` es configuración de Compose, no del proceso Maven. Los secretos no se guardan en Git. El valor JWT de desarrollo permite ejecutar localmente; el perfil `prod` exige un secreto explícito.
 
-## Flyway y evolución del esquema
+## Registro y login
 
-Spring ejecuta automáticamente los archivos de `src/main/resources/db/migration` antes de JPA:
+`POST /api/auth/registro`, JSON:
 
-| Versión | Archivo | Cambio |
-|---|---|---|
-| V1 | `V1__create_favoritos.sql` | Favoritos con ID, producto, nota y fecha |
-| V2 | `V2__create_listas.sql` | Listas con ID y nombre |
-| V3 | `V3__add_lista_id_a_favoritos.sql` | Relación nullable, FK sin borrado en cascada e índice |
-| V4 | `V4__lista_id_obligatorio.sql` | Crear lista por defecto si falta, completar filas anteriores y exigir NOT NULL |
-
-En el primer arranque el log informa `Successfully applied 4 migrations`.
-En los siguientes valida los checksums e informa `No migration necessary`.
-Hibernate solamente comprueba el esquema (`ddl-auto=validate`).
-`open-in-view=false` obliga a convertir las entidades a dominio y DTO dentro de la transacción.
-
-Confirmar el historial con Docker:
-
-```powershell
-docker compose exec postgres psql -U webii_tp2 -d webii_tp2 -c "SELECT version, description, success FROM flyway_schema_history ORDER BY installed_rank;"
+```json
+{"email":"usuario@example.com","password":"Una-clave-segura-123"}
 ```
 
-La convención es `V{versión}__{descripción}.sql`, con dos guiones bajos.
-Flyway guarda el checksum de cada migración aplicada; editarla produce un error de validación
-porque el historial deja de coincidir. La evolución se agrega en una migración nueva.
+Devuelve `201` con `id`, `email` y rol `USER`. El email se normaliza a minúsculas. Duplicados responden `409`, incluidos registros concurrentes gracias a la restricción única. La contraseña se valida y se almacena mediante BCrypt; nunca se devuelve el hash. BCrypt admite hasta 72 bytes UTF-8 y el registro exige al menos 8 caracteres.
 
-V4 completa primero los datos anteriores y solamente después impone NOT NULL.
-Modificar V1, V2 o V3 no actualizaría correctamente las bases donde esas versiones ya se
-ejecutaron y rompería sus checksums.
+`POST /api/auth/login` recibe el mismo JSON y devuelve `token`, `tokenType: Bearer` y `expiresIn` en segundos. Credenciales incorrectas responden `401`. Enviar `Authorization: Bearer <token>` en las operaciones protegidas.
 
-## Puertos y adapters: comparación con TP1
+La biblioteca Nimbus JOSE/JWT integrada en Spring Security emite y valida HS256, issuer, vencimiento, id positivo y rol permitido. El filtro Bearer nativo de Spring Security identifica al usuario. Sin token, con firma inválida o token vencido: `401`; identidad válida sin permiso: `403`.
 
-```text
-producto/    Controller → Service → ProductoClient → DummyJsonProductoClient → DummyJSON
-favorito/    Controller → Service → FavoritoRepository → FavoritoRepositoryAdapter → JPA → PostgreSQL
-lista/       Controller → Service → ListaRepository → ListaRepositoryAdapter → JPA → PostgreSQL
-error/       ApiError, excepciones y ApiExceptionHandler
-config/      OpenAPI, Clock UTC y RestClient
-```
+No hay cookies de autenticación ni sesiones. CSRF se desactiva porque el token se adjunta explícitamente en el header. Los tokens no tienen revocación inmediata: un cambio de rol se refleja al hacer login nuevamente y los tokens anteriores vencen según `exp`.
 
-`FavoritoRepository` es el puerto: el contrato que usa el servicio.
-`FavoritoRepositoryMemoria` implementaba ese contrato en el TP1; ahora
-`FavoritoRepositoryAdapter` lo implementa delegando en `FavoritoJpaRepository`.
-Los records de dominio siguen separados de entidades JPA mutables; JPA queda en
-los paquetes `persistencia/`. El service y el controller no importan entidades ni repositorios JPA.
-La relación es `@ManyToOne(fetch=LAZY)`, sin colección bidireccional:
-los favoritos de una lista se consultan con `findByLista_IdOrderByIdAsc`.
+## Endpoints y propiedad
 
-Para sustituir memoria por JPA bastaba cambiar el adapter y la configuración.
-**La incorporación posterior de listas sí cambia el contrato funcional**, por eso esta entrega
-modifica las siguientes clases del TP1:
-
-| Clase/capa | Cambio final |
+| Ruta | Acceso |
 |---|---|
-| `FavoritoRepositoryMemoria` | Eliminado; reemplazado por adapter, entidad y repositorio JPA |
-| `Favorito` | Agrega `listaId`; mantiene record, fecha y campos previos |
-| `FavoritoRepository` | Agrega listaId en escrituras y operaciones de consulta/movimiento por lista |
-| `FavoritoRequest`, `FavoritoResponse` | Incorporan listaId y su validación/documentación |
-| `FavoritoService` | Valida lista existente, pasa listaId y delimita transacciones |
-| `FavoritoController` | Conserva rutas y lógica HTTP; actualiza descripciones Swagger |
-| `ApiExceptionHandler` | Agrega 409 y el 400 de mover a la misma lista |
-| `ApiConfig` | Título TP2 y ejemplos de 409 |
-| Maven y properties | Dependencias y configuración de PostgreSQL/Flyway |
+| `GET /health`, `/swagger-ui/index.html`, `/v3/api-docs` | Público |
+| `GET /api/productos`, `/api/productos/{id}` | Público, catálogo externo de solo lectura |
+| `POST /api/auth/registro`, `/api/auth/login` | Público |
+| `GET/POST /api/listas` | Usuario: solo sus listas; nuevas listas toman el dueño del token |
+| `GET/DELETE /api/listas/{id}` | Dueño o ADMIN |
+| `GET /api/listas/{id}/favoritos` | Dueño o ADMIN |
+| `POST /api/listas/{origenId}/mover-favoritos` | Dueño de ambas listas o ADMIN; body `{"destinoId":2}` |
+| `GET/POST /api/favoritos` | Filtrado por dueño; alta requiere lista autorizada |
+| `GET/PUT/DELETE /api/favoritos/{id}` | Dueño de la lista o ADMIN; PUT también controla el destino |
 
-Quedaron exactamente iguales `ProductoClient`, `DummyJsonProductoClient`,
-`ProductoController`, `ProductoService`, sus DTOs/records, `RestClientConfig`,
-`HealthController`, `ApiError`, las excepciones previas y `ApiBlankApplication`.
-Productos mantiene su comportamiento y sus pruebas del TP1.
+La autorización por propiedad vive en `ListaServiceImpl.buscarAutorizada`, compartida por listas y `FavoritoService`. Así la regla protege también llamadas al servicio fuera del Controller, controla origen y destino antes de escribir y conserva el rollback transaccional del TP2. Los listados se filtran por usuario en las consultas a PostgreSQL.
 
-## Transacciones y ACID
+`ADMIN` accede a todos los recursos; el registro público nunca asigna ese rol. Para preparar un administrador de la práctica, un operador autorizado debe cambiar `usuarios.rol` en la base y luego iniciar sesión nuevamente. No hay un endpoint público para promover usuarios.
 
-`ListaService.moverFavoritos` usa `@Transactional`: valida las listas,
-ejecuta el UPDATE que reasigna favoritos y después borra el origen.
-Los adapters participan en esa misma transacción. Si una escritura o el commit falla,
-Spring revierte toda la operación.
+Swagger incluye el esquema `bearerAuth`, el botón Authorize, endpoints auth y respuestas 401/403. Pegá el JWT sin el prefijo Bearer en Authorize.
 
-Sin esa transacción, el UPDATE podría confirmarse y luego fallar el DELETE:
-la solicitud respondería con un error, pero los favoritos ya estarían en el destino
-y el origen seguiría existiendo. La atomicidad (A de ACID) exige que ambos cambios
-se confirmen juntos o ninguno. Las FK y NOT NULL contribuyen a la consistencia;
-PostgreSQL aporta aislamiento y durabilidad. La prueba de rollback agrega temporalmente
-una FK que impide el DELETE y confirma que los favoritos siguen en el origen.
+## Migraciones y datos previos
 
-## Pruebas y evidencia
+V1–V4 permanecen intactas. V5 crea `usuarios`; V6 agrega la FK de usuario a listas y su índice. Las listas de TP2 se conservan con `usuario_id = NULL` y solo ADMIN puede acceder a ellas. Cualquier asignación posterior de esas listas debe ser una decisión explícita del operador. No se borran ni se reasignan datos existentes automáticamente.
+
+## Pruebas
 
 ```powershell
-# Pruebas unitarias, sin base ni Internet:
 .\mvnw.cmd --batch-mode test
-
-# Unitarias + integración, migraciones y empaquetado; requiere PostgreSQL:
 .\mvnw.cmd --batch-mode verify
-
-# En este equipo, configura el PostgreSQL local antes de verify:
-.\scripts\run-local.ps1 -Verify
 ```
 
-Las pruebas de integración `*IT` las ejecuta Maven Failsafe en `verify`.
-Usan PostgreSQL real y crean esquemas aleatorios `tp2_test_*`, que eliminan al finalizar.
-No borran ni modifican las tablas del esquema de la aplicación.
-Para otra conexión de pruebas, configurar `TEST_DATABASE_URL`, `TEST_DATABASE_USER`
-y `TEST_DATABASE_PASSWORD` (por defecto localhost:5432 y credenciales webii_tp2).
+Linux/macOS: `./mvnw --batch-mode verify`. Surefire descubre las unitarias `*Test` y las regresiones existentes `*Tests`. Failsafe ejecuta `*IT` durante `verify`.
 
-Cobertura: CRUD de favoritos y listas, validación y referencias inexistentes,
-borrado con conflicto, movimiento incluyendo lista vacía, rollback por una falla SQL real,
-migración desde V1 con filas previas, conservación de favoritos clasificados y reinicio de Flyway,
-productos con cliente simulado, Swagger/OpenAPI y cliente HTTP con servidor local.
-Las pruebas automatizadas no consultan Internet.
+`PostgresTestDatabase` inicia un PostgreSQL 17 real con Testcontainers y puerto dinámico por ejecución. Cada integración usa un esquema aislado y lo elimina al terminar. Flyway aplica V1–V6; no se leen `TEST_DATABASE_*` ni la DB de desarrollo. Un Docker inaccesible produce un fallo, no un test omitido. La JVM de pruebas usa UTC para no depender de alias de zona horaria del equipo.
 
-GitHub Actions incluye PostgreSQL 17 y ejecuta `verify` en pushes a main, TP1, TP2 y tp2,
-y en PRs a main. Mockito conserva `mock-maker-subclass`, sin agente adjuntado a Java 25.
+Ver [matriz de pruebas y evidencia](docs/EVIDENCIA-TP3.md). Reportes: `target/surefire-reports` y `target/failsafe-reports`.
 
-[docs/tp2.http](docs/tp2.http) contiene requests ordenados de éxito/error para la entrega.
-[docs/EVIDENCIA-TP2.md](docs/EVIDENCIA-TP2.md) registra la ejecución real y la comprobación
-de persistencia después de reiniciar la aplicación.
+## CI y despliegue
 
-El material y [evidencia del TP1](docs/EVIDENCIA-TP1.md) se conservan como antecedente.
-Su colección `tp1.http` representa el contrato anterior: para esta versión usar `tp2.http`.
+`.github/workflows/ci.yml` corre `./mvnw --batch-mode verify` en pushes a `tp3` y las ramas anteriores, y en pull requests. Usa Docker del runner mediante Testcontainers, sin servicio PostgreSQL redundante. Publica los reportes aun si una prueba falla. En GitHub, abrir Actions → Java CI → job → paso de Maven para encontrar la clase/aserción que falló.
 
-## Configuración del catálogo
+[Despliegue Cloudflare Containers, secretos, túnel y diagnóstico](../../deployment/cloudflare/README.md). La imagen ejecuta con usuario sin privilegios. La publicación se condiciona a CI en verde; las credenciales de despliegue se cargan como secretos del repositorio.
 
-`DUMMYJSON_BASE_URL` permite reemplazar https://dummyjson.com.
-Los timeouts predeterminados son 3s de conexión y 5s de lectura.
-Los endpoints de productos necesitan conexión al proveedor; listas y favoritos funcionan
-independientemente de ese servicio.
-
-## Referencias
-
-- [Material local del TP2](docs/tp2/consigna.md)
-- [PostgreSQL para Windows y binarios](https://www.postgresql.org/download/windows/)
-- [Flyway: migraciones versionadas](https://documentation.red-gate.com/fd/versioned-migrations-273973333.html)
-- [DummyJSON Products](https://dummyjson.com/docs/products)
+Documentación histórica: [TP1](docs/EVIDENCIA-TP1.md), [TP2](docs/EVIDENCIA-TP2.md).

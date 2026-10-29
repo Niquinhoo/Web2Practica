@@ -2,7 +2,7 @@ param(
     [string]$PostgresDirectory = (Join-Path $env:PUBLIC 'codex-tp2-runtime\pgsql'),
     [string]$DataDirectory = (Join-Path $env:PUBLIC 'codex-tp2-runtime\data'),
     [int]$Port = 55432,
-    [string]$JavaDirectory = 'C:\Program Files\Java\jdk-25.0.4',
+    [string]$JavaDirectory = 'C:\Program Files\Java\jdk-25.0.2',
     [switch]$Verify
 )
 
@@ -55,9 +55,6 @@ if ($taskExists -ne '1') {
 }
 
 $env:DATABASE_URL = "jdbc:postgresql://127.0.0.1:$Port/webii_tp2"
-$env:TEST_DATABASE_URL = $env:DATABASE_URL
-$env:TEST_DATABASE_USER = $env:POSTGRES_USER
-$env:TEST_DATABASE_PASSWORD = $env:POSTGRES_PASSWORD
 Push-Location $taskProject
 try {
     if ($Verify) { & .\mvnw.cmd --batch-mode verify }

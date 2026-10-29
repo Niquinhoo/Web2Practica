@@ -19,6 +19,17 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ApiError> autenticacion(Exception ex) {
+        return ResponseEntity.status(401).header("WWW-Authenticate", "Bearer")
+                .body(new ApiError(401, "Credenciales inválidas", Map.of()));
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiError> accesoDenegado(Exception ex) {
+        return ResponseEntity.status(403).body(new ApiError(403, "Acceso denegado", Map.of()));
+    }
+
     @ExceptionHandler(ConflictoException.class)
     public ResponseEntity<ApiError> conflicto(ConflictoException ex) {
         return ResponseEntity.status(409).body(new ApiError(409, ex.getMessage(), Map.of()));

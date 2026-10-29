@@ -13,8 +13,11 @@ import ar.edu.unvime.apiblank.lista.ListaRepository;
 public class ListaRepositoryAdapter implements ListaRepository {
     private final ListaJpaRepository repository;
 
-    public ListaRepositoryAdapter(ListaJpaRepository repository) {
+    private final ar.edu.unvime.apiblank.usuario.persistencia.UsuarioJpaRepository usuarios;
+
+    public ListaRepositoryAdapter(ListaJpaRepository repository, ar.edu.unvime.apiblank.usuario.persistencia.UsuarioJpaRepository usuarios) {
         this.repository = repository;
+        this.usuarios = usuarios;
     }
 
     public List<Lista> buscarTodos() {
@@ -25,9 +28,13 @@ public class ListaRepositoryAdapter implements ListaRepository {
         return repository.findById(id).map(this::dominio);
     }
 
+    public List<Lista> buscarPorUsuarioId(Long usuarioId) {
+        return repository.findByUsuario_IdOrderByIdAsc(usuarioId).stream().map(this::dominio).toList();
+    }
+
     @Transactional
-    public Lista crear(String nombre) {
-        return dominio(repository.save(new ListaEntity(nombre)));
+    public Lista crear(String nombre, Long usuarioId) {
+        return dominio(repository.save(new ListaEntity(nombre, usuarios.getReferenceById(usuarioId))));
     }
 
     @Transactional
@@ -41,6 +48,6 @@ public class ListaRepositoryAdapter implements ListaRepository {
     }
 
     private Lista dominio(ListaEntity entity) {
-        return new Lista(entity.getId(), entity.getNombre());
+        return new Lista(entity.getId(), entity.getNombre(), entity.getUsuarioId());
     }
 }

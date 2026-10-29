@@ -11,14 +11,17 @@ import ar.edu.unvime.apiblank.lista.*;
 
 class FavoritoServiceTests {
     private final FavoritoRepository repository = mock(FavoritoRepository.class);
-    private final ListaRepository listas = mock(ListaRepository.class);
+    private final ListaServiceImpl listas = mock(ListaServiceImpl.class);
+    private final ar.edu.unvime.apiblank.seguridad.ContextoSeguridad seguridad = mock(ar.edu.unvime.apiblank.seguridad.ContextoSeguridad.class);
     private final Instant fecha = Instant.parse("2026-09-06T12:00:00Z");
-    private final FavoritoService service = new FavoritoService(repository, Clock.fixed(fecha, ZoneOffset.UTC), listas);
+    private final FavoritoService service = new FavoritoService(repository, Clock.fixed(fecha, ZoneOffset.UTC), listas, seguridad);
     private final Favorito favorito = new Favorito(7L, 3L, "Nota", fecha, 1L);
 
     @BeforeEach
     void listaExistente() {
-        when(listas.buscarPorId(1L)).thenReturn(Optional.of(new Lista(1L, "Regalos")));
+        when(seguridad.esAdmin()).thenReturn(true);
+        when(listas.buscarAutorizada(1L)).thenReturn(new Lista(1L, "Regalos", 10L));
+        when(listas.buscarAutorizada(99L)).thenThrow(new RecursoNoEncontradoException("No existe la lista 99"));
     }
     @Test
     void crearGeneraFechaYListaEnRespuesta() {
@@ -56,6 +59,7 @@ class FavoritoServiceTests {
     }
     @Test
     void eliminarDelegaAlRepositorio() {
+        when(repository.buscarPorId(7L)).thenReturn(Optional.of(favorito));
         when(repository.eliminar(7L)).thenReturn(true);
         service.eliminar(7L);
         verify(repository).eliminar(7L);

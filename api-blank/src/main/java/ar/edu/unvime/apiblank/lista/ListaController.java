@@ -13,17 +13,20 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import ar.edu.unvime.apiblank.error.ApiError;
 import ar.edu.unvime.apiblank.favorito.FavoritoResponse;
 
+@io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
+@ApiResponse(responseCode = "401", description = "Token ausente o inválido")
+@ApiResponse(responseCode = "403", description = "Recurso de otro usuario")
 @RestController
 @RequestMapping("/api/listas")
-@Tag(name = "Listas", description = "Organización persistente de favoritos")
+@Tag(name = "Listas", description = "Requiere autenticación. Cada usuario opera sobre sus listas; ADMIN accede a todas.")
 @ApiResponse(responseCode = "400", description = "Datos inválidos",
         content = @Content(schema = @Schema(implementation = ApiError.class)))
 @ApiResponse(responseCode = "404", description = "Lista inexistente",
         content = @Content(schema = @Schema(implementation = ApiError.class)))
 public class ListaController {
-    private final ListaService service;
+    private final ListaServiceImpl service;
 
-    public ListaController(ListaService service) {
+    public ListaController(ListaServiceImpl service) {
         this.service = service;
     }
 
