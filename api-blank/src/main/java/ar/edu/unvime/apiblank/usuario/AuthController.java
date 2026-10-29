@@ -28,6 +28,7 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "Obtener JWT usando email y contraseña")
     @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
+    @ApiResponse(responseCode = "200", description = "JWT Bearer y tiempo de vigencia")
     public JwtService.TokenResponse login(@Valid @RequestBody Credenciales request) {
         return jwt.emitir(usuarios.autenticar(request.email(), request.password()));
     }

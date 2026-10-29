@@ -42,7 +42,14 @@ El script crea dos usuarios con identificadores únicos y contraseñas aleatoria
 
 ## CI y publicación
 
-Pendiente de registrar aquí los enlaces a la corrida roja controlada, su recuperación en verde y el despliegue público al completar esas verificaciones. No se considera cerrado ese punto hasta obtener los resultados remotos.
+- [Fallo deliberado confirmado](https://github.com/Niquinhoo/Web2Practica/actions/runs/40817485164): se alteró únicamente una aserción de rol (`ADMIN` esperado frente a `USER` real). Surefire detectó el fallo y el workflow quedó rojo. La aserción se restauró en el commit siguiente.
+- [Recuperación en verde](https://github.com/Niquinhoo/Web2Practica/actions/runs/40817598752): 58 unitarias y 24 integraciones, sin fallos ni omisiones.
+- [CI con API y Worker](https://github.com/Niquinhoo/Web2Practica/actions/runs/40818228909): jobs Java y Cloudflare exitosos. El Worker tiene **5 pruebas adicionales** de arranque frío, concurrencia, límite de readiness, instancia caliente y selección de instancia. Total: **87 pruebas**.
+- [API pública](https://web2-practica-tp3.nicotrib699.workers.dev/health) y [Swagger](https://web2-practica-tp3.nicotrib699.workers.dev/swagger-ui/index.html).
+- Versión Cloudflare comprobada inicialmente: `868eed6b-b69e-4daf-8d07-e5245103723b`. La evidencia HTTP pública registró health `200`, ausencia de token `401`, registro `201`, login `200`, lista propia `200`, lista/favorito ajenos `403` y limpieza de recursos `204`.
+- [Resultados HTTP públicos](tp3/evidencias/http-publico.json), [imagen local contra DB remota](tp3/evidencias/http-local-con-db-remota.json), [captura health](tp3/evidencias/health-200.jpg) y [captura sin token](tp3/evidencias/listas-401.jpg).
+
+El primer intento de despliegue detectó que esta cuenta exige la política `durable-object`. Se reemplazó el helper anterior por la API nativa de Durable Objects, usando un único nombre de instancia, readiness compartido entre solicitudes y timeout para el arranque de la JVM. La aplicación publicada conservó Java/Spring y el PostgreSQL remoto. Los secretos no están incluidos en el repositorio.
 
 ## Límites conocidos
 

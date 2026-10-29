@@ -1,6 +1,6 @@
 # Despliegue TP3 · Cloudflare Containers
 
-El proveedor se cambió a Cloudflare por elección del usuario. Se conserva la aplicación Java/Spring Boot, dentro de un contenedor `basic`, con máximo una instancia y reposo después de un minuto sin tráfico. Requiere Workers Paid; puede generar consumo adicional. Esta elección difiere del proveedor gratuito sugerido en la consigna y debe acordarse con la cátedra si se exige gratuidad estricta.
+El proveedor se cambió a Cloudflare por elección del usuario. Se conserva la aplicación Java/Spring Boot, dentro de un contenedor `basic`, con una única instancia nombrada `tp3` y reposo después de un minuto sin tráfico. El Worker usa la API nativa de Durable Objects y la política `durable-object`, requerida por esta cuenta. Requiere Workers Paid; puede generar consumo adicional. Esta elección difiere del proveedor gratuito sugerido en la consigna y debe acordarse con la cátedra si se exige gratuidad estricta.
 
 ## Recorrido
 
@@ -44,3 +44,17 @@ npm run deploy
 Los resultados y enlaces de CI/despliegue se registran en [EVIDENCIA-TP3](../../api-blank/docs/EVIDENCIA-TP3.md).
 
 Referencias: [Cloudflare Containers](https://developers.cloudflare.com/containers/), [precios](https://developers.cloudflare.com/containers/platform/pricing/), [tokens de servicio Access](https://developers.cloudflare.com/cloudflare-one/access-controls/service-credentials/service-tokens/).
+
+## Operación del conector remoto
+
+Desde la PC remota:
+
+```sh
+sudo systemctl status web2-tp3-tunnel
+sudo systemctl restart web2-tp3-tunnel
+sudo journalctl -u web2-tp3-tunnel -n 50 --no-pager
+```
+
+Detener ese servicio interrumpe el acceso de la API a la base, pero no borra datos ni apaga PostgreSQL. El servicio está habilitado para iniciar al arrancar el equipo.
+
+La prueba deliberada de CI y su recuperación se hicieron únicamente en `tp3`. Antes de ejecutar `npm run deploy`, comprobar que los jobs Java y Cloudflare de la revisión que se va a publicar estén verdes. La publicación actual es manual; no se dejó una credencial de Cloudflare de uso general en GitHub.

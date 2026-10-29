@@ -31,6 +31,7 @@ public class FavoritoController {
 
     @GetMapping
     @Operation(summary = "Listar favoritos", description = "Ordenados por ID ascendente.")
+    @ApiResponse(responseCode = "200", description = "Favoritos visibles para el usuario autenticado")
     public List<FavoritoResponse> listar() {
         return service.listar();
     }

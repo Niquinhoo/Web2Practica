@@ -43,14 +43,17 @@ public class ListaController {
 
     @GetMapping
     @Operation(summary = "Listar listas", description = "Devuelve las listas ordenadas por ID ascendente.")
+    @ApiResponse(responseCode = "200", description = "Listas visibles para el usuario autenticado")
     public List<ListaResponse> listar() { return service.listar(); }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener una lista", description = "Devuelve ID y nombre de una lista existente.")
+    @ApiResponse(responseCode = "200", description = "Lista autorizada")
     public ListaResponse obtener(@PathVariable Long id) { return service.obtener(id); }
 
     @GetMapping("/{id}/favoritos")
     @Operation(summary = "Listar favoritos de una lista", description = "Lista vacía: array vacío. Lista inexistente: 404.")
+    @ApiResponse(responseCode = "200", description = "Favoritos de la lista autorizada")
     public List<FavoritoResponse> favoritos(@PathVariable Long id) { return service.favoritos(id); }
 
     @DeleteMapping("/{id}")

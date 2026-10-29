@@ -159,6 +159,8 @@ class SeguridadIT {
         assertThat(spec.at("/components/securitySchemes/bearerAuth/scheme").asString()).isEqualTo("bearer");
         assertThat(spec.at("/paths/~1api~1listas/get/security/0").has("bearerAuth")).isTrue();
         assertThat(spec.at("/paths/~1api~1auth~1login").has("post")).isTrue();
+        for (String path:List.of("/paths/~1api~1auth~1login/post/responses", "/paths/~1api~1listas/get/responses", "/paths/~1api~1favoritos/get/responses"))
+            assertThat(spec.at(path).has("200")).as(path).isTrue();
         assertThat(spec.at("/paths/~1api~1productos/get").has("security")).isFalse();
     }
     @Test void registro_concurrente_unSoloUsuarioYConflicto() throws Exception {
