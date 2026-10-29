@@ -62,6 +62,14 @@ La [guía reproducible](../../deployment/vercel/README.md) documenta creación d
 
 Se ejecutó nuevamente el [smoke HTTP completo en Vercel](tp3/evidencias/vercel/http-publico.json): health 200, sin token 401, registro 201, login 200, lista propia 200, lista/favorito ajenos 403 y limpieza 204. Capturas reales: [health](tp3/evidencias/vercel/health-200.jpg), [401 sin JWT](tp3/evidencias/vercel/listas-401.jpg), [200 con JWT](tp3/evidencias/vercel/listas-200.jpg). El cambio no modifica código Java ni la imagen de Cloudflare.
 
-## Límites de ambos despliegues
+## Cierre de pendientes de entrega
+
+El 29 de octubre se reemplazó la captura de health de Vercel por una tomada desde Swagger, con URL, código `200`, cuerpo JSON completo y cabeceras legibles. Ambos README configuran ahora `POSTGRES_PORT=55432` antes de levantar Compose y usan ese mismo puerto en JDBC; se verificó la configuración resuelta de Compose.
+
+Se renombraron seis clases unitarias de `Tests` a `Test` y cuarenta métodos heredados a `operación_escenario_resultado`, conservando sus cuerpos y aserciones. La convención se comprobó en los 57 métodos de prueba actuales. Los informes históricos de TP1/TP2 conservan los nombres que tenían en esas ejecuciones.
+
+Se ejecutó `./mvnw --batch-mode clean verify`: **58 unitarias y 24 integraciones**, cero fallos, errores u omisiones. `clean` eliminó clases y reportes anteriores al renombrado; los XML nuevos suman exactamente 82 ejecuciones Java.
+
+## Límites operativos
 
 JWT sin revocación inmediata: cambio de rol o baja de cuenta no invalida tokens ya emitidos hasta su vencimiento. Las listas legadas sin dueño solo son accesibles para ADMIN. La disponibilidad de PostgreSQL depende de que el equipo remoto y su Tunnel estén encendidos. Cloudflare Containers conserva Workers Paid; Vercel Hobby aporta la experiencia adicional de alojamiento gratuito, con cuotas y runtime de contenedores beta. No se agregaron refresh tokens, OAuth ni un umbral opcional de JaCoCo. No se realizaron pruebas de carga.

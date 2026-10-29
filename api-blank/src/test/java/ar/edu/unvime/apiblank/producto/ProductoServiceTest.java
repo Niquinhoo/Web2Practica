@@ -8,13 +8,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import ar.edu.unvime.apiblank.error.*;
 
-class ProductoServiceTests {
+class ProductoServiceTest {
     private final ProductoClient client = mock(ProductoClient.class);
     private final ProductoService service = new ProductoService(client);
     private final ProductoExterno externo = new ProductoExterno(1L, "Producto", "Descripción", new BigDecimal("9.99"), "beauty");
 
     @Test
-    void transformaListadoYDetalleAlContratoPropio() {
+    void consultar_productosValidos_transformaAlContratoPropio() {
         when(client.listar()).thenReturn(List.of(externo));
         when(client.obtener(1L)).thenReturn(Optional.of(externo));
         var esperado = new ProductoResponse(1L, "Producto", "Descripción", new BigDecimal("9.99"), "beauty");
@@ -23,13 +23,13 @@ class ProductoServiceTests {
     }
 
     @Test
-    void inexistenteSeTraduceAExcepcionPropia() {
+    void obtener_productoInexistente_lanzaNoEncontrado() {
         when(client.obtener(99L)).thenReturn(Optional.empty());
         assertThatThrownBy(() -> service.obtener(99L)).isInstanceOf(RecursoNoEncontradoException.class);
     }
 
     @Test
-    void fallaExternaConservaSuTipoParaElAdvice() {
+    void consultar_fallaExterna_conservaTipoDeExcepcion() {
         var falla = new ServicioExternoException("timeout");
         when(client.listar()).thenThrow(falla);
         when(client.obtener(1L)).thenThrow(falla);

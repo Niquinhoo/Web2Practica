@@ -7,12 +7,13 @@ Java 25, Spring Boot 4.1.1, PostgreSQL, JPA y Flyway. El catálogo DummyJSON sig
 Con JDK 25 y Docker instalado, desde esta carpeta:
 
 ```powershell
+$env:POSTGRES_PORT = '55432'
 docker compose up -d --wait postgres
 $env:DATABASE_URL = 'jdbc:postgresql://127.0.0.1:55432/webii_tp2'
 .\mvnw.cmd spring-boot:run
 ```
 
-`55432` es el puerto configurado en el `.env` de este equipo; en un checkout nuevo se usa `5432` salvo que se configure `POSTGRES_PORT`. [Comandos y comprobaciones de PostgreSQL](docs/tp3/postgresql-docker.md).
+El ejemplo fija `POSTGRES_PORT=55432` explícitamente antes de iniciar Compose; así coincide con la URL JDBC incluso sin un `.env` local. Si elegís otro puerto, cambialo también en `DATABASE_URL`. Sin esa variable, Compose usa `5432`. [Comandos y comprobaciones de PostgreSQL](docs/tp3/postgresql-docker.md).
 
 En Linux/macOS: `./mvnw spring-boot:run`. `scripts/run-local.ps1` conserva la alternativa de PostgreSQL instalado; para usarla hay que indicar los binarios y datos válidos de ese equipo. Las pruebas de integración siempre requieren Docker.
 
@@ -80,7 +81,7 @@ V1–V4 permanecen intactas. V5 crea `usuarios`; V6 agrega la FK de usuario a li
 .\mvnw.cmd --batch-mode verify
 ```
 
-Linux/macOS: `./mvnw --batch-mode verify`. Surefire descubre las unitarias `*Test` y las regresiones existentes `*Tests`. Failsafe ejecuta `*IT` durante `verify`.
+Linux/macOS: `./mvnw --batch-mode verify`. Las clases unitarias terminan en `Test` y Surefire las ejecuta; las integraciones terminan en `IT` y las ejecuta Failsafe durante `verify`. Los métodos de prueba siguen `operación_escenario_resultado`.
 
 `PostgresTestDatabase` inicia un PostgreSQL 17 real con Testcontainers y puerto dinámico por ejecución. Cada integración usa un esquema aislado y lo elimina al terminar. Flyway aplica V1–V6; no se leen `TEST_DATABASE_*` ni la DB de desarrollo. Un Docker inaccesible produce un fallo, no un test omitido. La JVM de pruebas usa UTC para no depender de alias de zona horaria del equipo.
 

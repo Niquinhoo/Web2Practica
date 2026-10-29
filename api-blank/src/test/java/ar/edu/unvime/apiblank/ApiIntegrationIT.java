@@ -82,7 +82,7 @@ class ApiIntegrationIT {
     }
 
     @Test
-    void listasCrudYConflictoDeEliminacion() throws Exception {
+    void operar_listaConYSinFavoritos_respetaCrudYConflictos() throws Exception {
         long id = crearLista("Regalos");
         mvc.perform(get("/api/listas")).andExpect(status().isOk()).andExpect(jsonPath("$").isArray());
         mvc.perform(get("/api/listas/" + id)).andExpect(status().isOk()).andExpect(jsonPath("$.nombre").value("Regalos"));
@@ -99,7 +99,7 @@ class ApiIntegrationIT {
     }
 
     @Test
-    void validaEntradasYReferenciasDeListas() throws Exception {
+    void operar_entradasOReferenciasInvalidas_responde400O404() throws Exception {
         for (String body : List.of("{}", "{\"nombre\":\"  \"}", "{\"nombre\":\"" + "a".repeat(101) + "\"}")) {
             mvc.perform(post("/api/listas").contentType(MediaType.APPLICATION_JSON).content(body))
                     .andExpect(status().isBadRequest()).andExpect(jsonPath("$.campos.nombre").exists());
@@ -125,7 +125,7 @@ class ApiIntegrationIT {
     }
 
     @Test
-    void mueveTodosLosFavoritosYEliminaOrigen() throws Exception {
+    void mover_listasConFavoritos_reasignaTodosYEliminaOrigen() throws Exception {
         long origen = crearLista("Origen");
         long destino = crearLista("Destino");
         long primero = crearFavorito(origen);
@@ -144,7 +144,7 @@ class ApiIntegrationIT {
     }
 
     @Test
-    void moverListaVaciaTambienEliminaOrigen() throws Exception {
+    void mover_listaVacia_eliminaOrigen() throws Exception {
         long origen = crearLista("Vacía");
         long destino = crearLista("Destino vacío");
         mvc.perform(post("/api/listas/" + origen + "/mover-favoritos").contentType(MediaType.APPLICATION_JSON)
@@ -153,7 +153,7 @@ class ApiIntegrationIT {
     }
 
     @Test
-    void falloRealTrasMoverRevierteTodaLaTransaccion() throws Exception {
+    void mover_falloRealTrasActualizar_revierteTodaLaTransaccion() throws Exception {
         long origen = crearLista("Rollback origen");
         long destino = crearLista("Rollback destino");
         long favorito = crearFavorito(origen);
@@ -172,7 +172,7 @@ class ApiIntegrationIT {
     }
 
     @Test
-    void cicloCompletoDeFavoritosConRepositorioReal() throws Exception {
+    void operar_repositorioReal_completaCrudDeFavoritos() throws Exception {
         long listaId = crearLista("CRUD");
         var creado = mvc.perform(post("/api/favoritos").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"productoId\":1,\"nota\":\"Inicial\",\"listaId\":" + listaId + "}"))
@@ -196,7 +196,7 @@ class ApiIntegrationIT {
     }
 
     @Test
-    void productosAtraviesanControllerServiceYAdviceSinInternet() throws Exception {
+    void consultar_catalogoSimulado_integraControllerServiceYAdvice() throws Exception {
         var producto = new ProductoExterno(1L, "Prueba", "Descripción", new BigDecimal("9.99"), "beauty");
         when(productoClient.listar()).thenReturn(List.of(producto));
         when(productoClient.obtener(1L)).thenReturn(Optional.of(producto));
@@ -209,7 +209,7 @@ class ApiIntegrationIT {
     }
 
     @Test
-    void swaggerYOpenApiPublicanProductosFavoritosYListas() throws Exception {
+    void documentar_apiPublica_exponeRutasYEsquemas() throws Exception {
         var result = mvc.perform(get("/v3/api-docs")).andExpect(status().isOk()).andReturn();
         var spec = json.readTree(result.getResponse().getContentAsString());
         var paths = spec.get("paths");

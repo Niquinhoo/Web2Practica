@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 class FlywayMigrationIT {
     @Test
-    void evolucionaDatosAnterioresSinPerderFavoritos() throws Exception {
+    void migrar_datosAnteriores_conservaFavoritosYEsIdempotente() throws Exception {
         String schema = PostgresTestDatabase.nuevoEsquema();
         try {
             flyway(schema, "1").migrate();

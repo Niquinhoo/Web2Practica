@@ -11,12 +11,13 @@ Proyecto Maven de Web II: Java 25, Spring Boot 4, PostgreSQL y Flyway, evolucion
 Desde `api-blank`, con JDK 25 y Docker Desktop iniciado:
 
 ```powershell
+$env:POSTGRES_PORT = '55432'
 docker compose up -d --wait postgres
 $env:DATABASE_URL = 'jdbc:postgresql://127.0.0.1:55432/webii_tp2'
 .\mvnw.cmd spring-boot:run
 ```
 
-El puerto `55432` corresponde al `.env` local documentado; el Compose usa `5432` si no se configura. La API responde en `http://localhost:8080`; Swagger está en `/swagger-ui/index.html`.
+El ejemplo fija `POSTGRES_PORT=55432` antes de iniciar Compose, por lo que la base y la URL JDBC usan el mismo puerto también en un clon nuevo. Si elegís otro puerto, cambialo en ambos lugares. La API responde en `http://localhost:8080`; Swagger está en `/swagger-ui/index.html`.
 
 ```powershell
 .\mvnw.cmd --batch-mode verify

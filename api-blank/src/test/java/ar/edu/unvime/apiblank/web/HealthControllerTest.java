@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-class HealthControllerTests {
+class HealthControllerTest {
 
 	private final MockMvc mockMvc = MockMvcBuilders
 			.standaloneSetup(new HealthController())
 			.build();
 
 	@Test
-	void healthEndpointRespondsWithExpectedJson() throws Exception {
+	void health_solicitudValida_responde200ConJsonEsperado() throws Exception {
 		mockMvc.perform(get("/health"))
 				.andExpect(status().isOk())
 				.andExpect(content().json("""

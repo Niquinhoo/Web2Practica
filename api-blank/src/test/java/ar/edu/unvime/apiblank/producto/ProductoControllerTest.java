@@ -10,13 +10,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ar.edu.unvime.apiblank.error.*;
 
-class ProductoControllerTests {
+class ProductoControllerTest {
     private final ProductoService service = mock(ProductoService.class);
     private final MockMvc mvc = MockMvcBuilders.standaloneSetup(new ProductoController(service))
             .setControllerAdvice(new ApiExceptionHandler()).build();
 
     @Test
-    void listadoYDetalleSoloExponenDtoPropio() throws Exception {
+    void consultar_productosValidos_exponeSoloDtoPropio() throws Exception {
         var producto = new ProductoResponse(1L, "Producto", "Descripción", new BigDecimal("9.99"), "beauty");
         when(service.listar()).thenReturn(List.of(producto));
         when(service.obtener(1L)).thenReturn(producto);
@@ -29,7 +29,7 @@ class ProductoControllerTests {
     }
 
     @Test
-    void inexistenteYProveedorCaidoUsanErrorComun() throws Exception {
+    void consultar_inexistenteOProveedorCaido_respondeErrorComun() throws Exception {
         when(service.obtener(99L)).thenThrow(new RecursoNoEncontradoException("No existe el producto 99"));
         when(service.listar()).thenThrow(new ServicioExternoException("Detalle privado"));
         mvc.perform(get("/api/productos/99")).andExpect(status().isNotFound()).andExpect(jsonPath("$.status").value(404));
@@ -39,7 +39,7 @@ class ProductoControllerTests {
     }
 
     @Test
-    void formatoInvalidoYEscrituraNoPermitida() throws Exception {
+    void consultar_formatoOMetodoInvalido_responde400O405() throws Exception {
         mvc.perform(get("/api/productos/abc")).andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(400));
         mvc.perform(post("/api/productos")).andExpect(status().isMethodNotAllowed()).andExpect(jsonPath("$.status").value(405));
         verifyNoInteractions(service);

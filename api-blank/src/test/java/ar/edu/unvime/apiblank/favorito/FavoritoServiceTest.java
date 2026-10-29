@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import ar.edu.unvime.apiblank.error.RecursoNoEncontradoException;
 import ar.edu.unvime.apiblank.lista.*;
 
-class FavoritoServiceTests {
+class FavoritoServiceTest {
     private final FavoritoRepository repository = mock(FavoritoRepository.class);
     private final ListaServiceImpl listas = mock(ListaServiceImpl.class);
     private final ar.edu.unvime.apiblank.seguridad.ContextoSeguridad seguridad = mock(ar.edu.unvime.apiblank.seguridad.ContextoSeguridad.class);
@@ -24,32 +24,32 @@ class FavoritoServiceTests {
         when(listas.buscarAutorizada(99L)).thenThrow(new RecursoNoEncontradoException("No existe la lista 99"));
     }
     @Test
-    void crearGeneraFechaYListaEnRespuesta() {
+    void crear_datosValidos_incluyeFechaYListaEnRespuesta() {
         when(repository.crear(3L, "Nota", fecha, 1L)).thenReturn(favorito);
         assertThat(service.crear(new FavoritoRequest(3L, "Nota", 1L)))
                 .isEqualTo(new FavoritoResponse(7L, 3L, "Nota", fecha, 1L));
     }
     @Test
-    void listarYObtenerMapeanElDominio() {
+    void consultar_favoritoExistente_mapeaDominioARespuesta() {
         when(repository.buscarTodos()).thenReturn(List.of(favorito));
         when(repository.buscarPorId(7L)).thenReturn(Optional.of(favorito));
         assertThat(service.listar()).containsExactly(service.obtener(7L));
     }
     @Test
-    void actualizarReemplazaDatosConservandoFecha() {
+    void actualizar_favoritoExistente_reemplazaDatosYConservaFecha() {
         when(repository.buscarPorId(7L)).thenReturn(Optional.of(favorito));
         when(repository.actualizar(7L, 9L, null, 1L)).thenReturn(Optional.of(new Favorito(7L, 9L, null, fecha, 1L)));
         assertThat(service.actualizar(7L, new FavoritoRequest(9L, null, 1L)))
                 .isEqualTo(new FavoritoResponse(7L, 9L, null, fecha, 1L));
     }
     @Test
-    void listaInexistenteNoEscribe() {
+    void crear_listaInexistente_rechazaSinEscribir() {
         assertThatThrownBy(() -> service.crear(new FavoritoRequest(1L, null, 99L)))
                 .isInstanceOf(RecursoNoEncontradoException.class).hasMessage("No existe la lista 99");
         verifyNoInteractions(repository);
     }
     @Test
-    void operacionesSobreInexistentesFallanSinCrear() {
+    void operar_favoritoInexistente_fallaSinEscribir() {
         assertThatThrownBy(() -> service.obtener(99L)).isInstanceOf(RecursoNoEncontradoException.class);
         assertThatThrownBy(() -> service.actualizar(99L, new FavoritoRequest(1L, null, 1L)))
                 .isInstanceOf(RecursoNoEncontradoException.class);
@@ -58,7 +58,7 @@ class FavoritoServiceTests {
         verify(repository, never()).actualizar(anyLong(), anyLong(), any(), anyLong());
     }
     @Test
-    void eliminarDelegaAlRepositorio() {
+    void eliminar_favoritoExistente_delegaAlRepositorio() {
         when(repository.buscarPorId(7L)).thenReturn(Optional.of(favorito));
         when(repository.eliminar(7L)).thenReturn(true);
         service.eliminar(7L);

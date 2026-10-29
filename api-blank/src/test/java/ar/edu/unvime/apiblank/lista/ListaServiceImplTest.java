@@ -23,14 +23,14 @@ class ListaServiceImplTest {
         when(listas.buscarPorId(id)).thenReturn(Optional.of(new Lista(id, "Lista " + id, 10L)));
     }
     @Test
-    void noEliminaListaConFavoritos() {
+    void eliminar_listaConFavoritos_lanzaConflictoSinBorrar() {
         existente(1L);
         when(favoritos.existenEnLista(1L)).thenReturn(true);
         assertThatThrownBy(() -> service.eliminar(1L)).isInstanceOf(ConflictoException.class);
         verify(listas, never()).eliminar(anyLong());
     }
     @Test
-    void moverValidaAmbasListasAntesDeEscribir() {
+    void mover_listaInexistente_rechazaAntesDeEscribir() {
         existente(1L);
         assertThatThrownBy(() -> service.moverFavoritos(1L, new MoverFavoritosRequest(99L)))
                 .isInstanceOf(RecursoNoEncontradoException.class);
@@ -40,14 +40,14 @@ class ListaServiceImplTest {
         verify(listas, never()).eliminar(anyLong());
     }
     @Test
-    void noPermiteMoverSobreLaMismaLista() {
+    void mover_mismaLista_rechazaSinEscribir() {
         existente(1L);
         assertThatThrownBy(() -> service.moverFavoritos(1L, new MoverFavoritosRequest(1L)))
                 .isInstanceOf(SolicitudInvalidaException.class);
         verifyNoInteractions(favoritos);
     }
     @Test
-    void mueveAntesDeEliminarOrigen() {
+    void mover_listasValidas_mueveAntesDeEliminarOrigen() {
         existente(1L);
         existente(2L);
         when(listas.eliminar(1L)).thenReturn(true);

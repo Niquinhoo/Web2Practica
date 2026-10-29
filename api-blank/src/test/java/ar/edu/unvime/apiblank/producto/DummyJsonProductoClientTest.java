@@ -17,7 +17,7 @@ import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import ar.edu.unvime.apiblank.error.ServicioExternoException;
 
-class DummyJsonProductoClientTests {
+class DummyJsonProductoClientTest {
     private HttpServer server;
     private ExecutorService executor;
     private DummyJsonProductoClient client;
@@ -66,7 +66,7 @@ class DummyJsonProductoClientTests {
     }
 
     @Test
-    void consultaCatalogoCompletoYDeserializa() {
+    void listar_catalogoValido_consultaTodoYDeserializa() {
         body = "{\"products\":[" + PRODUCTO + "],\"total\":1,\"skip\":0,\"limit\":1}";
         assertThat(client.listar()).singleElement().satisfies(p -> {
             assertThat(p.title()).isEqualTo("Prueba");
@@ -76,7 +76,7 @@ class DummyJsonProductoClientTests {
     }
 
     @Test
-    void consultaDetalleYTraduce404() {
+    void obtener_productoExistenteOAusente_traduceRespuesta() {
         body = PRODUCTO;
         assertThat(client.obtener(1L)).isPresent();
         assertThat(uri.get()).isEqualTo("/products/1");
@@ -87,7 +87,7 @@ class DummyJsonProductoClientTests {
 
     @ParameterizedTest
     @ValueSource(ints = {400, 429, 500, 503})
-    void erroresHttpDelProveedorSonFallasExternas(int codigo) {
+    void consultar_errorHttpDelProveedor_lanzaServicioExterno(int codigo) {
         status = codigo;
         body = "{\"message\":\"detalle externo\"}";
         assertThatThrownBy(client::listar).isInstanceOf(ServicioExternoException.class);
@@ -96,13 +96,13 @@ class DummyJsonProductoClientTests {
 
     @ParameterizedTest
     @ValueSource(strings = {"", "{", "{}", "{\"products\":null}", "{\"products\":[null]}", "{\"products\":[{\"id\":1}]}"})
-    void rechazaCatalogosInvalidos(String json) {
+    void listar_catalogoInvalido_lanzaServicioExterno(String json) {
         body = json;
         assertThatThrownBy(client::listar).isInstanceOf(ServicioExternoException.class);
     }
 
     @Test
-    void aceptaListaVaciaPeroNoProductoInvalido() {
+    void consultar_listaVaciaODetalleInvalido_validaRespuesta() {
         body = "{\"products\":[]}";
         assertThat(client.listar()).isEmpty();
         body = "{}";
@@ -112,7 +112,7 @@ class DummyJsonProductoClientTests {
     }
 
     @Test
-    void timeoutRealSeTraduceAExcepcionPropia() {
+    void obtener_timeoutReal_lanzaServicioExterno() {
         delay = 1500;
         body = PRODUCTO;
         var lento = crearClient(Duration.ofMillis(150));
