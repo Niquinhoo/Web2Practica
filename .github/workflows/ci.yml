@@ -35,3 +35,21 @@ jobs:
           path: |
             api-blank/target/surefire-reports/
             api-blank/target/failsafe-reports/
+
+  test-cloudflare:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deployment/cloudflare
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24.22.1'
+          cache: npm
+          cache-dependency-path: deployment/cloudflare/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm test

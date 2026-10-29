@@ -14,7 +14,7 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 143' TERM INT
 for attempt in {1..100}; do
-    if (echo > /dev/tcp/127.0.0.1/15432) 2>/dev/null; then break; fi
+    if (: > /dev/tcp/127.0.0.1/15432) 2>/dev/null; then break; fi
     kill -0 "$tunnel_pid"
     sleep 0.1
 done
