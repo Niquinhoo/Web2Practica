@@ -54,7 +54,7 @@ Desde la raíz del repositorio, con PowerShell 7:
 
 El script verifica health 200, listas sin JWT 401, registro 201, login 200, lista propia 200, lista/favorito ajenos 403 y limpieza de listas/favoritos 204. Quedan usuarios de prueba con un prefijo único. Guardar la salida como evidencia solo después de que termine correctamente.
 
-Abrir `/swagger-ui/index.html` en esa misma URL y seguir la [guía de defensa](../../api-blank/docs/GUIA-DEFENSA-TP3.md). Capturar respuestas reales de health, 401 y 200 con JWT, sin mostrar el token de Authorization ni las variables del proyecto.
+Abrir `/swagger-ui/index.html` en esa misma URL y seguir la demostración reproducible del [informe del TP3](../../informe.md). Capturar respuestas reales de health, 401 y 200 con JWT, sin mostrar el token de Authorization ni las variables del proyecto.
 
 Para defender la arquitectura: «Publiqué la misma imagen Java en un segundo proveedor con plan gratuito; los datos persisten en PostgreSQL de mi equipo. Vercel inicia el contenedor, el cliente cloudflared autentica la conexión de infraestructura con Access y Spring valida el JWT del usuario y la propiedad de sus listas».
 

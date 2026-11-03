@@ -1,0 +1,124 @@
+{
+  "fecha": "2026-11-03",
+  "zonaHoraria": "America/Buenos_Aires",
+  "ramaEntrega": "TP3",
+  "revisionBase": "86a5636",
+  "comandoJava": ".\\mvnw.cmd --batch-mode clean verify",
+  "java": "25.0.2",
+  "docker": "29.9.1",
+  "resultadoJava": "BUILD SUCCESS",
+  "suites": [
+    {
+      "tipo": "unitaria",
+      "clase": "ar.edu.unvime.apiblank.favorito.FavoritoControllerTest",
+      "ejecuciones": 17,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "unitaria",
+      "clase": "ar.edu.unvime.apiblank.favorito.FavoritoServiceTest",
+      "ejecuciones": 6,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "unitaria",
+      "clase": "ar.edu.unvime.apiblank.lista.ListaServiceImplTest",
+      "ejecuciones": 5,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "unitaria",
+      "clase": "ar.edu.unvime.apiblank.producto.DummyJsonProductoClientTest",
+      "ejecuciones": 14,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "unitaria",
+      "clase": "ar.edu.unvime.apiblank.producto.ProductoControllerTest",
+      "ejecuciones": 3,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "unitaria",
+      "clase": "ar.edu.unvime.apiblank.producto.ProductoServiceTest",
+      "ejecuciones": 3,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "unitaria",
+      "clase": "ar.edu.unvime.apiblank.seguridad.JwtServiceTest",
+      "ejecuciones": 5,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "unitaria",
+      "clase": "ar.edu.unvime.apiblank.usuario.UsuarioServiceImplTest",
+      "ejecuciones": 4,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "unitaria",
+      "clase": "ar.edu.unvime.apiblank.web.HealthControllerTest",
+      "ejecuciones": 1,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "integracion",
+      "clase": "ar.edu.unvime.apiblank.ApiIntegrationIT",
+      "ejecuciones": 8,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "integracion",
+      "clase": "ar.edu.unvime.apiblank.FlywayMigrationIT",
+      "ejecuciones": 1,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    {
+      "tipo": "integracion",
+      "clase": "ar.edu.unvime.apiblank.seguridad.SeguridadIT",
+      "ejecuciones": 16,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    }
+  ],
+  "worker": {
+    "node": "24.22.1",
+    "typescript": "npm run check: exit 0",
+    "comando": "npx --yes --package=node@24.22.1 node --test src/index.test.mjs",
+    "ejecuciones": 5,
+    "fallos": 0,
+    "errores": 0,
+    "omitidas": 0
+  },
+  "regresionRutas": {
+    "prueba": "SeguridadIT.rutasPublicas_operacionesNoImplementadas_noExigenToken",
+    "antes": "404 esperado; 401 observado: 1 fallo, 0 errores",
+    "despues": "Incluida en la suite completa en verde; auth inexistente 404 y POST productos 405"
+  },
+  "incidenciaEntorno": "npm test con Node 22.17 fallo por extension .ts; repetido con Node 24.22.1 requerido por CI: 5 casos en verde",
+  "despliegue": "Sin nueva publicacion ni solicitudes a produccion; Cloudflare conservado por instruccion del usuario"
+}

@@ -3,7 +3,7 @@ import java.sql.*;
 import java.util.UUID;
 import org.springframework.test.context.DynamicPropertyRegistry;
 
-final class PostgresTestDatabase {
+public final class PostgresTestDatabase {
     private static final org.testcontainers.postgresql.PostgreSQLContainer POSTGRES = iniciar();
     static final String URL = POSTGRES.getJdbcUrl();
     static final String USER = POSTGRES.getUsername();
@@ -14,7 +14,7 @@ final class PostgresTestDatabase {
         return postgres;
     }
 
-    static String nuevoEsquema() throws SQLException {
+    public static String nuevoEsquema() throws SQLException {
         String schema = "tp3_test_" + UUID.randomUUID().toString().replace("-", "");
         ejecutar("CREATE SCHEMA " + schema);
         return schema;
@@ -25,13 +25,13 @@ final class PostgresTestDatabase {
             statement.execute(sql);
         }
     }
-    static void configurar(DynamicPropertyRegistry properties, String schema) {
+    public static void configurar(DynamicPropertyRegistry properties, String schema) {
         properties.add("spring.datasource.url", () -> URL + (URL.contains("?") ? "&" : "?") + "currentSchema=" + schema);
         properties.add("spring.datasource.username", () -> USER);
         properties.add("spring.datasource.password", () -> PASSWORD);
         properties.add("spring.flyway.default-schema", () -> schema);
     }
-    static void borrar(String schema) throws SQLException {
+    public static void borrar(String schema) throws SQLException {
         ejecutar("DROP SCHEMA " + schema + " CASCADE");
     }
 }

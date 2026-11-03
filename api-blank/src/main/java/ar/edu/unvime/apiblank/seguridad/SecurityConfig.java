@@ -48,8 +48,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .requestCache(cache -> cache.disable())
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/auth/registro", "/api/auth/login").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/productos/**", "/health", "/ping", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
+                    .requestMatchers("/api/auth/**", "/api/productos/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/health", "/ping", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
                     .anyRequest().authenticated())
                 .exceptionHandling(errors -> errors
                     .authenticationEntryPoint((req, res, ex) -> error(res, 401, "Se requiere un token válido"))

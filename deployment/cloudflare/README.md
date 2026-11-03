@@ -1,6 +1,6 @@
 # Despliegue TP3 · Cloudflare Containers
 
-El proveedor se cambió a Cloudflare por elección del usuario. Se conserva la aplicación Java/Spring Boot, dentro de un contenedor `basic`, con una única instancia nombrada `tp3` y reposo después de un minuto sin tráfico. El Worker usa la API nativa de Durable Objects y la política `durable-object`, requerida por esta cuenta. Requiere Workers Paid; puede generar consumo adicional. Esta elección difiere del proveedor gratuito sugerido en la consigna y debe acordarse con la cátedra si se exige gratuidad estricta.
+Cloudflare es el proveedor elegido expresamente por el usuario y ratificado para la entrega el 3 de noviembre de 2026, exceptuando la exigencia original de gratuidad. Se conserva la aplicación Java/Spring Boot, dentro de un contenedor `basic`, con una única instancia nombrada `tp3` y reposo después de un minuto sin tráfico. El Worker usa la API nativa de Durable Objects y la política `durable-object`, requerida por esta cuenta. Requiere Workers Paid; se documenta como un recurso pago, sin presentarlo como alojamiento gratuito. La rama de entrega es `TP3`; preparar esa rama no vuelve a desplegar automáticamente.
 
 ## Recorrido
 

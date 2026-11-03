@@ -1,6 +1,6 @@
 # TP3 · Resolución paso a paso
 
-La resolución está en `Web2Practica/tp3`, basada en `TP2`. [Consigna](TP3-consigna.md), [teoría](TP3-teoria.md) y [evidencia de ejecución](api-blank/docs/EVIDENCIA-TP3.md).
+La resolución se entrega en `Web2Practica/TP3`, continuación de `tp3` y basada en `TP2`. [Consigna](TP3-consigna.md), [teoría](TP3-teoria.md), [informe detallado](informe.md) y [evidencia de ejecución](api-blank/docs/EVIDENCIA-TP3.md). Los pasos 1–11 describen la implementación inicial; el paso 12 registra los ajustes de entrega.
 
 ## 1. Conservar TP2 y revisar la base
 
@@ -89,4 +89,12 @@ Las capturas, resultados y enlaces están en [EVIDENCIA-TP3](api-blank/docs/EVID
 
 Se conservó Cloudflare y se publicó también la misma imagen en Vercel Hobby. El plan se verificó por API, sin trial ni cambio a un plan pago. PostgreSQL continúa en el equipo remoto por el mismo Tunnel, con una clave JWT distinta para cada publicación.
 
-El primer arranque superó el timeout observado de Vercel. Se configuró `JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1` y región `gru1` para reducir la latencia hacia la base. Los arranques observados quedaron en 13–15 segundos y el smoke HTTP completo pasó en la URL pública. [Pasos, configuración, incidentes y evidencia](deployment/vercel/README.md). [Guía para probar y defender desde Swagger](api-blank/docs/GUIA-DEFENSA-TP3.md).
+El primer arranque superó el timeout observado de Vercel. Se configuró `JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1` y región `gru1` para reducir la latencia hacia la base. Los arranques observados quedaron en 13–15 segundos y el smoke HTTP completo pasó en la URL pública. [Pasos, configuración, incidentes y evidencia](deployment/vercel/README.md). [Informe detallado, cumplimiento por consigna y demostración en Swagger](informe.md).
+
+## 12. Cerrar la entrega en TP3 · 3 de noviembre
+
+Se agregó la dependencia directa `testcontainers`, se habilitó CI para cada push y pull request sin filtro de ramas y se ajustaron los patrones públicos de Security al enunciado. `SeguridadIT` está ahora en el paquete `seguridad` y comparte el helper de PostgreSQL temporal con las integraciones globales.
+
+Una integración nueva reprodujo primero el `401` incorrecto en una ruta auth inexistente y pasó después del ajuste, esperando `404` y `405` según la operación. `clean verify` terminó con **58 unitarias y 25 integraciones en verde**. El Worker pasó TypeScript y sus cinco pruebas con Node 24.22.1. El detalle por consigna y la explicación de la base están en `informe.md`; los resultados nuevos se distinguen de las evidencias históricas de despliegue.
+
+Se mantiene **Cloudflare como proveedor por elección expresa del usuario**. No se migra infraestructura ni se vuelve a desplegar al preparar este commit. La entrega se publica en la rama `TP3`, continuando la historia previa de `tp3`.

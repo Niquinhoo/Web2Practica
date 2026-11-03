@@ -1,4 +1,4 @@
-package ar.edu.unvime.apiblank;
+package ar.edu.unvime.apiblank.seguridad;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.json.JsonMapper;
 import ar.edu.unvime.apiblank.producto.ProductoClient;
-import ar.edu.unvime.apiblank.seguridad.JwtService;
+import ar.edu.unvime.apiblank.PostgresTestDatabase;
 import ar.edu.unvime.apiblank.usuario.*;
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -149,6 +149,10 @@ class SeguridadIT {
         mvc.perform(delete("/api/listas/"+ajena).header("Authorization","Bearer "+admin)).andExpect(status().isNoContent());
         int total=jdbc.queryForObject("SELECT count(*) FROM listas",Integer.class);
         mvc.perform(get("/api/listas").header("Authorization","Bearer "+admin)).andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(total));
+    }
+    @Test void rutasPublicas_operacionesNoImplementadas_noExigenToken() throws Exception {
+        mvc.perform(get("/api/auth/no-existe")).andExpect(status().isNotFound());
+        mvc.perform(post("/api/productos")).andExpect(status().isMethodNotAllowed());
     }
     @Test void rutasPublicas_yOpenApi_documentanBearerSinPedirToken() throws Exception {
         when(productos.listar()).thenReturn(List.of());

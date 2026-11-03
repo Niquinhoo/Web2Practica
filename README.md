@@ -1,8 +1,9 @@
 # Web2Practica · TP3
 
-Proyecto Maven de Web II: Java 25, Spring Boot 4, PostgreSQL y Flyway, evolucionado desde `TP2` en la rama `tp3`.
+Proyecto Maven de Web II: Java 25, Spring Boot 4, PostgreSQL y Flyway, evolucionado desde `TP2`. La rama de entrega es `TP3`, continuación de `tp3`.
 
 - [Consigna TP3](TP3-consigna.md), [teoría](TP3-teoria.md) y [plan de trabajo](TP3-paso-a-paso.md).
+- [Informe detallado del TP3](informe.md): cumplimiento requisito por requisito, pasos de implementación, decisiones, contenedores de PostgreSQL y demostración reproducible.
 - [Ejecutar API, autenticación, pruebas y variables](api-blank/README.md).
 - [Cobertura y evidencia de TP3](api-blank/docs/EVIDENCIA-TP3.md).
 - [Despliegue Cloudflare Containers y PostgreSQL por Tunnel](deployment/cloudflare/README.md).

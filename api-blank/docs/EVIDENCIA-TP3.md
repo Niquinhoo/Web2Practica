@@ -1,6 +1,23 @@
 # TP3 · Cobertura y evidencia
 
-Implementación sobre `tp3`, desde `TP2`. Fecha de ejecución: 29 de octubre de 2026.
+Implementación iniciada en `tp3`, desde `TP2`; rama de entrega `TP3`. Evidencia original del 29 de octubre y verificación de cierre del 3 de noviembre de 2026.
+
+## Cierre para entrega · 3 de noviembre de 2026
+
+Se declararon explícitamente el núcleo y los módulos de Testcontainers, se quitaron los filtros de ramas de CI, se ajustaron los patrones públicos a `/api/auth/**` y `/api/productos/**` y se trasladó `SeguridadIT` al paquete `seguridad`. El [informe detallado](../../informe.md) reúne el cumplimiento de cada requisito, la explicación de contenedores y la demostración de Swagger. La guía de defensa anterior se eliminó y se actualizaron sus enlaces.
+
+Se agregó `SeguridadIT.rutasPublicas_operacionesNoImplementadas_noExigenToken`: antes del ajuste falló con `404` esperado frente a `401`; después pasó en la suite completa. Las rutas públicas permiten llegar a la resolución HTTP de operaciones inexistentes, sin convertirlas en endpoints nuevos.
+
+Validación local ejecutada con JDK 25 y Docker:
+
+```powershell
+# Desde api-blank
+.\mvnw.cmd --batch-mode clean verify
+```
+
+Resultado: **BUILD SUCCESS, 58 unitarias y 25 integraciones**, cero fallos, errores u omisiones. PostgreSQL fue temporal, iniciado por Testcontainers; `clean` evitó conservar la clase del paquete anterior. También pasó `npm run check` del Worker y sus **cinco pruebas** con Node **24.22.1**, la versión de CI: **88 ejecuciones en total**. El Node 22.17 de la terminal no podía cargar `.ts`; el intento inicial falló y se repitió con la versión requerida, sin cambiar el código del Worker.
+
+[Resumen de resultados por suite](tp3/evidencias/entrega-2026-11-03.json). Los datos siguientes conservan su fecha original: no se repitieron las solicitudes de producción ni se publicó una imagen nueva. **Cloudflare sigue siendo el proveedor elegido expresamente por el usuario**, exceptuando para esta entrega la exigencia original de gratuidad. Workers Paid no se presenta como un plan gratuito; la evidencia Hobby se conserva como experiencia adicional histórica.
 
 ## Comprobaciones locales
 

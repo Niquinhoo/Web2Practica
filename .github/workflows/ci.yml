@@ -2,9 +2,7 @@ name: Java CI
 
 on:
   push:
-    branches: [main, TP1, TP2, tp2, tp3]
   pull_request:
-    branches: [main, TP2, tp3]
   workflow_dispatch:
 
 permissions:
