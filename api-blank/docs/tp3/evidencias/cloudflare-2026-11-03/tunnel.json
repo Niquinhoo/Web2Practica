@@ -1,0 +1,7 @@
+{
+  "fechaUtc": "2026-11-03T22:52:04.1092111Z",
+  "hostname": "tp3-postgres.osadiamarketing.com",
+  "httpSinTokenAccess": 403,
+  "postgresConAccess": "Comprobado con psql por listener local de cloudflared: SELECT 1 y V1-V6",
+  "credencialesPublicadas": false
+}

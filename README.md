@@ -8,6 +8,7 @@ Proyecto Maven de Web II: Java 25, Spring Boot 4, PostgreSQL y Flyway, evolucion
 - [Cobertura y evidencia de TP3](api-blank/docs/EVIDENCIA-TP3.md).
 - [Despliegue Cloudflare Containers y PostgreSQL por Tunnel](deployment/cloudflare/README.md).
 - [PostgreSQL local con Docker](api-blank/docs/tp3/postgresql-docker.md).
+- [Swagger de entrega en Cloudflare](https://web2-practica-tp3.nicotrib699.workers.dev/swagger-ui/index.html): revisión `994e5b7` de `TP3`, publicada y verificada el 3 de noviembre con [evidencia nueva](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/despliegue.json).
 
 Desde `api-blank`, con JDK 25 y Docker Desktop iniciado:
 

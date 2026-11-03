@@ -1,0 +1,44 @@
+{
+  "fechaUtc": "2026-11-03T22:42:39.1081876Z",
+  "url": "https://web2-practica-tp3.nicotrib699.workers.dev",
+  "rama": "TP3",
+  "revision": "994e5b7a57671ac6f703d68213b5d9a422a81293",
+  "resultado": false,
+  "casos": [
+    {
+      "caso": "health público",
+      "metodo": "GET",
+      "ruta": "/health",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "Swagger UI real",
+      "metodo": "GET",
+      "ruta": "/swagger-ui/index.html",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "OpenAPI público con Bearer",
+      "metodo": "GET",
+      "ruta": "/v3/api-docs",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "catálogo público",
+      "metodo": "GET",
+      "ruta": "/api/productos",
+      "esperado": 200,
+      "obtenido": 502
+    }
+  ],
+  "limpieza": {
+    "usuarios": 0,
+    "errores": []
+  },
+  "fallo": "catálogo público : 502, esperado 200",
+  "secretos": "No se guardaron contraseñas, JWT ni hashes",
+  "admin": "Caso ADMIN no alcanzado en este intento"
+}

@@ -2,6 +2,18 @@
 
 Implementación iniciada en `tp3`, desde `TP2`; rama de entrega `TP3`. Evidencia original del 29 de octubre y verificación de cierre del 3 de noviembre de 2026.
 
+## Publicación final en Cloudflare · 3 de noviembre de 2026
+
+Se publicó el commit **`994e5b7` de `TP3`**, después de [CI exitoso](https://github.com/Niquinhoo/Web2Practica/actions/runs/41732115409). Versión activa `fe9b2948-2f9d-4517-80c6-1118e800db92`, 100 % del tráfico, deployment `431a96af-3678-4069-b4d1-cdcb7debf350`. [Revisión e imagen exactas](tp3/evidencias/cloudflare-2026-11-03/despliegue.json).
+
+La rama duplicada `tp3` se retiró tras comprobar que no tenía commits exclusivos ni PR abiertos. `npm run deploy` permite solo la rama `TP3`; se comprobó el rechazo de una rama minúscula en un repositorio temporal. El nombre del Worker y la instancia `tp3` no son nombres de ramas y permanecen iguales.
+
+El [recorrido público completo](tp3/evidencias/cloudflare-2026-11-03/http-publico-completo.json) verificó **54 solicitudes**: productos, registro/login, 401, propiedad y filtrado, favoritos, errores 400/403/404/409, movimiento permitido y ADMIN sobre lista ajena. La cuenta ADMIN descartable se restauró a USER y se eliminaron las dos cuentas, listas y favoritos de ese recorrido. [V1–V6 remotas](tp3/evidencias/cloudflare-2026-11-03/migraciones-remotas.json) están en success en PostgreSQL 18.6. [Tunnel](tp3/evidencias/cloudflare-2026-11-03/tunnel.json): 403 HTTP sin Access y conexión PostgreSQL autenticada comprobada.
+
+El [primer intento del catálogo](tp3/evidencias/cloudflare-2026-11-03/http-intento-inicial.json) dio 502; después respondió 200 con 194 productos y pasó el recorrido completo. El [resumen de logs](tp3/evidencias/cloudflare-2026-11-03/runtime.json) conserva el incidente: 158 eventos con outcome ok, dos de nivel error asociados al catálogo; ventana posterior de 112 eventos info sin errores de ejecución. No se publican logs crudos ni cabeceras de visitantes.
+
+Swagger se verificó también en **Chrome**, ejecutando respuestas reales: [interfaz](tp3/evidencias/cloudflare-2026-11-03/swagger-ui.png), [health 200](tp3/evidencias/cloudflare-2026-11-03/health-swagger-200.png), [listas 401](tp3/evidencias/cloudflare-2026-11-03/listas-swagger-401.png) y [listas con JWT 200](tp3/evidencias/cloudflare-2026-11-03/listas-swagger-200.png). El token no aparece en las capturas. Se retiró la autorización y se cerró la pestaña. La revisión automática bloqueó la limpieza de la cuenta adicional de captura: quedó USER sin listas, identificada en [la evidencia del navegador](tp3/evidencias/cloudflare-2026-11-03/swagger-browser.json). El archivo privado temporal ya no contiene su JWT.
+
 ## Cierre para entrega · 3 de noviembre de 2026
 
 Se declararon explícitamente el núcleo y los módulos de Testcontainers, se quitaron los filtros de ramas de CI, se ajustaron los patrones públicos a `/api/auth/**` y `/api/productos/**` y se trasladó `SeguridadIT` al paquete `seguridad`. El [informe detallado](../../informe.md) reúne el cumplimiento de cada requisito, la explicación de contenedores y la demostración de Swagger. La guía de defensa anterior se eliminó y se actualizaron sus enlaces.
@@ -17,7 +29,7 @@ Validación local ejecutada con JDK 25 y Docker:
 
 Resultado: **BUILD SUCCESS, 58 unitarias y 25 integraciones**, cero fallos, errores u omisiones. PostgreSQL fue temporal, iniciado por Testcontainers; `clean` evitó conservar la clase del paquete anterior. También pasó `npm run check` del Worker y sus **cinco pruebas** con Node **24.22.1**, la versión de CI: **88 ejecuciones en total**. El Node 22.17 de la terminal no podía cargar `.ts`; el intento inicial falló y se repitió con la versión requerida, sin cambiar el código del Worker.
 
-[Resumen de resultados por suite](tp3/evidencias/entrega-2026-11-03.json). Los datos siguientes conservan su fecha original: no se repitieron las solicitudes de producción ni se publicó una imagen nueva. **Cloudflare sigue siendo el proveedor elegido expresamente por el usuario**, exceptuando para esta entrega la exigencia original de gratuidad. Workers Paid no se presenta como un plan gratuito; la evidencia Hobby se conserva como experiencia adicional histórica.
+[Resumen de resultados por suite](tp3/evidencias/entrega-2026-11-03.json). En esa primera preparación se verificó código sin publicar una imagen; la publicación posterior y sus comprobaciones están en el apartado anterior. **Cloudflare sigue siendo el proveedor elegido expresamente por el usuario**, exceptuando para esta entrega la exigencia original de gratuidad. Workers Paid no se presenta como un plan gratuito; la evidencia Hobby se conserva como experiencia adicional histórica.
 
 La [corrida de entrega en GitHub Actions](https://github.com/Niquinhoo/Web2Practica/actions/runs/41730538085), rama `TP3`, commit `82a32c6`, terminó en **success** con ambos jobs exitosos: Java/PostgreSQL y Worker. Incluye las nuevas comprobaciones; los enlaces rojos y verdes anteriores siguen acreditando la prueba deliberada exigida por el punto 6.
 

@@ -1,0 +1,44 @@
+{
+  "worker": "web2-practica-tp3",
+  "version": "fe9b2948-2f9d-4517-80c6-1118e800db92",
+  "ventanaCompleta": {
+    "desdeUtc": "2026-11-03T22:39:37.000Z",
+    "hastaUtc": "2026-11-03T22:48:29.321Z",
+    "eventos": 158,
+    "total": 158,
+    "niveles": {
+      "info": 156,
+      "error": 2
+    },
+    "resultados": {
+      "ok": 158
+    },
+    "erroresDeEjecucion": 0
+  },
+  "trasRecuperacion": {
+    "desdeUtc": "2026-11-03T22:44:07.000Z",
+    "hastaUtc": "2026-11-03T22:48:29.321Z",
+    "eventos": 112,
+    "total": 112,
+    "niveles": {
+      "info": 112
+    },
+    "resultados": {
+      "ok": 112
+    },
+    "erroresDeEjecucion": 0
+  },
+  "nota": "Los dos eventos iniciales de nivel error corresponden a GET /api/productos con respuesta 502 manejada; outcome ok. Posteriormente el catálogo respondió 200 y la verificación completa pasó.",
+  "contenedor": [
+    {
+      "id": "d591a723705ac02da45b7275d87ee7529930599f8ff6a8a71b511db0b62e5f4f",
+      "name": "tp3",
+      "started_at": "2026-11-03T22:40:49.925Z",
+      "status": {
+        "state": "stopped",
+        "updated_at": "2026-11-03T22:45:59.268Z"
+      },
+      "image": "registry.cloudflare.com/6d93a005ece548efa7de48c051ace6fb/cloudflare-build/87fa681664f3/web2-practica-tp3-api-base@sha256:05f430e51314feee8ddefdf92a1263beb29eb0171ab0fb78215cfd1ea00ae9c9"
+    }
+  ]
+}

@@ -16,10 +16,58 @@ Este informe contrasta las consignas proporcionadas con el código, la configura
 | 4. Propiedad y rol | Implementado. | ADMIN tiene excepción de propiedad también en operaciones de modificación. Las listas anteriores sin dueño quedan solo para ADMIN. |
 | 5. Pruebas | Nueva ejecución local en verde: 58 unitarias y 25 integraciones. | `SeguridadIT` está en el paquete `seguridad`; la integración global está junto a la aplicación. Base temporal por ejecución, con esquemas por clase. |
 | 6. CI | Nueva corrida de entrega en verde; fallo/recuperación anteriores conservados. | Eventos push y pull_request sin filtro de ramas, incluida `TP3`; jobs Java/PostgreSQL y Worker exitosos. |
-| 7. Despliegue | Cloudflare conservado según instrucción expresa. | Aplicación en Cloudflare Containers y PostgreSQL remoto por Access/Tunnel. Workers Paid se documenta como tal; Vercel queda como experiencia adicional histórica. |
+| 7. Despliegue | Nueva revisión publicada y verificada en Cloudflare el 3 de noviembre. | Commit `994e5b7` de `TP3`, versión `fe9b2948-2f9d-4517-80c6-1118e800db92` al 100 %. PostgreSQL remoto por Access/Tunnel; Vercel queda como experiencia adicional histórica. |
 | 8. Documentación | Implementado. | Swagger y README describen auth, permisos, pruebas, CI y despliegue; este informe reúne la explicación detallada. |
 
-**Alcance de la comprobación actual:** se ejecutó `clean verify` con JDK 25 y Docker, se comprobó TypeScript y se ejecutaron las cinco pruebas del Worker con Node 24.22.1. Las 83 ejecuciones Java y las cinco del Worker pasaron sin fallos. También se contrastaron migraciones e integridad documental. Las evidencias públicas de Cloudflare/Vercel siguen fechadas el **29 de octubre**: esta preparación de entrega no vuelve a desplegar ni modifica sus servicios.
+**Alcance de la comprobación actual:** 83 ejecuciones Java y cinco del Worker en verde, también en CI para la revisión publicada. Se desplegó `994e5b7` desde `TP3` y se verificaron **54 solicitudes públicas correctas**, además de health y acceso protegido 401/200 desde Swagger en Chrome. Se consultó PostgreSQL remoto para confirmar V1–V6 y se revisaron los eventos del Worker. La nueva evidencia de Cloudflare es del **3 de noviembre**; la publicación adicional de Vercel conserva sus evidencias del 29 de octubre.
+
+## Publicación final y verificación en Cloudflare · 3 de noviembre
+
+| Dato verificable | Resultado |
+|---|---|
+| Rama única de entrega | `TP3`. Se retiró `tp3` después de verificar que `86a5636` era ancestro de `TP3` y no tenía PR abiertos. |
+| Revisión de código e infraestructura publicada | `994e5b7a57671ac6f703d68213b5d9a422a81293`. Los commits posteriores de esta verificación solo registran documentación y evidencia. |
+| CI de esa revisión | [Corrida 41732115409](https://github.com/Niquinhoo/Web2Practica/actions/runs/41732115409), ambos jobs exitosos. |
+| Worker | `web2-practica-tp3`. |
+| Versión activa | `fe9b2948-2f9d-4517-80c6-1118e800db92`, 100 % del tráfico. |
+| Deployment | `431a96af-3678-4069-b4d1-cdcb7debf350`. |
+| Imagen ejecutada | Digest `sha256:05f430e51314feee8ddefdf92a1263beb29eb0171ab0fb78215cfd1ea00ae9c9`. |
+| Identificación de origen | Tag `TP3-994e5b7a5767` y mensaje de versión con la referencia al commit de `TP3`. |
+| Base remota | PostgreSQL 18.6; V1–V6 presentes, todas con `success=true`. |
+| Tunnel | HTTP sin credencial Access devuelve `403`; conexión PostgreSQL autenticada comprobada por el listener TCP de cloudflared. |
+| Control de publicación | `npm run deploy` ejecuta `predeploy`: permite `TP3`, rechaza cualquier otra rama. Se comprobó también el rechazo de `tp3`. |
+
+### Qué se verificó en la URL pública
+
+El [recorrido de 54 solicitudes](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/http-publico-completo.json) registró los códigos esperados y comprobó campos de las respuestas. Incluye:
+
+- Health y Swagger/OpenAPI públicos; esquema Bearer y operaciones auth presentes.
+- Productos reales: catálogo, producto existente, inexistente y rechazo de un método de escritura.
+- La ruta auth inexistente responde `404`: confirma en producción el patrón público de la revisión nueva.
+- Listas y favoritos sin JWT o con JWT inválido responden `401`.
+- Registro USER sin exponer contraseña/hash; duplicado `409`, entrada inválida `400` y login incorrecto `401`.
+- Dueño de lista tomado del token aunque el body incluya un ID ajeno; listado filtrado por dueño.
+- Lectura y borrado de listas ajenas, favoritos ajenos y altas/PUT hacia listas ajenas denegados con `403`.
+- Borrado de lista con favoritos `409`; movimiento con origen o destino ajeno `403`, mismo origen/destino `400` y destino inexistente `404`.
+- Movimiento propio `204`, origen eliminado y favorito conservado en el destino; actualización propia del favorito.
+- ADMIN real sobre recurso ajeno `200` y listado de recursos de ambos dueños. Se preparó solo una cuenta descartable, se restauró a USER y se comprobó nuevamente el `403` con un token USER nuevo.
+- Limpieza de los favoritos, listas y **las dos cuentas** de ese recorrido. No se modificaron cuentas o listas previas del usuario.
+
+Se comprobó además en PostgreSQL que las cuentas del recorrido tenían hashes BCrypt, sin copiar sus valores a la evidencia. El rollback ante una FK forzada se acredita con la integración en CI; no se introdujo esa falla artificial en producción.
+
+### Incidente observado y recuperación
+
+El [primer intento](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/http-intento-inicial.json) se detuvo cuando el catálogo externo produjo `502`. Las comprobaciones siguientes obtuvieron `200`, con 194 productos, y después pasó el recorrido completo. No se alteró el catálogo ni se ocultó el fallo con datos simulados. El código contempla `502` cuando falla el proveedor; esta observación no permite atribuir con certeza la causa al proveedor o al primer establecimiento de la conexión.
+
+El [resumen de runtime](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/runtime.json) contiene 158 eventos de la ventana revisada, todos con outcome `ok`: dos de nivel error corresponden a la solicitud de catálogo que respondió `502`. La ventana posterior contiene 112 eventos info, sin errores de ejecución. El estado `stopped` observado después de un minuto sin tráfico corresponde a la política de inactividad; la instancia utiliza el digest publicado. Health volvió a responder `200` en una comprobación posterior. No se afirma que esos conteos representen todas las horas de operación.
+
+### Capturas reales y limpieza de la sesión de navegador
+
+Se abrió Swagger en Chrome, se ejecutó health y se consultó listas primero sin token y después con un JWT de una cuenta descartable. Se guardaron [Swagger cargado](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/swagger-ui.png), [health 200](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/health-swagger-200.png), [listas 401](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/listas-swagger-401.png) y [listas 200](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/listas-swagger-200.png). Las capturas muestran respuestas ejecutadas, no `Example Value`, y el JWT quedó fuera del encuadre.
+
+La autorización se retiró de Swagger, se limpió la respuesta que contenía el Curl con JWT y se cerró la pestaña de prueba. La revisión automática **bloqueó el comando de limpieza de la cuenta adicional de captura**, sin explicar otro motivo que política. Esa tercera cuenta quedó como **USER y sin listas**, identificada en [swagger-browser.json](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/swagger-browser.json). El archivo temporal privado ya no contiene el token. Esto se distingue de las dos cuentas del recorrido de 54 solicitudes, que sí se eliminaron.
+
+Todos los artefactos públicos excluyen contraseñas, JWT, hashes y credenciales de infraestructura. La [evidencia del despliegue](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/despliegue.json), las [migraciones consultadas](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/migraciones-remotas.json) y la [protección del Tunnel](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/tunnel.json) completan la trazabilidad.
 
 Para navegar: [listado de cumplimiento](#listado-de-cumplimiento-requisito-por-requisito), [paso a paso](#reconstrucción-paso-a-paso-de-lo-realizado), [contenedores y bases](#el-contenedor-de-la-base-de-datos-qué-es-y-qué-decisión-resolvió), [consigna 1](#1-dependencias-y-configuración), [demostración](#demostración-reproducible-en-swagger) y [entregables y diferencias](#verificación-de-los-entregables-esperados).
 
@@ -61,7 +109,7 @@ La numeración interna de esta tabla permite referenciar cada exigencia, aun cua
 | 6.3 | Runner limpio sin PostgreSQL personal; wrapper ejecutable. | Testcontainers y propiedades dinámicas; `mvnw` versionado con modo 100755. | Implementado |
 | 7.1 | Proveedor gratuito con PostgreSQL. | Se conserva Cloudflare Containers y PostgreSQL remoto; el usuario exceptuó expresamente la exigencia de gratuidad para esta entrega. | Excepción de proveedor solicitada; despliegue documentado |
 | 7.2 | Conexión remota y secreto JWT por entorno. | Perfil prod, configuración de secretos y guías de publicación. | Implementado y documentado |
-| 7.3 | Migraciones remotas, health público y logs sin errores de arranque. | JSON de runtime con Flyway v6, smoke HTTP y capturas. | Evidencia histórica |
+| 7.3 | Migraciones remotas, health público y revisión de logs. | Consulta nueva V1–V6, runtime del Worker, 54 solicitudes y capturas ejecutadas en Swagger. | Verificado el 3 de noviembre |
 | 7.4 | Se permite apagar después de verificar. | Se conservan resultados y capturas; no se presupone disponibilidad actual. | Evidencia conservada |
 | 8.1 | Swagger documenta auth y recursos protegidos. | `AuthController`, `ApiConfig`, `@SecurityRequirement`, tags y respuestas 401/403. | Implementado |
 | 8.2 | README explica tests, CI y despliegue. | README de API y enlaces a ambas publicaciones. | Documentado |
@@ -580,6 +628,7 @@ La evidencia registra que se cambió una aserción para esperar ADMIN cuando el 
 - [Recuperación registrada](https://github.com/Niquinhoo/Web2Practica/actions/runs/40817598752).
 - [CI final citado en la documentación anterior](https://github.com/Niquinhoo/Web2Practica/actions/runs/40820858514).
 - [CI de entrega del 3 de noviembre, commit 82a32c6](https://github.com/Niquinhoo/Web2Practica/actions/runs/41730538085): jobs Java/PostgreSQL y Worker exitosos sobre la rama `TP3`, con las nuevas rutas públicas, dependencia explícita y paquete de pruebas corregido.
+- [CI de la revisión desplegada, commit 994e5b7](https://github.com/Niquinhoo/Web2Practica/actions/runs/41732115409): ambos jobs exitosos antes de publicar en Cloudflare.
 
 **Por qué se hizo:** “No solo configuré un archivo YAML: la evidencia muestra que una aserción incorrecta vuelve rojo el pipeline y que restaurarla lo hace pasar. Así compruebo que el workflow detecta fallos de las pruebas.”
 
@@ -644,7 +693,7 @@ La evidencia existente registra:
 - Registro, login y operaciones sobre listas/favoritos contra PostgreSQL real.
 - Logs resumidos de arranque y capturas conservadas en el repositorio.
 
-**Evidencia principal de Cloudflare:** [resultados HTTP](api-blank/docs/tp3/evidencias/http-publico.json), [resumen de runtime](api-blank/docs/tp3/evidencias/runtime-cloudflare.json), [health 200](api-blank/docs/tp3/evidencias/health-200.jpg), [listas 401](api-blank/docs/tp3/evidencias/listas-401.jpg) y [listas 200](api-blank/docs/tp3/evidencias/listas-200.jpg). La evidencia adicional de Vercel se conserva en [su guía](deployment/vercel/README.md), con el plan y las capturas de esa publicación.
+**Evidencia vigente de Cloudflare, 3 de noviembre:** [54 solicitudes HTTP](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/http-publico-completo.json), [runtime](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/runtime.json), [health 200](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/health-swagger-200.png), [listas 401](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/listas-swagger-401.png) y [listas 200](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/listas-swagger-200.png). La evidencia adicional de Vercel se conserva en [su guía](deployment/vercel/README.md), con el plan y las capturas de esa publicación.
 
 **¿Health demuestra que PostgreSQL funciona?** No por sí solo. [HealthController](api-blank/src/main/java/ar/edu/unvime/apiblank/web/HealthController.java) devuelve un JSON fijo con `status: ok` y `service: api-blank`. Para acreditar la base se muestran los logs de Flyway y las operaciones que realmente leen o escriben datos.
 
@@ -811,14 +860,14 @@ No hay un endpoint público para eliminar usuarios; esas cuentas permanecen. Log
 | Evolución de TP2 con autenticación/autorización. | Mismo proyecto `api-blank`, paquetes de usuario y seguridad, servicios con propiedad. |
 | V5 y V6 nuevas; migraciones anteriores sin alterar. | [V5](api-blank/src/main/resources/db/migration/V5__create_usuarios.sql), [V6](api-blank/src/main/resources/db/migration/V6__add_usuario_id_a_listas.sql). La comparación actual de V1–V4 entre `TP2` y `HEAD` no produjo diferencias. El historial visible de V5/V6 muestra su alta en `6b7492f` y ninguna edición posterior versionada. Eso no demuestra por sí solo el checksum actual de una base remota, que no se consultó de nuevo. |
 | Unitarias e integraciones en verde. | Nueva ejecución del 3 de noviembre: 58 + 25 Java; otras cinco del Worker. Resumen en [EVIDENCIA-TP3](api-blank/docs/EVIDENCIA-TP3.md). |
-| Al menos una corrida Actions exitosa. | [Nueva corrida de entrega en TP3, 3 de noviembre](https://github.com/Niquinhoo/Web2Practica/actions/runs/41730538085), commit `82a32c6`; también se conserva la recuperación histórica. |
-| URL pública y capturas de health 200, protegido 401/200. | Cloudflare: [resultados](api-blank/docs/tp3/evidencias/http-publico.json), [health](api-blank/docs/tp3/evidencias/health-200.jpg), [401](api-blank/docs/tp3/evidencias/listas-401.jpg), [200](api-blank/docs/tp3/evidencias/listas-200.jpg). |
+| Al menos una corrida Actions exitosa. | [CI de la revisión desplegada](https://github.com/Niquinhoo/Web2Practica/actions/runs/41732115409), commit `994e5b7` de `TP3`; también se conserva la recuperación histórica. |
+| URL pública y capturas de health 200, protegido 401/200. | Cloudflare, 3 de noviembre: [54 solicitudes](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/http-publico-completo.json), [health](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/health-swagger-200.png), [401](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/listas-swagger-401.png), [200](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/listas-swagger-200.png). |
 | README con ubicación y justificación de propiedad. | [README de API](api-blank/README.md), sección «Endpoints y propiedad». |
 
 ### Ajustes de cierre aplicados el 3 de noviembre
 
 1. Se declaró directamente el núcleo `testcontainers` con scope test, además de los módulos JUnit y PostgreSQL.
-2. Se quitaron los filtros de ramas de push y pull_request. El nombre de entrega es `TP3`; se conserva la historia de `tp3` sin reescribirla ni eliminar su rama remota.
+2. Se quitaron los filtros de ramas de push y pull_request. La rama de entrega y despliegue es `TP3`. Posteriormente se retiró la referencia remota duplicada `tp3`, comprobando antes que todos sus commits estaban incluidos y que no tenía PR abiertos; su historia sigue incluida en `TP3`.
 3. Se cambiaron los patrones de acceso público a `/api/auth/**` y `/api/productos/**`. Una nueva integración comprobó primero el fallo anterior (`404` esperado frente a `401`) y, después del cambio, pasó con toda la suite.
 4. Se trasladó `SeguridadIT` al paquete `seguridad` y se expusieron solo las operaciones compartidas del helper de base temporal que necesita desde allí. `clean verify` eliminó clases antiguas para no duplicar casos por el cambio de paquete.
 5. Se integraron la explicación, la demostración y la matriz de cumplimiento en este informe; se retiró la guía de defensa anterior y se actualizaron sus referencias.
@@ -830,7 +879,7 @@ Nimbus en lugar de JJWT y el filtro Bearer nativo son opciones permitidas por la
 
 Se inspeccionaron POM, configuración, modelo/persistencia de usuarios y listas, cadena de seguridad, autorización en servicios, clases de pruebas, Compose, Dockerfile, entrypoint, workflow y evidencias de publicación. Se compararon V1–V4 contra TP2, se leyó el historial de V5/V6 y se comprobó que el wrapper esté registrado como ejecutable. También se sumaron las ejecuciones de los 12 XML locales guardados y se verificó la presencia del núcleo de Testcontainers en su classpath.
 
-Se ejecutó `clean verify`: 58 unitarias y 25 integraciones, sin fallos, errores u omisiones. Se ejecutó `npm run check` y las cinco pruebas del Worker con Node 24.22.1. La regresión de rutas públicas falló antes del ajuste y pasó en la suite posterior. Las comprobaciones editoriales verifican las ocho consignas, las 36 filas, enlaces, bloques de código y ausencia de referencias a la guía eliminada. No se reiniciaron servicios de despliegue ni se publicó una nueva imagen. Los pasos de demostración HTTP siguen siendo instrucciones, no solicitudes nuevas ejecutadas contra producción.
+Se ejecutó `clean verify`: 58 unitarias y 25 integraciones, sin fallos, errores u omisiones. Se ejecutó `npm run check` y las cinco pruebas del Worker con Node 24.22.1. La regresión de rutas públicas falló antes del ajuste y pasó en la suite posterior. La revisión `994e5b7` pasó CI antes de desplegarse en Cloudflare. Se verificaron 54 solicitudes públicas, V1–V6 en la base, protección Access y los códigos 200/401/200 en Swagger. Las comprobaciones editoriales incluyen las ocho consignas, las 36 filas, enlaces, bloques de código y ausencia de referencias a la guía eliminada. Las instrucciones genéricas de demostración se distinguen del recorrido nuevo efectivamente registrado.
 
 ## Autoevaluación antes de defender
 
@@ -847,4 +896,4 @@ Podés considerar preparado un punto cuando puedas explicarlo sin leer el párra
 
 ## Límites que conviene poder reconocer
 
-No hay refresh tokens ni revocación inmediata; los permisos del JWT se mantienen hasta vencer. La disponibilidad de datos depende del equipo remoto y su túnel. La verificación local es del 3 de noviembre; la evidencia de despliegue conserva su fecha histórica y no acredita que la nueva revisión ya esté publicada en Cloudflare. El uso de Workers Paid es una elección expresa del usuario.
+No hay refresh tokens ni revocación inmediata; los permisos del JWT se mantienen hasta vencer. La disponibilidad depende del equipo remoto, su túnel y el proveedor del catálogo. La revisión `994e5b7` está publicada y verificada en Cloudflare; Workers Paid es una elección expresa del usuario. Queda una cuenta USER de captura sin listas por el bloqueo automático de su limpieza, detallado en la evidencia; la sesión y el token temporal se retiraron.

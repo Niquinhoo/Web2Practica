@@ -1,6 +1,6 @@
 # TP3 · Resolución paso a paso
 
-La resolución se entrega en `Web2Practica/TP3`, continuación de `tp3` y basada en `TP2`. [Consigna](TP3-consigna.md), [teoría](TP3-teoria.md), [informe detallado](informe.md) y [evidencia de ejecución](api-blank/docs/EVIDENCIA-TP3.md). Los pasos 1–11 describen la implementación inicial; el paso 12 registra los ajustes de entrega.
+La resolución se entrega en `Web2Practica/TP3`, continuación de `tp3` y basada en `TP2`. [Consigna](TP3-consigna.md), [teoría](TP3-teoria.md), [informe detallado](informe.md) y [evidencia de ejecución](api-blank/docs/EVIDENCIA-TP3.md). Los pasos 1–11 describen la implementación inicial; los pasos 12–13 registran los ajustes de entrega y la publicación verificada.
 
 ## 1. Conservar TP2 y revisar la base
 
@@ -98,3 +98,9 @@ Se agregó la dependencia directa `testcontainers`, se habilitó CI para cada pu
 Una integración nueva reprodujo primero el `401` incorrecto en una ruta auth inexistente y pasó después del ajuste, esperando `404` y `405` según la operación. `clean verify` terminó con **58 unitarias y 25 integraciones en verde**. El Worker pasó TypeScript y sus cinco pruebas con Node 24.22.1. El detalle por consigna y la explicación de la base están en `informe.md`; los resultados nuevos se distinguen de las evidencias históricas de despliegue.
 
 Se mantiene **Cloudflare como proveedor por elección expresa del usuario**. No se migra infraestructura ni se vuelve a desplegar al preparar este commit. La entrega se publica en la rama `TP3`, continuando la historia previa de `tp3`.
+
+## 13. Publicar y comprobar la revisión final en Cloudflare
+
+Se publicó `994e5b7` desde `TP3`, tras CI exitoso, como versión `fe9b2948-2f9d-4517-80c6-1118e800db92`. Se retiró la rama remota duplicada `tp3`, cuya historia ya estaba incluida, y se agregó un control que impide ejecutar `npm run deploy` desde otra rama.
+
+El recorrido público verificó 54 solicitudes, incluidos ADMIN, permisos y movimientos; se consultaron las seis migraciones remotas y se capturaron health 200 y listas 401/200 reales desde Swagger. Se conservó el 502 inicial del catálogo y su recuperación. Las dos cuentas del recorrido completo se eliminaron; una cuenta USER adicional de captura quedó sin listas por el bloqueo automático de su limpieza, documentado en el informe. [Resultados, capturas y revisión exacta](informe.md).

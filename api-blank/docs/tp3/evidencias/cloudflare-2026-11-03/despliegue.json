@@ -1,0 +1,28 @@
+{
+  "fechaUtc": "2026-11-03T22:41:01.3350104Z",
+  "rama": "TP3",
+  "revision": "994e5b7a57671ac6f703d68213b5d9a422a81293",
+  "worker": "web2-practica-tp3",
+  "url": "https://web2-practica-tp3.nicotrib699.workers.dev",
+  "version": "fe9b2948-2f9d-4517-80c6-1118e800db92",
+  "digestImagen": "sha256:05f430e51314feee8ddefdf92a1263beb29eb0171ab0fb78215cfd1ea00ae9c9",
+  "despliegue": {
+    "id": "431a96af-3678-4069-b4d1-cdcb7debf350",
+    "source": "cf_cli",
+    "strategy": "percentage",
+    "annotations": {
+      "workers/message": "Entrega desde TP3; commit 994e5b7a57671ac6f703d...",
+      "workers/triggered_by": "upload"
+    },
+    "versions": [
+      {
+        "version_id": "fe9b2948-2f9d-4517-80c6-1118e800db92",
+        "percentage": 100
+      }
+    ],
+    "created_on": "2026-11-03T22:39:37.283383Z"
+  },
+  "ci": "https://github.com/Niquinhoo/Web2Practica/actions/runs/41732115409",
+  "ramaMinuscula": "Retirada tras comprobar que su commit era ancestro de TP3 y no tenía PR abiertos",
+  "control": "predeploy acepta TP3 y rechaza tp3"
+}

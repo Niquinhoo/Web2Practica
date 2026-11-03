@@ -1,0 +1,24 @@
+{
+  "fechaUtc": "2026-11-03T22:54:52.0409538Z",
+  "browser": "Chrome",
+  "url": "https://web2-practica-tp3.nicotrib699.workers.dev/swagger-ui/index.html",
+  "health": 200,
+  "listasSinToken": 401,
+  "listasConToken": 200,
+  "capturas": [
+    "swagger-ui.png",
+    "health-swagger-200.png",
+    "listas-swagger-401.png",
+    "listas-swagger-200.png"
+  ],
+  "sesionCerrada": true,
+  "cuentaDescartable": {
+    "id": 13,
+    "email": "tp3-captura-3cb0c3d8ac9d49a5ab8ebb768b5fef5b@example.com",
+    "rol": "USER",
+    "listas": 0,
+    "eliminada": false,
+    "motivo": "La revisión automática bloqueó el comando de limpieza por política sin más detalle"
+  },
+  "tokensVisiblesEnCapturas": false
+}

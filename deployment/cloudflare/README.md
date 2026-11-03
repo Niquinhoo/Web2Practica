@@ -58,3 +58,11 @@ sudo journalctl -u web2-tp3-tunnel -n 50 --no-pager
 Detener ese servicio interrumpe el acceso de la API a la base, pero no borra datos ni apaga PostgreSQL. El servicio está habilitado para iniciar al arrancar el equipo.
 
 La prueba deliberada de CI y su recuperación se hicieron originalmente en `tp3`. La rama vigente de código y despliegue es **`TP3`**. `npm run deploy` ejecuta un control previo que rechaza cualquier otra rama, incluso `tp3`. Antes de publicar, comprobar que los jobs Java y Cloudflare de esa revisión estén verdes, que los archivos a desplegar estén commiteados y usar `--tag TP3-<commit>` y `--message` para registrar la revisión. La publicación es manual; no se dejó una credencial de Cloudflare de uso general en GitHub. El identificador de instancia `tp3` y el nombre del Worker no cambian: no son referencias Git.
+
+## Publicación de entrega verificada · 3 de noviembre
+
+Código publicado desde `TP3`: `994e5b7a57671ac6f703d68213b5d9a422a81293`, con CI en verde antes de publicar. Versión `fe9b2948-2f9d-4517-80c6-1118e800db92`, al 100 %, tag `TP3-994e5b7a5767`. [Metadata del despliegue](../../api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/despliegue.json).
+
+Se verificaron 54 solicitudes HTTP, V1–V6 remotas y acceso ADMIN con cuenta descartable; también se ejecutaron health 200 y listas 401/200 en Swagger desde Chrome. La evidencia conserva un 502 inicial del catálogo y la recuperación posterior. [Informe y límites de la comprobación](../../informe.md). Los commits posteriores que guardan evidencia no cambian el código de la imagen ya publicada.
+
+La referencia remota duplicada `tp3` fue retirada tras comprobar que su historia estaba incluida en `TP3` y que no tenía PR abiertos. Solo se usa **`TP3` en mayúsculas** para futuras publicaciones de código y despliegue.

@@ -1,0 +1,35 @@
+{
+  "postgresVersion": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
+  "migraciones": [
+    {
+      "version": "1",
+      "descripcion": "create favoritos",
+      "success": true
+    },
+    {
+      "version": "2",
+      "descripcion": "create listas",
+      "success": true
+    },
+    {
+      "version": "3",
+      "descripcion": "add lista id a favoritos",
+      "success": true
+    },
+    {
+      "version": "4",
+      "descripcion": "lista id obligatorio",
+      "success": true
+    },
+    {
+      "version": "5",
+      "descripcion": "create usuarios",
+      "success": true
+    },
+    {
+      "version": "6",
+      "descripcion": "add usuario id a listas",
+      "success": true
+    }
+  ]
+}

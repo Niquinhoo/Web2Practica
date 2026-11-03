@@ -1,0 +1,5 @@
+{
+  "status": 401,
+  "mensaje": "Se requiere un token válido",
+  "campos": {}
+}
