@@ -19,6 +19,8 @@ Resultado: **BUILD SUCCESS, 58 unitarias y 25 integraciones**, cero fallos, erro
 
 [Resumen de resultados por suite](tp3/evidencias/entrega-2026-11-03.json). Los datos siguientes conservan su fecha original: no se repitieron las solicitudes de producción ni se publicó una imagen nueva. **Cloudflare sigue siendo el proveedor elegido expresamente por el usuario**, exceptuando para esta entrega la exigencia original de gratuidad. Workers Paid no se presenta como un plan gratuito; la evidencia Hobby se conserva como experiencia adicional histórica.
 
+La [corrida de entrega en GitHub Actions](https://github.com/Niquinhoo/Web2Practica/actions/runs/41730538085), rama `TP3`, commit `82a32c6`, terminó en **success** con ambos jobs exitosos: Java/PostgreSQL y Worker. Incluye las nuevas comprobaciones; los enlaces rojos y verdes anteriores siguen acreditando la prueba deliberada exigida por el punto 6.
+
 ## Comprobaciones locales
 
 `./mvnw --batch-mode verify` pasó con **58 pruebas unitarias y 24 de integración**, sin fallos ni omisiones. Las integraciones usaron PostgreSQL 17.11 temporal, iniciado por Testcontainers; se verificó evolución e idempotencia de V1–V6 con datos previos conservados. Reportes XML en `target/surefire-reports` y `target/failsafe-reports`.

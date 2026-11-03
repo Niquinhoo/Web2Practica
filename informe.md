@@ -15,7 +15,7 @@ Este informe contrasta las consignas proporcionadas con el código, la configura
 | 3. Login y JWT | Implementado y verificado. | Filtro Bearer nativo y patrones públicos `/api/auth/**` y `/api/productos/**`, como pide el enunciado. Las operaciones inexistentes siguen respondiendo 404/405. |
 | 4. Propiedad y rol | Implementado. | ADMIN tiene excepción de propiedad también en operaciones de modificación. Las listas anteriores sin dueño quedan solo para ADMIN. |
 | 5. Pruebas | Nueva ejecución local en verde: 58 unitarias y 25 integraciones. | `SeguridadIT` está en el paquete `seguridad`; la integración global está junto a la aplicación. Base temporal por ejecución, con esquemas por clase. |
-| 6. CI | Implementado; fallo/recuperación anteriores conservados. | Eventos push y pull_request sin filtro de ramas, incluida la rama de entrega `TP3`. |
+| 6. CI | Nueva corrida de entrega en verde; fallo/recuperación anteriores conservados. | Eventos push y pull_request sin filtro de ramas, incluida `TP3`; jobs Java/PostgreSQL y Worker exitosos. |
 | 7. Despliegue | Cloudflare conservado según instrucción expresa. | Aplicación en Cloudflare Containers y PostgreSQL remoto por Access/Tunnel. Workers Paid se documenta como tal; Vercel queda como experiencia adicional histórica. |
 | 8. Documentación | Implementado. | Swagger y README describen auth, permisos, pruebas, CI y despliegue; este informe reúne la explicación detallada. |
 
@@ -579,6 +579,7 @@ La evidencia registra que se cambió una aserción para esperar ADMIN cuando el 
 - [Corrida con fallo deliberado](https://github.com/Niquinhoo/Web2Practica/actions/runs/40817485164).
 - [Recuperación registrada](https://github.com/Niquinhoo/Web2Practica/actions/runs/40817598752).
 - [CI final citado en la documentación anterior](https://github.com/Niquinhoo/Web2Practica/actions/runs/40820858514).
+- [CI de entrega del 3 de noviembre, commit 82a32c6](https://github.com/Niquinhoo/Web2Practica/actions/runs/41730538085): jobs Java/PostgreSQL y Worker exitosos sobre la rama `TP3`, con las nuevas rutas públicas, dependencia explícita y paquete de pruebas corregido.
 
 **Por qué se hizo:** “No solo configuré un archivo YAML: la evidencia muestra que una aserción incorrecta vuelve rojo el pipeline y que restaurarla lo hace pasar. Así compruebo que el workflow detecta fallos de las pruebas.”
 
@@ -810,7 +811,7 @@ No hay un endpoint público para eliminar usuarios; esas cuentas permanecen. Log
 | Evolución de TP2 con autenticación/autorización. | Mismo proyecto `api-blank`, paquetes de usuario y seguridad, servicios con propiedad. |
 | V5 y V6 nuevas; migraciones anteriores sin alterar. | [V5](api-blank/src/main/resources/db/migration/V5__create_usuarios.sql), [V6](api-blank/src/main/resources/db/migration/V6__add_usuario_id_a_listas.sql). La comparación actual de V1–V4 entre `TP2` y `HEAD` no produjo diferencias. El historial visible de V5/V6 muestra su alta en `6b7492f` y ninguna edición posterior versionada. Eso no demuestra por sí solo el checksum actual de una base remota, que no se consultó de nuevo. |
 | Unitarias e integraciones en verde. | Nueva ejecución del 3 de noviembre: 58 + 25 Java; otras cinco del Worker. Resumen en [EVIDENCIA-TP3](api-blank/docs/EVIDENCIA-TP3.md). |
-| Al menos una corrida Actions exitosa. | [Recuperación registrada](https://github.com/Niquinhoo/Web2Practica/actions/runs/40817598752) y enlaces de CI de la evidencia. |
+| Al menos una corrida Actions exitosa. | [Nueva corrida de entrega en TP3, 3 de noviembre](https://github.com/Niquinhoo/Web2Practica/actions/runs/41730538085), commit `82a32c6`; también se conserva la recuperación histórica. |
 | URL pública y capturas de health 200, protegido 401/200. | Cloudflare: [resultados](api-blank/docs/tp3/evidencias/http-publico.json), [health](api-blank/docs/tp3/evidencias/health-200.jpg), [401](api-blank/docs/tp3/evidencias/listas-401.jpg), [200](api-blank/docs/tp3/evidencias/listas-200.jpg). |
 | README con ubicación y justificación de propiedad. | [README de API](api-blank/README.md), sección «Endpoints y propiedad». |
 

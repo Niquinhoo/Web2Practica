@@ -120,5 +120,22 @@
     "despues": "Incluida en la suite completa en verde; auth inexistente 404 y POST productos 405"
   },
   "incidenciaEntorno": "npm test con Node 22.17 fallo por extension .ts; repetido con Node 24.22.1 requerido por CI: 5 casos en verde",
-  "despliegue": "Sin nueva publicacion ni solicitudes a produccion; Cloudflare conservado por instruccion del usuario"
+  "despliegue": "Sin nueva publicacion ni solicitudes a produccion; Cloudflare conservado por instruccion del usuario",
+  "ci": {
+    "url": "https://github.com/Niquinhoo/Web2Practica/actions/runs/41730538085",
+    "revision": "82a32c6a4ce9f3fdb6105455626f6e6f73ce2ab8",
+    "rama": "TP3",
+    "resultado": "success",
+    "java": {
+      "unitarias": 58,
+      "integraciones": 25,
+      "fallos": 0,
+      "errores": 0,
+      "omitidas": 0
+    },
+    "worker": {
+      "ejecuciones": 5,
+      "fallos": 0
+    }
+  }
 }
