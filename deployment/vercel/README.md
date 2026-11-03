@@ -21,11 +21,11 @@ La base propia y el Tunnel evitan contratar una base administrada para este segu
 
 ## Pasos reproducibles
 
-1. Verificar que las pruebas de la revisión de `tp3` estén en verde. El proyecto procede de `Niquinhoo/Web2Practica`, no de otro repositorio ni de `main`.
+1. Verificar que las pruebas de la revisión de `TP3` estén en verde. El proyecto procede de `Niquinhoo/Web2Practica`, no de otro repositorio ni de `main`. La publicación inicial fue desde `tp3`; desde la unificación del 3 de noviembre se usa exclusivamente `TP3` para nuevas publicaciones.
 2. Crear un proyecto Vercel separado llamado `web2-practica-tp3`, seleccionar el preset `Container` y Root Directory `api-blank`. Usar `api-blank/Dockerfile` como Dockerfile del contexto de construcción.
-3. Confirmar que el equipo es Hobby. Elegir una sola región `gru1`, cercana a la base doméstica. Se deshabilitaron los despliegues Preview de este proyecto: las credenciales se configuraron para Production y esta experiencia se publica manualmente desde `tp3`.
+3. Confirmar que el equipo es Hobby. Elegir una sola región `gru1`, cercana a la base doméstica. Se deshabilitaron los despliegues Preview de este proyecto: las credenciales se configuraron para Production y esta experiencia se publica manualmente desde `TP3`.
 4. Configurar para Production las variables descritas abajo, mediante el CLI autenticado si el conector no tiene permisos. Los secretos no se escriben en el repositorio. Se preparó un archivo privado ignorado por Git, `deployment/cloudflare/.secrets/production-vercel.json`, con una clave JWT nueva para esta segunda publicación; no debe copiarse a la documentación ni a capturas.
-5. Crear explícitamente un despliegue Production del ref `tp3`; no usar el default `main` del repositorio. La publicación no implica fusionar ramas ni cambiar `main`.
+5. Crear explícitamente un despliegue Production del ref `TP3`; no usar el default `main` del repositorio. La publicación no implica fusionar ramas ni cambiar `main`.
 6. Esperar el estado Ready y revisar logs de construcción y ejecución. Confirmar el inicio de Spring y la verificación de Flyway sobre la base remota. Una base ya migrada puede mostrar que está actualizada en v6; no debe volver a crear ni borrar sus tablas.
 7. Registrar la URL real y ejecutar el smoke HTTP. No dar por probado PostgreSQL solamente porque responde health.
 

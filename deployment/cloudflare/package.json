@@ -10,6 +10,7 @@
   "scripts": {
     "check": "tsc --noEmit",
     "build": "cf deploy --dry-run",
+    "predeploy": "node -e \"if(require('node:child_process').execFileSync('git',['branch','--show-current'],{encoding:'utf8'}).trim()!=='TP3')throw new Error('El deploy requiere la rama TP3')\"",
     "deploy": "cf deploy --secrets-file .secrets/production.json",
     "test": "node --test src/index.test.mjs"
   },

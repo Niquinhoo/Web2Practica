@@ -57,4 +57,4 @@ sudo journalctl -u web2-tp3-tunnel -n 50 --no-pager
 
 Detener ese servicio interrumpe el acceso de la API a la base, pero no borra datos ni apaga PostgreSQL. El servicio está habilitado para iniciar al arrancar el equipo.
 
-La prueba deliberada de CI y su recuperación se hicieron únicamente en `tp3`. Antes de ejecutar `npm run deploy`, comprobar que los jobs Java y Cloudflare de la revisión que se va a publicar estén verdes. La publicación actual es manual; no se dejó una credencial de Cloudflare de uso general en GitHub.
+La prueba deliberada de CI y su recuperación se hicieron originalmente en `tp3`. La rama vigente de código y despliegue es **`TP3`**. `npm run deploy` ejecuta un control previo que rechaza cualquier otra rama, incluso `tp3`. Antes de publicar, comprobar que los jobs Java y Cloudflare de esa revisión estén verdes, que los archivos a desplegar estén commiteados y usar `--tag TP3-<commit>` y `--message` para registrar la revisión. La publicación es manual; no se dejó una credencial de Cloudflare de uso general en GitHub. El identificador de instancia `tp3` y el nombre del Worker no cambian: no son referencias Git.

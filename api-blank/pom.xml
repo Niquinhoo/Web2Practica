@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>api-blank</name>
 	<description>TP3: Productos, favoritos y listas con PostgreSQL y Flyway para Web II</description>
-	<url>https://github.com/Niquinhoo/Web2Practica/tree/main/api-blank</url>
+	<url>https://github.com/Niquinhoo/Web2Practica/tree/TP3/api-blank</url>
 	<licenses>
 		<license/>
 	</licenses>
@@ -24,7 +24,7 @@
 		<connection>scm:git:https://github.com/Niquinhoo/Web2Practica.git</connection>
 		<developerConnection>scm:git:https://github.com/Niquinhoo/Web2Practica.git</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/Niquinhoo/Web2Practica/tree/main/api-blank</url>
+		<url>https://github.com/Niquinhoo/Web2Practica/tree/TP3/api-blank</url>
 	</scm>
 	<properties>
 		<java.version>25</java.version>
