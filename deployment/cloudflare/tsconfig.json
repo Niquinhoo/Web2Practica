@@ -5,12 +5,15 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "types": [
       "@cloudflare/workers-types"
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "cloudflare.config.ts",
+    "database-proxy/*.ts"
   ]
 }

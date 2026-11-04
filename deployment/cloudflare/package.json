@@ -12,7 +12,9 @@
     "build": "cf deploy --dry-run",
     "predeploy": "node -e \"if(require('node:child_process').execFileSync('git',['branch','--show-current'],{encoding:'utf8'}).trim()!=='TP3')throw new Error('El deploy requiere la rama TP3')\"",
     "deploy": "cf deploy --secrets-file .secrets/production.json",
-    "test": "node --test src/index.test.mjs"
+    "predeploy:db-proxy": "npm run predeploy",
+    "deploy:db-proxy": "cd database-proxy && cf deploy --secrets-file ../.secrets/database-proxy.json",
+    "test": "node --test src/*.test.mjs"
   },
   "engines": {
     "node": ">=24.22.0"
