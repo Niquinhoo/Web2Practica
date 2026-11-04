@@ -23,13 +23,19 @@ function fixture(health = async () => new Response("ok"), running = false) {
       assert.equal(port, 8080);
       return { fetch: async (input) => {
         if (typeof input === "string") return health();
+        if (this.forwardError) throw this.forwardError;
         forwarded.push(input);
         return new Response("forwarded");
       } };
     },
   };
   const api = new ApiContainer({container, blockConcurrencyWhile: fn => fn()}, env);
-  return {api, starts, idle, forwarded};
+  return {api, container, starts, idle, forwarded};
+}
+function healthContado() {
+  const contador = {calls: 0};
+  contador.health = async () => { contador.calls++; return new Response("ok"); };
+  return contador;
 }
 test("cold start espera readiness y conserva body y bearer con headers de proxy confiables", async () => {
   let attempts = 0;
@@ -71,6 +77,39 @@ test("instancia caliente restaura inactividad sin iniciar otra JVM", async () =>
   const f = fixture(undefined, true);
   assert.equal((await f.api.fetch(new Request("https://api.example.com/health"))).status, 200);
   assert.equal(f.starts.length, 0); assert.ok(f.idle.every(x=>x===60000));
+});
+test("instancia verificada no repite readiness en peticiones siguientes", async () => {
+  const h = healthContado();
+  const f = fixture(h.health, true);
+  await f.api.fetch(new Request("https://api.example.com/api/listas"));
+  const idleTrasVerificar = f.idle.length;
+  for (let i = 0; i < 2; i++) assert.equal((await f.api.fetch(new Request("https://api.example.com/api/listas"))).status, 200);
+  assert.equal(h.calls, 1);
+  assert.equal(f.idle.length, idleTrasVerificar);
+  assert.equal(f.forwarded.length, 3);
+});
+test("contenedor detenido vuelve a iniciarse y verificarse", async () => {
+  const h = healthContado();
+  const f = fixture(h.health);
+  await f.api.fetch(new Request("https://api.example.com/api/listas"));
+  f.container.running = false;
+  assert.equal((await f.api.fetch(new Request("https://api.example.com/api/listas"))).status, 200);
+  assert.equal(f.starts.length, 2);
+  assert.equal(h.calls, 2);
+});
+test("fallo al reenviar responde 503 y la siguiente petición vuelve a verificar", async () => {
+  const logger = mock.method(console,"error",()=>{});
+  const h = healthContado();
+  const f = fixture(h.health, true);
+  await f.api.fetch(new Request("https://api.example.com/api/listas"));
+  f.container.forwardError = new Error("detalle-interno");
+  const fallida = await f.api.fetch(new Request("https://api.example.com/api/listas"));
+  assert.equal(fallida.status, 503);
+  assert.equal(h.calls, 1);
+  delete f.container.forwardError;
+  assert.equal((await f.api.fetch(new Request("https://api.example.com/api/listas"))).status, 200);
+  assert.equal(h.calls, 2);
+  logger.mock.restore();
 });
 test("router usa siempre la única instancia tp3", async () => {
   let name;

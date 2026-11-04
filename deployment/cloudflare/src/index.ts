@@ -13,6 +13,7 @@ interface Env {
 }
 export class ApiContainer extends DurableObject<Env> {
   private starting: Promise<void> | undefined;
+  private ready = false;
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     if (ctx.container?.running) {
@@ -21,8 +22,11 @@ export class ApiContainer extends DurableObject<Env> {
   }
   async fetch(request: Request): Promise<Response> {
     try {
-      this.starting ??= this.startAndWait().finally(() => { this.starting = undefined; });
-      await this.starting;
+      // Con la JVM ya verificada no se repite el readiness: sumaría latencia a cada petición.
+      if (!this.ready || !this.ctx.container!.running) {
+        this.starting ??= this.startAndWait().finally(() => { this.starting = undefined; });
+        await this.starting;
+      }
       const original = new URL(request.url);
       const url = new URL(request.url);
       url.protocol = "http:";
@@ -35,11 +39,13 @@ export class ApiContainer extends DurableObject<Env> {
       forwarded.headers.set("X-Forwarded-Port", original.port || (original.protocol === "https:" ? "443" : "80"));
       return await this.ctx.container!.getTcpPort(8080).fetch(forwarded);
     } catch (error) {
+      this.ready = false;
       console.error("No se pudo iniciar o contactar la API", error instanceof Error ? error.message : "Error del contenedor");
       return Response.json({status: 503, mensaje: "La API está iniciando o no está disponible"}, {status: 503});
     }
   }
   private async startAndWait(): Promise<void> {
+    this.ready = false;
     const container = this.ctx.container!;
     if (!container.running) {
       container.start({
@@ -70,7 +76,7 @@ export class ApiContainer extends DurableObject<Env> {
       try {
         const health = await container.getTcpPort(8080).fetch("http://container/health", {signal: AbortSignal.timeout(1000)});
         await health.body?.cancel();
-        if (health.ok) return;
+        if (health.ok) { this.ready = true; return; }
       } catch { /* El puerto todavía puede estar iniciando. */ }
       await scheduler.wait(1000);
     }
