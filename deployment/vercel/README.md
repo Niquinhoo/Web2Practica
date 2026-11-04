@@ -6,10 +6,10 @@ Se agregó una publicación verificada de la misma API Java/Spring en Vercel Hob
 
 - [API / health](https://web2-practica-tp3.vercel.app/health).
 - [Swagger](https://web2-practica-tp3.vercel.app/swagger-ui/index.html).
-- Despliegue vigente: `dpl_24GQBeTvXnVgQ5yusz4KmPuwgm8W`, Production READY, fuente **`TP3`** en commit `229c8ce45c46e5699917efcc89c6e88e9e095f08`.
+- Despliegue de código verificado: `dpl_24GQBeTvXnVgQ5yusz4KmPuwgm8W`, Production READY, fuente **`TP3`** en commit `229c8ce45c46e5699917efcc89c6e88e9e095f08`.
 - [54 comprobaciones HTTP nuevas](../../api-blank/docs/tp3/evidencias/sin-dominio-2026-11-03/vercel-http-publico-completo.json); [prueba anterior](../../api-blank/docs/tp3/evidencias/vercel/http-publico.json) y [logs anteriores](../../api-blank/docs/tp3/evidencias/vercel/runtime.json) conservados como historia.
 
-El 3 de noviembre se actualizó la conexión de ambos proveedores al puente `web2-tp3-postgres.nicotrib699.workers.dev`, autenticado y enlazado por VPC al Tunnel dedicado. Se retiró la publicación anterior del TP en un dominio de cliente. Se conservaron el Worker de la API, PostgreSQL y los datos. La rama de producción del proyecto Vercel se corrigió de `main` a **`TP3`** y se comprobó por API.
+El 3 de noviembre se actualizó la conexión de ambos proveedores al puente `web2-tp3-postgres.nicotrib699.workers.dev`, autenticado y enlazado por VPC al Tunnel dedicado. Se retiró la publicación anterior del TP en un dominio de cliente. Se conservaron el Worker de la API, PostgreSQL y los datos. La rama de producción del proyecto Vercel se corrigió de `main` a **`TP3`** y se comprobó por API. Vercel genera también publicaciones al pushear documentación a esa rama: la ID anterior identifica el recorrido de 54 pruebas, no una promesa de que seguirá siendo la última ID publicada.
 
 ## Por qué puede funcionar en Vercel
 

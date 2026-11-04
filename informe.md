@@ -31,7 +31,7 @@ El usuario aclaró que el dominio que se había usado para publicar el acceso TC
 | CI de la fuente desplegada | [41753033540](https://github.com/Niquinhoo/Web2Practica/actions/runs/41753033540): 58 unitarias + 25 integraciones + 10 de Workers = 93 |
 | API Cloudflare | [Swagger](https://web2-practica-tp3.nicotrib699.workers.dev/swagger-ui/index.html), versión `ab1a015e-ec01-4680-82dc-1350be30943c`, 100 % |
 | Puente PostgreSQL | `web2-tp3-postgres.nicotrib699.workers.dev`, versión `8510c80d-6ea5-4f39-980b-71b35e605fc0`, 100 %; sin credenciales responde `401` |
-| Publicación gratuita adicional | [Swagger Vercel](https://web2-practica-tp3.vercel.app/swagger-ui/index.html), `dpl_24GQBeTvXnVgQ5yusz4KmPuwgm8W`, Production READY, ref `TP3` |
+| Publicación gratuita adicional | [Swagger Vercel](https://web2-practica-tp3.vercel.app/swagger-ui/index.html), despliegue probado `dpl_24GQBeTvXnVgQ5yusz4KmPuwgm8W`, Production READY, ref `TP3`; los pushes posteriores de documentación generan nuevas IDs desde esa misma rama |
 | Rama de producción Vercel | Corregida de `main` a `TP3`; las nuevas publicaciones usan mayúsculas |
 | HTTP Cloudflare | [54 solicitudes correctas](api-blank/docs/tp3/evidencias/sin-dominio-2026-11-03/cloudflare-http-publico-completo.json) |
 | HTTP Vercel | [54 solicitudes correctas](api-blank/docs/tp3/evidencias/sin-dominio-2026-11-03/vercel-http-publico-completo.json) |
