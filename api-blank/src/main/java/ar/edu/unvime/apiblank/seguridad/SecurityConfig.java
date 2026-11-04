@@ -1,5 +1,6 @@
 package ar.edu.unvime.apiblank.seguridad;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
@@ -15,6 +16,9 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.*;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 @Configuration
@@ -38,11 +42,24 @@ public class SecurityConfig {
         decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(JwtValidators.createDefaultWithIssuer("web2-practica"), identidad));
         return decoder;
     }
+    // Solo los orígenes configurados pueden leer respuestas desde un navegador; no se usan cookies.
+    @Bean CorsConfigurationSource corsConfigurationSource(@Value("${app.cors.origenes-permitidos}") List<String> origenes) {
+        var config = new CorsConfiguration();
+        config.setAllowedOrigins(origenes);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        config.setExposedHeaders(List.of("Location"));
+        config.setMaxAge(600L);
+        var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
     @Bean SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         var authorities = new JwtGrantedAuthoritiesConverter();
         authorities.setAuthoritiesClaimName("rol"); authorities.setAuthorityPrefix("ROLE_");
         var converter = new JwtAuthenticationConverter(); converter.setJwtGrantedAuthoritiesConverter(authorities);
         return http
+                .cors(org.springframework.security.config.Customizer.withDefaults())
                 // El bearer se envía explícitamente en Authorization; no usamos cookies de autenticación.
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

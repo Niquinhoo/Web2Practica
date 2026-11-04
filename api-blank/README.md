@@ -29,6 +29,7 @@ En Linux/macOS: `./mvnw spring-boot:run`. `scripts/run-local.ps1` conserva la al
 | `PORT` | Puerto HTTP; 8080 por defecto |
 | `SPRING_PROFILES_ACTIVE` | `prod` en el contenedor de despliegue |
 | `PG_TUNNEL_HOSTNAME`, `TUNNEL_SERVICE_TOKEN_ID`, `TUNNEL_SERVICE_TOKEN_SECRET` | Activa cloudflared contra el puente autenticado `web2-tp3-postgres.nicotrib699.workers.dev`; el Worker conecta a PostgreSQL mediante VPC/Tunnel sin dominio propio |
+| `CORS_ORIGENES` | Orígenes del front autorizados por CORS, separados por coma. Por defecto `http://localhost:5173` y `https://web2-practica-front.nicotrib699.workers.dev` |
 | `DATABASE_FALLBACK_URL`, `DATABASE_FALLBACK_USER`, `DATABASE_FALLBACK_PASSWORD` | Base de respaldo opcional (PostgreSQL de Render). Si `DATABASE_FALLBACK_URL` está definida, la API prueba primero la base principal (Tunnel) y, si no responde al iniciar, usa esta |
 | `DATABASE_PRIMARY_TIMEOUT_SECONDS` | Espera máxima por la base principal antes de usar el respaldo; 5 por defecto |
 

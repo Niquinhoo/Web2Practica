@@ -74,6 +74,21 @@ class SeguridadIT {
                 .andExpect(status().isCreated()).andReturn();
         return json.readTree(result.getResponse().getContentAsString()).get("id").asLong();
     }
+    @Test void cors_origenPermitido_autorizaPreflightYExponeRespuestas() throws Exception {
+        String origen = "https://web2-practica-front.nicotrib699.workers.dev";
+        mvc.perform(options("/api/listas").header("Origin",origen).header("Access-Control-Request-Method","POST")
+                .header("Access-Control-Request-Headers","authorization,content-type"))
+                .andExpect(status().isOk()).andExpect(header().string("Access-Control-Allow-Origin",origen))
+                .andExpect(header().doesNotExist("Access-Control-Allow-Credentials"));
+        mvc.perform(get("/api/listas").header("Origin",origen)).andExpect(status().isUnauthorized())
+                .andExpect(header().string("Access-Control-Allow-Origin",origen));
+        mvc.perform(get("/api/listas").header("Origin",origen).header("Authorization","Bearer "+uno.token()))
+                .andExpect(status().isOk()).andExpect(header().string("Access-Control-Allow-Origin",origen));
+    }
+    @Test void cors_origenAjeno_rechazaPreflightSinCabeceras() throws Exception {
+        mvc.perform(options("/api/listas").header("Origin","https://origen-no-autorizado.example").header("Access-Control-Request-Method","GET"))
+                .andExpect(status().isForbidden()).andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
+    }
     @Test void registro_yLogin_guardanHashYNoExponenSecretos() throws Exception {
         String hash = jdbc.queryForObject("SELECT password_hash FROM usuarios WHERE id=?", String.class, uno.id());
         assertThat(hash).isNotEqualTo("Una-clave-123");
