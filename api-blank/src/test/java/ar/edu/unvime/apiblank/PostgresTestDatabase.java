@@ -5,9 +5,9 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 
 public final class PostgresTestDatabase {
     private static final org.testcontainers.postgresql.PostgreSQLContainer POSTGRES = iniciar();
-    static final String URL = POSTGRES.getJdbcUrl();
-    static final String USER = POSTGRES.getUsername();
-    static final String PASSWORD = POSTGRES.getPassword();
+    public static final String URL = POSTGRES.getJdbcUrl();
+    public static final String USER = POSTGRES.getUsername();
+    public static final String PASSWORD = POSTGRES.getPassword();
     private static org.testcontainers.postgresql.PostgreSQLContainer iniciar() {
         var postgres = new org.testcontainers.postgresql.PostgreSQLContainer("postgres:17");
         postgres.start();

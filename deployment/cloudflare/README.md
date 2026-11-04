@@ -30,6 +30,8 @@ npm run deploy
 
 `npm run deploy` lee `.secrets/production.json`, ignorado por Git. El archivo debe contener `DATABASE_URL`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `JWT_SECRETO`, `PG_TUNNEL_HOSTNAME`, `TUNNEL_SERVICE_TOKEN_ID` y `TUNNEL_SERVICE_TOKEN_SECRET`. Los valores se publican como secretos del Worker y se pasan al contenedor al iniciarlo. No se incluyen tokens o contraseñas en la imagen ni en la configuración versionada.
 
+Opcionalmente, `.secrets/production.json` lleva `DATABASE_FALLBACK_URL`, `DATABASE_FALLBACK_USER` y `DATABASE_FALLBACK_PASSWORD` (PostgreSQL de Render): si el Tunnel no responde al iniciar la API, esta usa esa base. Las tres claves están declaradas como secretos del Worker en `cloudflare.config.ts`, por lo que el archivo debe incluirlas antes de `npm run deploy`. Ver [Base de respaldo en Render](../../api-blank/README.md#base-de-respaldo-en-render).
+
 `DATABASE_URL` apunta a `jdbc:postgresql://127.0.0.1:15432/webii_tp3?sslmode=disable`. `PG_TUNNEL_HOSTNAME` es `web2-tp3-postgres.nicotrib699.workers.dev`. El puente valida identificador y secreto antes de aceptar WebSocket y solo permite el destino fijo `127.0.0.1:5432` mediante el binding VPC del Tunnel `web2-tp3-postgres`. No acepta destinos del cliente ni contiene la contraseña PostgreSQL.
 
 Los nombres `TUNNEL_SERVICE_TOKEN_*` y las cabeceras `CF-Access-Client-*` se conservan por compatibilidad con `cloudflared access tcp`. La credencial actual la valida el Worker: no es un token emitido por Access ni depende de una aplicación Access, una zona DNS o un dominio propio. Si se rota, actualizar el puente, la API Cloudflare y Vercel juntos. La contraseña PostgreSQL y el JWT de usuario son credenciales separadas.

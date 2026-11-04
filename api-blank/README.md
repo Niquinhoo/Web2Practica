@@ -29,6 +29,8 @@ En Linux/macOS: `./mvnw spring-boot:run`. `scripts/run-local.ps1` conserva la al
 | `PORT` | Puerto HTTP; 8080 por defecto |
 | `SPRING_PROFILES_ACTIVE` | `prod` en el contenedor de despliegue |
 | `PG_TUNNEL_HOSTNAME`, `TUNNEL_SERVICE_TOKEN_ID`, `TUNNEL_SERVICE_TOKEN_SECRET` | Activa cloudflared contra el puente autenticado `web2-tp3-postgres.nicotrib699.workers.dev`; el Worker conecta a PostgreSQL mediante VPC/Tunnel sin dominio propio |
+| `DATABASE_FALLBACK_URL`, `DATABASE_FALLBACK_USER`, `DATABASE_FALLBACK_PASSWORD` | Base de respaldo opcional (PostgreSQL de Render). Si `DATABASE_FALLBACK_URL` está definida, la API prueba primero la base principal (Tunnel) y, si no responde al iniciar, usa esta |
+| `DATABASE_PRIMARY_TIMEOUT_SECONDS` | Espera máxima por la base principal antes de usar el respaldo; 5 por defecto |
 
 `.env` es configuración de Compose, no del proceso Maven. Los secretos no se guardan en Git. El valor JWT de desarrollo permite ejecutar localmente; el perfil `prod` exige un secreto explícito.
 
@@ -96,3 +98,14 @@ Ver [matriz de pruebas y evidencia](docs/EVIDENCIA-TP3.md). Reportes: `target/su
 [Segundo despliegue Vercel Hobby con la misma base por Tunnel](../deployment/vercel/README.md): plan gratuito confirmado, pasos, ajuste de JVM y evidencia HTTP. [Swagger en Vercel](https://web2-practica-tp3.vercel.app/swagger-ui/index.html). Cloudflare se conserva.
 
 Documentación histórica: [TP1](docs/EVIDENCIA-TP1.md), [TP2](docs/EVIDENCIA-TP2.md).
+
+## Base de respaldo en Render
+
+PostgreSQL gratuito de Render (`web2-tp3-postgres`, Virginia, PostgreSQL 17) como respaldo del Tunnel. `DataSourceFailoverConfig` elige la base una vez por arranque: intenta la principal (`DATABASE_URL`, el Tunnel) y, si no conecta dentro de `DATABASE_PRIMARY_TIMEOUT_SECONDS`, usa `DATABASE_FALLBACK_URL`. Flyway aplica V1–V6 sobre la base elegida, así que la de Render queda migrada la primera vez que se usa. Sin `DATABASE_FALLBACK_URL` el comportamiento no cambia.
+
+Límites a tener en cuenta:
+
+- Son **dos bases independientes**: no hay replicación. Usuarios, listas y favoritos creados en una no existen en la otra; los JWT emitidos son válidos en ambas (misma `JWT_SECRETO`), pero el `sub` puede apuntar a un usuario que solo existe en la otra base.
+- La elección ocurre al iniciar. Si el Tunnel cae con la API ya arrancada, esa instancia sigue usando la principal hasta reiniciarse (en Cloudflare Containers eso pasa tras un minuto sin tráfico).
+- La base gratuita de Render **vence a los 30 días** (el 4 de diciembre de 2026 para esta) y permite una por workspace.
+- La URL JDBC externa de Render exige TLS: `jdbc:postgresql://<host-externo>.virginia-postgres.render.com/web2_tp3_postgres?sslmode=require`. Hay que permitir el acceso externo (lista de IP permitidas) en el Dashboard de Render.

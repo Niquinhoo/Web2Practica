@@ -7,6 +7,9 @@ interface Env {
   PG_TUNNEL_HOSTNAME: string;
   TUNNEL_SERVICE_TOKEN_ID: string;
   TUNNEL_SERVICE_TOKEN_SECRET: string;
+  DATABASE_FALLBACK_URL?: string;
+  DATABASE_FALLBACK_USER?: string;
+  DATABASE_FALLBACK_PASSWORD?: string;
 }
 export class ApiContainer extends DurableObject<Env> {
   private starting: Promise<void> | undefined;
@@ -53,6 +56,11 @@ export class ApiContainer extends DurableObject<Env> {
           PG_TUNNEL_HOSTNAME: this.env.PG_TUNNEL_HOSTNAME,
           TUNNEL_SERVICE_TOKEN_ID: this.env.TUNNEL_SERVICE_TOKEN_ID,
           TUNNEL_SERVICE_TOKEN_SECRET: this.env.TUNNEL_SERVICE_TOKEN_SECRET,
+          ...(this.env.DATABASE_FALLBACK_URL ? {
+            DATABASE_FALLBACK_URL: this.env.DATABASE_FALLBACK_URL,
+            DATABASE_FALLBACK_USER: this.env.DATABASE_FALLBACK_USER ?? "",
+            DATABASE_FALLBACK_PASSWORD: this.env.DATABASE_FALLBACK_PASSWORD ?? "",
+          } : {}),
         },
       });
     }
