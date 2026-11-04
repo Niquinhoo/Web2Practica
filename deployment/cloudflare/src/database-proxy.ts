@@ -37,6 +37,7 @@ export default {
       return new Response("PostgreSQL no disponible", { status: 502 });
     }
     const [client, server] = Object.values(new WebSocketPair());
+    server.binaryType = "arraybuffer";
     server.accept();
     const writer = socket.writable.getWriter();
     let closed = false;
