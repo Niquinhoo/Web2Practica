@@ -1,0 +1,36 @@
+{
+  "fechaUtc": "2026-11-04T01:29:00.886Z",
+  "rama": "TP3",
+  "commit": "229c8ce45c46e5699917efcc89c6e88e9e095f08",
+  "web2-practica-tp3": {
+    "deployment": "d4ebc04a-0a9c-480e-b996-e7fd26b5086d",
+    "versions": [
+      {
+        "version_id": "ab1a015e-ec01-4680-82dc-1350be30943c",
+        "percentage": 100
+      }
+    ],
+    "fechaUtc": "2026-11-04T01:18:54.153988Z"
+  },
+  "web2-tp3-postgres": {
+    "deployment": "3dbac60f-f354-4efc-a784-b72f4433c418",
+    "versions": [
+      {
+        "version_id": "8510c80d-6ea5-4f39-980b-71b35e605fc0",
+        "percentage": 100
+      }
+    ],
+    "fechaUtc": "2026-11-04T01:17:54.235633Z"
+  },
+  "retiroAnterior": {
+    "registrosDelTpRestantes": 0,
+    "aplicacionesDelTpRestantes": 0,
+    "politicasDelTpRestantes": 0,
+    "tokensDelTpRestantes": 0,
+    "ingress": [
+      {
+        "service": "http_status:404"
+      }
+    ]
+  }
+}

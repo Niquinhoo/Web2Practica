@@ -6,10 +6,10 @@ Se agregó una publicación verificada de la misma API Java/Spring en Vercel Hob
 
 - [API / health](https://web2-practica-tp3.vercel.app/health).
 - [Swagger](https://web2-practica-tp3.vercel.app/swagger-ui/index.html).
-- Despliegue verificado: `dpl_BBn32Wt21tKgCn6NpCJLgRa6ythP`, Production, región `gru1` (São Paulo), fuente `tp3` en commit `9c8be6510b5b45423a982cbb025445aad021eb58`.
-- [Prueba HTTP completa](../../api-blank/docs/tp3/evidencias/vercel/http-publico.json), [logs resumidos](../../api-blank/docs/tp3/evidencias/vercel/runtime.json).
+- Despliegue vigente: `dpl_24GQBeTvXnVgQ5yusz4KmPuwgm8W`, Production READY, fuente **`TP3`** en commit `229c8ce45c46e5699917efcc89c6e88e9e095f08`.
+- [54 comprobaciones HTTP nuevas](../../api-blank/docs/tp3/evidencias/sin-dominio-2026-11-03/vercel-http-publico-completo.json); [prueba anterior](../../api-blank/docs/tp3/evidencias/vercel/http-publico.json) y [logs anteriores](../../api-blank/docs/tp3/evidencias/vercel/runtime.json) conservados como historia.
 
-No se modificó ni eliminó la aplicación de Cloudflare. La base sigue siendo PostgreSQL del equipo remoto, mediante el Tunnel y la política Access existentes.
+El 3 de noviembre se actualizó la conexión de ambos proveedores al puente `web2-tp3-postgres.nicotrib699.workers.dev`, autenticado y enlazado por VPC al Tunnel dedicado. Se retiró la publicación anterior del TP en un dominio de cliente. Se conservaron el Worker de la API, PostgreSQL y los datos. La rama de producción del proyecto Vercel se corrigió de `main` a **`TP3`** y se comprobó por API.
 
 ## Por qué puede funcionar en Vercel
 
@@ -25,7 +25,7 @@ La base propia y el Tunnel evitan contratar una base administrada para este segu
 2. Crear un proyecto Vercel separado llamado `web2-practica-tp3`, seleccionar el preset `Container` y Root Directory `api-blank`. Usar `api-blank/Dockerfile` como Dockerfile del contexto de construcción.
 3. Confirmar que el equipo es Hobby. Elegir una sola región `gru1`, cercana a la base doméstica. Se deshabilitaron los despliegues Preview de este proyecto: las credenciales se configuraron para Production y esta experiencia se publica manualmente desde `TP3`.
 4. Configurar para Production las variables descritas abajo, mediante el CLI autenticado si el conector no tiene permisos. Los secretos no se escriben en el repositorio. Se preparó un archivo privado ignorado por Git, `deployment/cloudflare/.secrets/production-vercel.json`, con una clave JWT nueva para esta segunda publicación; no debe copiarse a la documentación ni a capturas.
-5. Crear explícitamente un despliegue Production del ref `TP3`; no usar el default `main` del repositorio. La publicación no implica fusionar ramas ni cambiar `main`.
+5. Mantener la rama de producción del proyecto en `TP3` y crear el despliegue Production del ref `TP3`. No usar el default `main` del repositorio. La publicación no implica fusionar ramas ni cambiar `main`.
 6. Esperar el estado Ready y revisar logs de construcción y ejecución. Confirmar el inicio de Spring y la verificación de Flyway sobre la base remota. Una base ya migrada puede mostrar que está actualizada en v6; no debe volver a crear ni borrar sus tablas.
 7. Registrar la URL real y ejecutar el smoke HTTP. No dar por probado PostgreSQL solamente porque responde health.
 
@@ -38,11 +38,11 @@ La base propia y el Tunnel evitan contratar una base administrada para este segu
 | `POSTGRES_USER` | Rol dedicado de la práctica |
 | `POSTGRES_PASSWORD` | Secreto de la base; nunca versionarlo |
 | `JWT_SECRETO` | Secreto de firma de al menos 32 bytes |
-| `PG_TUNNEL_HOSTNAME` | `tp3-postgres.osadiamarketing.com` |
-| `TUNNEL_SERVICE_TOKEN_ID` | Identificador del token de servicio Access |
-| `TUNNEL_SERVICE_TOKEN_SECRET` | Secreto del token de servicio Access |
+| `PG_TUNNEL_HOSTNAME` | `web2-tp3-postgres.nicotrib699.workers.dev` |
+| `TUNNEL_SERVICE_TOKEN_ID` | Identificador privado del cliente del puente |
+| `TUNNEL_SERVICE_TOKEN_SECRET` | Secreto privado que valida el Worker del puente |
 
-`sslmode=disable` corresponde al tramo loopback entre JDBC y el cliente cloudflared. El trayecto público del Tunnel usa cifrado; no se abre el puerto 5432 en el router. El JWT de los usuarios y el token Access tienen propósitos distintos.
+`sslmode=disable` corresponde al tramo loopback entre JDBC y el cliente cloudflared. El trayecto público hasta el puente usa TLS/WebSocket; no se abre el puerto 5432 en el router. Los nombres heredados `CF-Access-Client-*` son compatibles con cloudflared, pero ahora autentica el Worker; no se necesita una aplicación Access ni un dominio propio. El JWT del usuario, el secreto del puente y la contraseña PostgreSQL tienen propósitos distintos. [Configuración del puente](../cloudflare/README.md).
 
 ## Comprobación y defensa
 
@@ -56,7 +56,7 @@ El script verifica health 200, listas sin JWT 401, registro 201, login 200, list
 
 Abrir `/swagger-ui/index.html` en esa misma URL y seguir la demostración reproducible del [informe del TP3](../../informe.md). Capturar respuestas reales de health, 401 y 200 con JWT, sin mostrar el token de Authorization ni las variables del proyecto.
 
-Para defender la arquitectura: «Publiqué la misma imagen Java en un segundo proveedor con plan gratuito; los datos persisten en PostgreSQL de mi equipo. Vercel inicia el contenedor, el cliente cloudflared autentica la conexión de infraestructura con Access y Spring valida el JWT del usuario y la propiedad de sus listas».
+Para defender la arquitectura: «Publiqué la misma imagen Java en un segundo proveedor con plan gratuito; los datos persisten en PostgreSQL de mi equipo. Vercel inicia el contenedor, cloudflared conecta al puente workers.dev autenticado, VPC/Tunnel llega a la base y Spring valida el JWT del usuario y la propiedad de sus listas. No usamos dominios de clientes».
 
 ## Incidentes y resolución observada
 
@@ -72,6 +72,6 @@ Los cambios de esta etapa son documentación y configuración del proveedor; no 
 
 ## Límites
 
-Container Runtime está en beta y escala a cero; hay arranques en frío y cuotas de Hobby. La disponibilidad de ambos despliegues depende de la misma PC, DB, Tunnel y vencimiento de Access. Compartir la base significa compartir los datos de la práctica entre las dos URLs. Una modificación de esquema posterior debe seguir siendo compatible con ambas revisiones.
+Container Runtime y Workers VPC están en beta; hay arranques en frío y cuotas de Hobby. La disponibilidad de ambos despliegues depende de la misma PC, DB, Tunnel y puente. El secreto del puente debe coincidir en ambos proveedores y rotarse conjuntamente. Compartir la base significa compartir los datos de la práctica entre las dos URLs. Una modificación de esquema posterior debe seguir siendo compatible con ambas revisiones.
 
 Esta experiencia acredita alojamiento de aplicación en Hobby gratuito y uso de PostgreSQL propio accesible por Tunnel. No se contrató una base administrada en Vercel. No se hicieron pruebas de carga ni se garantiza disponibilidad doméstica de producción; las cuotas vigentes se consultan en la documentación de Hobby.

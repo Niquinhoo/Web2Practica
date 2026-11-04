@@ -2,7 +2,21 @@
 
 Implementación iniciada en `tp3`, desde `TP2`; rama de entrega `TP3`. Evidencia original del 29 de octubre y verificación de cierre del 3 de noviembre de 2026.
 
-## Publicación final en Cloudflare · 3 de noviembre de 2026
+## Corrección vigente: sin dominios propios ni de clientes
+
+Se publicaron la API Cloudflare y el puente PostgreSQL desde **`229c8ce` de `TP3`**, con [CI verde: 58 unitarias, 25 integraciones y 10 de Workers](https://github.com/Niquinhoo/Web2Practica/actions/runs/41753033540). La API conserva su workers.dev. El puente es `web2-tp3-postgres.nicotrib699.workers.dev`: exige credencial privada y abre TCP mediante VPC al Tunnel dedicado, con destino fijo `127.0.0.1:5432`.
+
+Se retiraron el CNAME, aplicación Access, política y token dedicados del TP que estaban asociados al dominio de un cliente. No se modificaron otros recursos. [Metadatos y retiro comprobado](tp3/evidencias/sin-dominio-2026-11-03/despliegues.json). Se preservaron PostgreSQL, las tablas y el Tunnel privado; el ingress público queda con `http_status:404`.
+
+- Cloudflare: versión `ab1a015e-ec01-4680-82dc-1350be30943c`, 100 %, [54 verificaciones públicas](tp3/evidencias/sin-dominio-2026-11-03/cloudflare-http-publico-completo.json).
+- Puente: versión `8510c80d-6ea5-4f39-980b-71b35e605fc0`, 100 %, [SQL real y rechazo anónimo 401](tp3/evidencias/sin-dominio-2026-11-03/postgres-vpc.json).
+- Vercel: `dpl_24GQBeTvXnVgQ5yusz4KmPuwgm8W`, READY, ref `TP3`, [54 verificaciones públicas](tp3/evidencias/sin-dominio-2026-11-03/vercel-http-publico-completo.json). La rama de producción se corrigió de `main` a `TP3`.
+
+Los recorridos nuevos incluyen ADMIN y eliminación de sus dos cuentas descartables en cada proveedor. Se conservaron las seis migraciones. Se verificaron respuesta de 100.000 caracteres Unicode y consulta SQL de 200 KB. Hubo un 502 inicial y un timeout en el catálogo de Cloudflare antes del recorrido completo exitoso; no se afirma disponibilidad continua. Las fechas UTC corresponden al 4 de noviembre, todavía 3 de noviembre en Argentina. No se repitieron las capturas de Chrome en esta corrección.
+
+## Publicación anterior en Cloudflare · 3 de noviembre de 2026
+
+Lo siguiente conserva la evidencia previa al cambio de transporte. Sus controles Access y versiones son históricos; la configuración vigente es la sección anterior.
 
 Se publicó el commit **`994e5b7` de `TP3`**, después de [CI exitoso](https://github.com/Niquinhoo/Web2Practica/actions/runs/41732115409). Versión activa `fe9b2948-2f9d-4517-80c6-1118e800db92`, 100 % del tráfico, deployment `431a96af-3678-4069-b4d1-cdcb7debf350`. [Revisión e imagen exactas](tp3/evidencias/cloudflare-2026-11-03/despliegue.json).
 
@@ -59,7 +73,7 @@ La verificación inicial de TP2 tenía 48 unitarias verdes y dos errores de cone
 
 Se construyó `web2-practica:tp3` con Java 25 y usuario sin privilegios. La imagen incluye un cliente `cloudflared` opcional para conectarse a PostgreSQL por Access y Tunnel.
 
-Se creó una base dedicada `webii_tp3` en el PostgreSQL 18.6 del equipo remoto. El conector systemd `web2-tp3-tunnel.service` quedó activo y el hostname `tp3-postgres.osadiamarketing.com` se protege con una política Service Auth limitada al token del contenedor. Una petición sin ese token recibió `403`.
+Se creó una base dedicada `webii_tp3` en el PostgreSQL 18.6 del equipo remoto. El conector systemd `web2-tp3-tunnel.service` quedó activo. El acceso anterior estaba protegido por una política Service Auth y devolvió `403` sin token; ese hostname y su configuración Access fueron retirados. La conexión vigente usa el puente workers.dev y VPC descritos arriba, con rechazo anónimo `401`.
 
 La imagen ejecutada localmente se conectó a la base remota por el túnel; los logs confirmaron aplicación de las seis migraciones sobre `public`, versión v6. `/health` respondió `200` y `/api/listas` sin JWT respondió `401`.
 

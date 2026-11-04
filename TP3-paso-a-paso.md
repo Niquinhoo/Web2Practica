@@ -57,7 +57,7 @@ npm run check
 npm test
 ```
 
-Las cinco pruebas del Worker verifican inicio frío, concurrencia, readiness agotado, instancia caliente y enrutamiento a una sola instancia. [Matriz completa](api-blank/docs/EVIDENCIA-TP3.md).
+Cinco pruebas del Worker verifican inicio frío, concurrencia, readiness agotado, instancia caliente y enrutamiento a una sola instancia. Otras cinco cubren autenticación, rechazo y transferencia binaria del puente PostgreSQL. [Matriz completa](api-blank/docs/EVIDENCIA-TP3.md).
 
 ## 8. CI y documentación HTTP
 
@@ -69,7 +69,7 @@ Swagger publica Bearer, registro/login, códigos 200/201/401/403 y las rutas pro
 
 Por elección del usuario se usa PostgreSQL del equipo remoto y Cloudflare Containers. Se crearon una base y un rol dedicados `webii_tp3`. El servicio systemd `web2-tp3-tunnel` mantiene una conexión saliente hacia Cloudflare, sin abrir un puerto PostgreSQL en el router.
 
-Access protege `tp3-postgres.osadiamarketing.com` con un token de servicio. El cliente `cloudflared` dentro de la imagen crea un listener TCP local al que conecta JDBC. Una petición al hostname sin token Access devuelve `403`.
+El puente `web2-tp3-postgres.nicotrib699.workers.dev` valida una credencial privada y conecta por un binding VPC al Tunnel dedicado. El cliente `cloudflared` dentro de la imagen crea un listener TCP local al que conecta JDBC. Una petición al puente sin credencial devuelve `401`. No se necesita un dominio propio ni se utiliza el dominio de un cliente. Los nombres de cabeceras `CF-Access-Client-*` se conservan por compatibilidad con cloudflared; ahora autentica el Worker, sin una aplicación Access asociada a una zona DNS.
 
 ## 10. Cloudflare Containers y evidencia pública
 
@@ -104,3 +104,7 @@ Se mantiene **Cloudflare como proveedor por elección expresa del usuario**. No 
 Se publicó `994e5b7` desde `TP3`, tras CI exitoso, como versión `fe9b2948-2f9d-4517-80c6-1118e800db92`. Se retiró la rama remota duplicada `tp3`, cuya historia ya estaba incluida, y se agregó un control que impide ejecutar `npm run deploy` desde otra rama.
 
 El recorrido público verificó 54 solicitudes, incluidos ADMIN, permisos y movimientos; se consultaron las seis migraciones remotas y se capturaron health 200 y listas 401/200 reales desde Swagger. Se conservó el 502 inicial del catálogo y su recuperación. Las dos cuentas del recorrido completo se eliminaron; una cuenta USER adicional de captura quedó sin listas por el bloqueo automático de su limpieza, documentado en el informe. [Resultados, capturas y revisión exacta](informe.md).
+
+## Corrección de transporte sin dominio propio · 3 de noviembre
+
+Se retiró la publicación del TP en el dominio del cliente y se publicó el puente autenticado `web2-tp3-postgres.nicotrib699.workers.dev`, enlazado por VPC al Tunnel privado. Se conservaron PostgreSQL y Java. El código `229c8ce` de `TP3` pasó CI con 93 pruebas y se desplegó en Cloudflare y Vercel. Cada URL pasó 54 verificaciones HTTP; SQL real comprobó las seis migraciones y tráfico grande. La rama de producción Vercel quedó en `TP3`. El [informe](informe.md) explica el recorrido, los secretos y los límites; la [evidencia vigente](api-blank/docs/tp3/evidencias/sin-dominio-2026-11-03/despliegues.json) comprueba el retiro de la configuración anterior.

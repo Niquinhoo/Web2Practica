@@ -16,12 +16,46 @@ Este informe contrasta las consignas proporcionadas con el código, la configura
 | 4. Propiedad y rol | Implementado. | ADMIN tiene excepción de propiedad también en operaciones de modificación. Las listas anteriores sin dueño quedan solo para ADMIN. |
 | 5. Pruebas | Nueva ejecución local en verde: 58 unitarias y 25 integraciones. | `SeguridadIT` está en el paquete `seguridad`; la integración global está junto a la aplicación. Base temporal por ejecución, con esquemas por clase. |
 | 6. CI | Nueva corrida de entrega en verde; fallo/recuperación anteriores conservados. | Eventos push y pull_request sin filtro de ramas, incluida `TP3`; jobs Java/PostgreSQL y Worker exitosos. |
-| 7. Despliegue | Nueva revisión publicada y verificada en Cloudflare el 3 de noviembre. | Commit `994e5b7` de `TP3`, versión `fe9b2948-2f9d-4517-80c6-1118e800db92` al 100 %. PostgreSQL remoto por Access/Tunnel; Vercel queda como experiencia adicional histórica. |
+| 7. Despliegue | Cloudflare y Vercel actualizados y verificados el 3 de noviembre. | Commit `229c8ce` de `TP3`. PostgreSQL remoto por puente `workers.dev` y VPC/Tunnel, sin dominio propio ni de clientes. |
 | 8. Documentación | Implementado. | Swagger y README describen auth, permisos, pruebas, CI y despliegue; este informe reúne la explicación detallada. |
 
-**Alcance de la comprobación actual:** 83 ejecuciones Java y cinco del Worker en verde, también en CI para la revisión publicada. Se desplegó `994e5b7` desde `TP3` y se verificaron **54 solicitudes públicas correctas**, además de health y acceso protegido 401/200 desde Swagger en Chrome. Se consultó PostgreSQL remoto para confirmar V1–V6 y se revisaron los eventos del Worker. La nueva evidencia de Cloudflare es del **3 de noviembre**; la publicación adicional de Vercel conserva sus evidencias del 29 de octubre.
+**Alcance de la comprobación actual:** 83 ejecuciones Java y diez de Workers en verde en CI. Se desplegó `229c8ce` desde `TP3` y se verificaron **54 solicitudes públicas correctas en Cloudflare y otras 54 en Vercel** con la conexión nueva. Se confirmó PostgreSQL remoto con V1–V6, consulta grande y respuesta Unicode. Las capturas de Chrome y el runtime de la publicación anterior se conservan como evidencia histórica y no se presentan como capturas nuevas de la conexión VPC.
 
-## Publicación final y verificación en Cloudflare · 3 de noviembre
+## Corrección vigente: usar exclusivamente direcciones del proveedor
+
+El usuario aclaró que el dominio que se había usado para publicar el acceso TCP pertenece a un cliente y no está autorizado para este TP. Por eso se retiró esa dependencia. La API conserva su URL predeterminada de Cloudflare y la DB ahora se alcanza mediante otro Worker con URL predeterminada, sin crear una zona DNS ni registrar un dominio.
+
+| Dato actual | Evidencia |
+|---|---|
+| Fuente | `229c8ce45c46e5699917efcc89c6e88e9e095f08`, rama `TP3` |
+| CI de la fuente desplegada | [41753033540](https://github.com/Niquinhoo/Web2Practica/actions/runs/41753033540): 58 unitarias + 25 integraciones + 10 de Workers = 93 |
+| API Cloudflare | [Swagger](https://web2-practica-tp3.nicotrib699.workers.dev/swagger-ui/index.html), versión `ab1a015e-ec01-4680-82dc-1350be30943c`, 100 % |
+| Puente PostgreSQL | `web2-tp3-postgres.nicotrib699.workers.dev`, versión `8510c80d-6ea5-4f39-980b-71b35e605fc0`, 100 %; sin credenciales responde `401` |
+| Publicación gratuita adicional | [Swagger Vercel](https://web2-practica-tp3.vercel.app/swagger-ui/index.html), `dpl_24GQBeTvXnVgQ5yusz4KmPuwgm8W`, Production READY, ref `TP3` |
+| Rama de producción Vercel | Corregida de `main` a `TP3`; las nuevas publicaciones usan mayúsculas |
+| HTTP Cloudflare | [54 solicitudes correctas](api-blank/docs/tp3/evidencias/sin-dominio-2026-11-03/cloudflare-http-publico-completo.json) |
+| HTTP Vercel | [54 solicitudes correctas](api-blank/docs/tp3/evidencias/sin-dominio-2026-11-03/vercel-http-publico-completo.json) |
+| SQL real por el puente | [PostgreSQL 18.6, seis migraciones, 100.000 caracteres Unicode y consulta de 200 KB](api-blank/docs/tp3/evidencias/sin-dominio-2026-11-03/postgres-vpc.json) |
+| Retiro de configuración anterior | [Cero registros, aplicaciones, políticas y tokens del TP restantes de la publicación anterior](api-blank/docs/tp3/evidencias/sin-dominio-2026-11-03/despliegues.json) |
+
+### Qué se hizo, cómo y por qué
+
+1. **Se retiró la publicación del TP en el dominio del cliente.** Se quitó su regla ingress del Tunnel, su CNAME, su aplicación Access, su política y su token dedicado. Se comprobaron los IDs antes de actuar; no se modificaron otros recursos del cliente. La base, sus filas y el Tunnel privado se conservaron.
+2. **Se publicó un puente mínimo en `workers.dev`.** [database-proxy.ts](deployment/cloudflare/src/database-proxy.ts) exige una credencial privada y una conexión WebSocket binaria. Valida antes de conectar a la DB y responde `401` ante credenciales ausentes o incorrectas. El destino es fijo: `127.0.0.1:5432`; un cliente no puede usarlo como proxy hacia otros servicios.
+3. **Se vinculó el Worker directamente al Tunnel privado.** [La configuración](deployment/cloudflare/database-proxy/cloudflare.config.ts) declara un binding VPC con el UUID de `web2-tp3-postgres`. La API VPC abre TCP hacia el PostgreSQL del equipo remoto a través de ese conector. No requiere un hostname público en una zona de cliente. El ingress público del Tunnel queda únicamente con respuesta `404`.
+4. **Se conservó JDBC y el contenedor Java existentes.** `cloudflared access tcp` sigue proporcionando `127.0.0.1:15432` a JDBC. El nombre del subcomando y las cabeceras `CF-Access-Client-*` permiten reutilizar el cliente: ahora el Worker valida esa credencial, sin una aplicación Cloudflare Access. El puente no conoce la contraseña PostgreSQL. La DB sigue exigiendo su propia autenticación.
+5. **Se rotó la credencial de transporte y se actualizaron ambos proveedores.** La API de Cloudflare y Vercel recibieron el hostname nuevo y el mismo secreto privado del puente; cada publicación conserva su secreto JWT independiente. Los valores solo están en archivos ignorados y en la configuración privada de los proveedores.
+6. **Se verificó antes de darlo por resuelto.** Una prueba reprodujo el problema del tipo binario Blob predeterminado del runtime. Se fijó `binaryType = "arraybuffer"` antes de `accept()` y se comprobó la transferencia en ambos sentidos y el cierre del socket. Pasaron TypeScript y diez pruebas de Workers, y CI completó también las 83 Java. Después se probaron SQL real y los 54 casos HTTP en cada publicación, incluyendo ADMIN. Las dos cuentas creadas en cada recorrido se eliminaron.
+
+Se eligió este recorrido para conservar PostgreSQL y Java sin usar un dominio ajeno ni contratar una base administrada. No se abrió el puerto 5432 del router. El puente y Workers VPC agregan una dependencia de infraestructura; VPC está en beta. La PC remota, PostgreSQL y el conector deben permanecer activos. Los secretos del puente se rotan coordinadamente en los tres servicios. El JWT del alumno/usuario, la credencial de transporte y la contraseña de la DB cumplen funciones diferentes.
+
+Durante la nueva verificación de Cloudflare hubo un primer `502` del catálogo externo y un intento que agotó 60 segundos. La repetición completa posterior pasó, incluidos catálogo y producto. La evidencia no demuestra disponibilidad continua ni ausencia de futuros fallos del proveedor. En esta corrección no se repitieron las capturas de navegador ni se hizo una prueba de carga. Las fechas JSON están en UTC del 4 de noviembre; las comprobaciones ocurrieron el 3 de noviembre por la noche en Argentina.
+
+Referencias de la solución: [VPC Networks enlazadas a Tunnel](https://developers.cloudflare.com/workers-vpc/configuration/vpc-networks/), [API TCP de VPC](https://developers.cloudflare.com/workers-vpc/api/) y [tipo binario de WebSocket](https://developers.cloudflare.com/workers/runtime-apis/websockets/).
+
+## Publicación anterior y verificación histórica en Cloudflare · 3 de noviembre
+
+Esta sección registra la publicación previa a la corrección del dominio. Sus IDs, conteos y comprobación Access corresponden a ese momento. La configuración vigente es la de la sección anterior; no recrear el hostname ni las credenciales retirados.
 
 | Dato verificable | Resultado |
 |---|---|
@@ -132,7 +166,7 @@ Esta es una secuencia técnica de la solución final, sustentada en código e in
 | 8 | Centralizar permisos y extenderlos a favoritos. | `buscarAutorizada`, filtrado por usuario y control de origen/destino. | Evitar accesos por IDs ajenos y caminos alternativos al mismo recurso. | 4 |
 | 9 | Aislar las integraciones. | Contenedor temporal, esquemas por clase, Flyway y JVM UTC. | Probar en limpio sin tocar datos personales ni depender de aliases horarios locales. | 5 |
 | 10 | Automatizar la comprobación. | Surefire/Failsafe, Actions y reportes; aserción rota y restaurada según evidencia. | Detectar regresiones también fuera del equipo del desarrollador. | 5 y 6 |
-| 11 | Publicar el contenedor Java con PostgreSQL externo. | Imagen multietapa, Cloudflare Containers y conexión Access/Tunnel. | Conservar Java y la base remota elegida, con datos fuera de la JVM. | 7, con diferencia de gratuidad |
+| 11 | Publicar el contenedor Java con PostgreSQL externo. | Imagen multietapa, Cloudflare Containers y conexión por puente workers.dev + VPC/Tunnel. | Conservar Java y la base remota elegida, con datos fuera de la JVM. | 7, con diferencia de gratuidad |
 | 12 | Agregar una publicación Hobby. | Misma imagen en Vercel, secretos propios para JWT, ajuste de arranque y región. | Aportar la experiencia de alojamiento gratuito de la aplicación que faltaba en Cloudflare. | 7, con DB propia |
 | 13 | Registrar y ordenar la evidencia. | Swagger, README, capturas, JSON de resultados, logs resumidos y enlaces Actions. | Permitir revisar el comportamiento y explicar cada requisito sin depender solo de afirmaciones. | 8 y evidencia esperada |
 
@@ -146,7 +180,7 @@ Hay que distinguir **desarrollo manual**, **pruebas automatizadas** y **desplieg
 |---|---|---|---|---|
 | Desarrollo local | Contenedor Docker de `docker-compose.yml`, imagen `postgres:17`. | La persona que ejecuta Compose. | Volumen `postgres-data`; se conservan entre arranques. | Puerto local publicado; ejemplo `127.0.0.1:55432`. |
 | Integraciones locales y CI | Contenedor Docker temporal, imagen `postgres:17`. | `PostgresTestDatabase` mediante Testcontainers. | Esquemas temporales; no se conserva como base personal. | Puerto dinámico y propiedades obtenidas del contenedor. |
-| Publicación documentada | Servicio PostgreSQL del equipo remoto, observado como versión 18.6 en la evidencia. | Administración del equipo remoto. | Base dedicada `webii_tp3`, externa al contenedor de la API. | JDBC a listener cloudflared, luego Access/Tunnel. |
+| Publicación documentada | Servicio PostgreSQL del equipo remoto, observado como versión 18.6 en la evidencia. | Administración del equipo remoto. | Base dedicada `webii_tp3`, externa al contenedor de la API. | JDBC a listener cloudflared, luego puente workers.dev y VPC/Tunnel. |
 
 **La base pública no queda acreditada como un contenedor de PostgreSQL desplegado en Vercel o Cloudflare.** Lo que sí se empaqueta y publica allí es el contenedor **de la aplicación Java**, que se conecta a la base remota. No hay que confundirlo con los dos contenedores de PostgreSQL usados en desarrollo y pruebas.
 
@@ -246,9 +280,9 @@ Esto demuestra comportamiento real de PostgreSQL: FK, UNIQUE, SQL de migraciones
 
 El despliegue documentado reutilizó el PostgreSQL del equipo remoto, con base y rol dedicados. La primera elección de Cloudflare se hizo por preferencia del usuario y luego se agregó Vercel Hobby. Los datos deben sobrevivir aunque el contenedor Java duerma o se reemplace; ubicarlos en una base externa conserva esa separación.
 
-El equipo remoto mantiene un conector saliente `web2-tp3-tunnel.service`. Dentro del contenedor Java, `cloudflared access tcp` abre un listener en `127.0.0.1:15432`; JDBC conecta ahí y el túnel transporta la conexión hasta el PostgreSQL remoto. No se abre el puerto de PostgreSQL en el router. Access verifica el token de servicio de infraestructura.
+El equipo remoto mantiene un conector saliente `web2-tp3-tunnel.service`. Dentro del contenedor Java, `cloudflared access tcp` abre un listener en `127.0.0.1:15432`; JDBC conecta ahí. Cloudflared abre WebSocket TLS hacia `web2-tp3-postgres.nicotrib699.workers.dev`, donde el Worker verifica una credencial privada y abre TCP por VPC/Tunnel al PostgreSQL remoto. No se abre el puerto de PostgreSQL en el router ni se utiliza una zona DNS de cliente.
 
-La contrapartida de esta decisión es operativa: si se apaga la PC, PostgreSQL o el conector, la API pierde acceso a datos; también debe mantenerse vigente la credencial de Access. Compartir la base entre Cloudflare y Vercel implica compartir las filas y mantener compatibilidad de esquema. Ninguna de estas dependencias queda resuelta por el volumen Docker del entorno local.
+La contrapartida de esta decisión es operativa: si se apaga la PC, PostgreSQL o el conector, o falla el puente/VPC, la API pierde acceso a datos. La credencial del puente debe coincidir en ambos proveedores y rotarse conjuntamente. Compartir la base entre Cloudflare y Vercel implica compartir las filas y mantener compatibilidad de esquema. Ninguna de estas dependencias queda resuelta por el volumen Docker del entorno local.
 
 ### Cómo funciona el contenedor de la aplicación
 
@@ -258,7 +292,7 @@ La contrapartida de esta decisión es operativa: si se apaga la PC, PostgreSQL o
 2. La imagen de ejecución usa JRE 25, recibe el JAR y el binario cloudflared, y ejecuta como usuario sin privilegios `10001:10001`.
 3. Se activa el perfil `prod` y se declara el puerto 8080.
 4. Si no se configura `PG_TUNNEL_HOSTNAME`, el entrypoint inicia Java directamente.
-5. Si se configura, exige las credenciales de Access, inicia el listener TCP del túnel y luego Java. Supervisa ambos procesos y detiene el restante si alguno termina.
+5. Si se configura, exige las credenciales del transporte, inicia el listener TCP del túnel y luego Java. Supervisa ambos procesos y detiene el restante si alguno termina. Los nombres heredados de Access se conservan por compatibilidad con cloudflared; el Worker es quien autentica el transporte vigente.
 
 La imagen no incluye un servidor PostgreSQL. Tampoco ejecuta las pruebas de integración al construirse: el build usa `-DskipTests`; la comprobación completa corresponde al job CI que ejecuta `verify`. Empaquetar un JAR no reemplaza pasar esas pruebas.
 
@@ -582,7 +616,7 @@ Las clases unitarias terminan en `Test`; las integraciones, en `IT`. Las de serv
 
 **Por qué se hizo:** “El sufijo decide qué plugin ejecuta la clase. Además, el nombre del método permite entender qué comportamiento se está comprobando.”
 
-El **3 de noviembre se ejecutó `clean verify`** con JDK 25 y Docker: **58 unitarias y 25 integraciones, 83 ejecuciones Java**, sin fallos, errores u omisiones. La integración adicional comprueba los patrones públicos. Las cinco pruebas del Worker pasaron con Node 24.22.1: **88 ejecuciones en total**. Los resultados del 29 de octubre, 82 Java y cinco del Worker, se conservan como históricos y no se confunden con esta ejecución. Una parametrizada puede producir varias ejecuciones; estas cantidades no son un porcentaje de cobertura.
+El **3 de noviembre se ejecutó `clean verify`** con JDK 25 y Docker: **58 unitarias y 25 integraciones, 83 ejecuciones Java**, sin fallos, errores u omisiones. La integración adicional comprueba los patrones públicos. Esa ejecución inicial incluía cinco pruebas del Worker (88 en total). Después se agregaron cinco del puente PostgreSQL: autenticación ausente, incorrecta o sin configurar; exigencia de WebSocket; y transferencia binaria con cierre. La comprobación local de TypeScript y diez pruebas de Workers pasó, y CI de `229c8ce` completó **93 ejecuciones**. Los resultados del 29 de octubre, 82 Java y cinco del Worker, se conservan como históricos. Una parametrizada puede producir varias ejecuciones; estas cantidades no son un porcentaje de cobertura.
 
 Reportes XML generados por la nueva ejecución limpia:
 
@@ -628,7 +662,7 @@ La evidencia registra que se cambió una aserción para esperar ADMIN cuando el 
 - [Recuperación registrada](https://github.com/Niquinhoo/Web2Practica/actions/runs/40817598752).
 - [CI final citado en la documentación anterior](https://github.com/Niquinhoo/Web2Practica/actions/runs/40820858514).
 - [CI de entrega del 3 de noviembre, commit 82a32c6](https://github.com/Niquinhoo/Web2Practica/actions/runs/41730538085): jobs Java/PostgreSQL y Worker exitosos sobre la rama `TP3`, con las nuevas rutas públicas, dependencia explícita y paquete de pruebas corregido.
-- [CI de la revisión desplegada, commit 994e5b7](https://github.com/Niquinhoo/Web2Practica/actions/runs/41732115409): ambos jobs exitosos antes de publicar en Cloudflare.
+- [CI de la revisión vigente, commit 229c8ce](https://github.com/Niquinhoo/Web2Practica/actions/runs/41753033540): ambos jobs exitosos, 93 ejecuciones. [Publicación anterior 994e5b7](https://github.com/Niquinhoo/Web2Practica/actions/runs/41732115409) conservada como historia.
 
 **Por qué se hizo:** “No solo configuré un archivo YAML: la evidencia muestra que una aserción incorrecta vuelve rojo el pipeline y que restaurarla lo hace pasar. Así compruebo que el workflow detecta fallos de las pruebas.”
 
@@ -656,10 +690,10 @@ Se documentaron dos publicaciones de la misma API Java:
 
 | Publicación | Qué explicar |
 |---|---|
-| Cloudflare Containers | Proveedor principal elegido para la entrega. Usa Workers Paid, una instancia `basic` y PostgreSQL remoto por Access/Tunnel. |
-| Vercel Hobby | Experiencia adicional del 29 de octubre, conservada como evidencia histórica. No es necesaria para justificar la elección actual del usuario. |
+| Cloudflare Containers | Proveedor principal elegido para la entrega. Usa Workers Paid, una instancia `basic` y PostgreSQL remoto por puente workers.dev y VPC/Tunnel. |
+| Vercel Hobby | Publicación gratuita adicional, actualizada y verificada desde `TP3` con la misma base y el nuevo transporte. |
 
-**PostgreSQL corre en tu equipo remoto**, no es una base administrada contratada en Vercel. Se accede mediante Cloudflare Access y Tunnel. La arquitectura depende de ese equipo y del túnel para operar con datos.
+**PostgreSQL corre en tu equipo remoto**, no es una base administrada contratada en Vercel. Se accede mediante el puente autenticado en workers.dev y VPC/Tunnel. La arquitectura depende de ese equipo, del puente y del túnel para operar con datos.
 
 **Por qué se hizo:** se conserva la plataforma que el usuario ya eligió para el proyecto, manteniendo la aplicación Java dentro de un contenedor, los datos fuera de su ciclo de vida y el acceso a la base mediante Tunnel. La elección permite continuar con la infraestructura configurada, sin migrar servicios para esta preparación de entrega. No se afirma que Workers Paid sea gratuito ni que la preferencia del usuario constituya una aprobación de la cátedra.
 
@@ -667,19 +701,19 @@ Se documentaron dos publicaciones de la misma API Java:
 
 **Dónde mostrarlo:** tabla de configuración de la guía de despliegue y [Dockerfile](api-blank/Dockerfile), sin exhibir valores secretos.
 
-Se configura perfil `prod`, URL JDBC, credenciales PostgreSQL y `JWT_SECRETO`. El contenedor también necesita las variables del cliente de Cloudflare Access para abrir la conexión TCP del túnel.
+Se configura perfil `prod`, URL JDBC, credenciales PostgreSQL y `JWT_SECRETO`. El contenedor también necesita `PG_TUNNEL_HOSTNAME` y las dos variables privadas de autenticación del puente para abrir la conexión TCP del túnel.
 
 ```text
 Swagger o cliente → HTTPS → aplicación Spring
                                 ↓
                          JDBC a listener local
                                 ↓
-                       cloudflared + Access/Tunnel
+                 cloudflared → puente workers.dev → VPC/Tunnel
                                 ↓
                          PostgreSQL remoto
 ```
 
-**Por qué se hizo:** “Hay dos credenciales con funciones distintas: el JWT identifica al usuario de la API; el token de servicio de Access permite que el contenedor llegue a PostgreSQL. El usuario no recibe las credenciales de infraestructura.”
+**Por qué se hizo:** “El JWT identifica al usuario de la API; la credencial privada del puente permite llegar a PostgreSQL, y la contraseña de la base autentica la sesión SQL. El usuario no recibe las credenciales de infraestructura. El endpoint workers.dev evita usar el dominio de un cliente.”
 
 Los datos viven fuera del contenedor Java, por lo que no desaparecen al detenerlo o reemplazarlo. La guía de Vercel registra además el ajuste `-XX:TieredStopAtLevel=1` y la región `gru1` para reducir el tiempo de arranque observado; no son requisitos del JWT.
 
@@ -859,8 +893,8 @@ No hay un endpoint público para eliminar usuarios; esas cuentas permanecen. Log
 |---|---|
 | Evolución de TP2 con autenticación/autorización. | Mismo proyecto `api-blank`, paquetes de usuario y seguridad, servicios con propiedad. |
 | V5 y V6 nuevas; migraciones anteriores sin alterar. | [V5](api-blank/src/main/resources/db/migration/V5__create_usuarios.sql), [V6](api-blank/src/main/resources/db/migration/V6__add_usuario_id_a_listas.sql). La comparación actual de V1–V4 entre `TP2` y `HEAD` no produjo diferencias. El historial visible de V5/V6 muestra su alta en `6b7492f` y ninguna edición posterior versionada. Eso no demuestra por sí solo el checksum actual de una base remota, que no se consultó de nuevo. |
-| Unitarias e integraciones en verde. | Nueva ejecución del 3 de noviembre: 58 + 25 Java; otras cinco del Worker. Resumen en [EVIDENCIA-TP3](api-blank/docs/EVIDENCIA-TP3.md). |
-| Al menos una corrida Actions exitosa. | [CI de la revisión desplegada](https://github.com/Niquinhoo/Web2Practica/actions/runs/41732115409), commit `994e5b7` de `TP3`; también se conserva la recuperación histórica. |
+| Unitarias e integraciones en verde. | Ejecución vigente: 58 + 25 Java; diez de Workers. Resumen en [EVIDENCIA-TP3](api-blank/docs/EVIDENCIA-TP3.md). |
+| Al menos una corrida Actions exitosa. | [CI de la revisión desplegada](https://github.com/Niquinhoo/Web2Practica/actions/runs/41753033540), commit `229c8ce` de `TP3`; también se conserva la recuperación histórica. |
 | URL pública y capturas de health 200, protegido 401/200. | Cloudflare, 3 de noviembre: [54 solicitudes](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/http-publico-completo.json), [health](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/health-swagger-200.png), [401](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/listas-swagger-401.png), [200](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/listas-swagger-200.png). |
 | README con ubicación y justificación de propiedad. | [README de API](api-blank/README.md), sección «Endpoints y propiedad». |
 
@@ -879,7 +913,7 @@ Nimbus en lugar de JJWT y el filtro Bearer nativo son opciones permitidas por la
 
 Se inspeccionaron POM, configuración, modelo/persistencia de usuarios y listas, cadena de seguridad, autorización en servicios, clases de pruebas, Compose, Dockerfile, entrypoint, workflow y evidencias de publicación. Se compararon V1–V4 contra TP2, se leyó el historial de V5/V6 y se comprobó que el wrapper esté registrado como ejecutable. También se sumaron las ejecuciones de los 12 XML locales guardados y se verificó la presencia del núcleo de Testcontainers en su classpath.
 
-Se ejecutó `clean verify`: 58 unitarias y 25 integraciones, sin fallos, errores u omisiones. Se ejecutó `npm run check` y las cinco pruebas del Worker con Node 24.22.1. La regresión de rutas públicas falló antes del ajuste y pasó en la suite posterior. La revisión `994e5b7` pasó CI antes de desplegarse en Cloudflare. Se verificaron 54 solicitudes públicas, V1–V6 en la base, protección Access y los códigos 200/401/200 en Swagger. Las comprobaciones editoriales incluyen las ocho consignas, las 36 filas, enlaces, bloques de código y ausencia de referencias a la guía eliminada. Las instrucciones genéricas de demostración se distinguen del recorrido nuevo efectivamente registrado.
+Se ejecutó `clean verify`: 58 unitarias y 25 integraciones, sin fallos, errores u omisiones. Para la corrección de transporte se ejecutaron `npm run check` y diez pruebas de Workers con Node 24.22.1; CI de `229c8ce` completó 93 ejecuciones. La regresión de rutas públicas y la regresión binaria fallaron antes de sus ajustes y pasaron después. La conexión vigente se verificó con SQL real, V1–V6, rechazo anónimo 401 y 54 solicitudes públicas por proveedor. Los códigos 200/401/200 de Swagger en Chrome pertenecen a la publicación anterior y sus capturas se conservaron como historia. Las instrucciones de demostración no se presentan como comprobaciones ejecutadas.
 
 ## Autoevaluación antes de defender
 
@@ -896,4 +930,4 @@ Podés considerar preparado un punto cuando puedas explicarlo sin leer el párra
 
 ## Límites que conviene poder reconocer
 
-No hay refresh tokens ni revocación inmediata; los permisos del JWT se mantienen hasta vencer. La disponibilidad depende del equipo remoto, su túnel y el proveedor del catálogo. La revisión `994e5b7` está publicada y verificada en Cloudflare; Workers Paid es una elección expresa del usuario. Queda una cuenta USER de captura sin listas por el bloqueo automático de su limpieza, detallado en la evidencia; la sesión y el token temporal se retiraron.
+No hay refresh tokens ni revocación inmediata; los permisos del JWT se mantienen hasta vencer. La disponibilidad depende del equipo remoto, el puente VPC/Tunnel y el proveedor del catálogo. Workers VPC está en beta. La revisión `229c8ce` está publicada y verificada en Cloudflare y Vercel, sin depender de dominios de clientes; Workers Paid es una elección expresa del usuario. Queda una cuenta USER de la captura histórica sin listas por el bloqueo automático de su limpieza, detallado en la evidencia; la sesión y el token temporal se retiraron.

@@ -8,7 +8,8 @@ Proyecto Maven de Web II: Java 25, Spring Boot 4, PostgreSQL y Flyway, evolucion
 - [Cobertura y evidencia de TP3](api-blank/docs/EVIDENCIA-TP3.md).
 - [Despliegue Cloudflare Containers y PostgreSQL por Tunnel](deployment/cloudflare/README.md).
 - [PostgreSQL local con Docker](api-blank/docs/tp3/postgresql-docker.md).
-- [Swagger de entrega en Cloudflare](https://web2-practica-tp3.nicotrib699.workers.dev/swagger-ui/index.html): revisión `994e5b7` de `TP3`, publicada y verificada el 3 de noviembre con [evidencia nueva](api-blank/docs/tp3/evidencias/cloudflare-2026-11-03/despliegue.json).
+- [Swagger de entrega en Cloudflare](https://web2-practica-tp3.nicotrib699.workers.dev/swagger-ui/index.html) y [publicación gratuita adicional en Vercel](https://web2-practica-tp3.vercel.app/swagger-ui/index.html): revisión `229c8ce` de `TP3`, verificada con 54 solicitudes por proveedor. [Despliegues y retiro de la conexión anterior](api-blank/docs/tp3/evidencias/sin-dominio-2026-11-03/despliegues.json).
+- La DB se alcanza por `web2-tp3-postgres.nicotrib699.workers.dev`, puente autenticado con VPC/Tunnel. No utiliza un dominio propio ni de clientes; sin credenciales devuelve `401`.
 
 Desde `api-blank`, con JDK 25 y Docker Desktop iniciado:
 

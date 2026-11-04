@@ -1,0 +1,394 @@
+{
+  "fechaUtc": "2026-11-04T01:22:22.2133694Z",
+  "url": "https://web2-practica-tp3.vercel.app",
+  "rama": "TP3",
+  "revision": "229c8ce45c46e5699917efcc89c6e88e9e095f08",
+  "resultado": true,
+  "casos": [
+    {
+      "caso": "health público",
+      "metodo": "GET",
+      "ruta": "/health",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "Swagger UI real",
+      "metodo": "GET",
+      "ruta": "/swagger-ui/index.html",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "OpenAPI público con Bearer",
+      "metodo": "GET",
+      "ruta": "/v3/api-docs",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "catálogo público",
+      "metodo": "GET",
+      "ruta": "/api/productos",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "producto público existente",
+      "metodo": "GET",
+      "ruta": "/api/productos/1",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "producto inexistente",
+      "metodo": "GET",
+      "ruta": "/api/productos/999999999",
+      "esperado": 404,
+      "obtenido": 404
+    },
+    {
+      "caso": "patrón auth de revisión nueva",
+      "metodo": "GET",
+      "ruta": "/api/auth/no-existe",
+      "esperado": 404,
+      "obtenido": 404
+    },
+    {
+      "caso": "catálogo sin escritura",
+      "metodo": "POST",
+      "ruta": "/api/productos",
+      "esperado": 405,
+      "obtenido": 405
+    },
+    {
+      "caso": "listas sin JWT",
+      "metodo": "GET",
+      "ruta": "/api/listas",
+      "esperado": 401,
+      "obtenido": 401
+    },
+    {
+      "caso": "favoritos sin JWT",
+      "metodo": "GET",
+      "ruta": "/api/favoritos",
+      "esperado": 401,
+      "obtenido": 401
+    },
+    {
+      "caso": "JWT inválido",
+      "metodo": "GET",
+      "ruta": "/api/listas",
+      "esperado": 401,
+      "obtenido": 401
+    },
+    {
+      "caso": "registro a",
+      "metodo": "POST",
+      "ruta": "/api/auth/registro",
+      "esperado": 201,
+      "obtenido": 201
+    },
+    {
+      "caso": "login a",
+      "metodo": "POST",
+      "ruta": "/api/auth/login",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "registro b",
+      "metodo": "POST",
+      "ruta": "/api/auth/registro",
+      "esperado": 201,
+      "obtenido": 201
+    },
+    {
+      "caso": "login b",
+      "metodo": "POST",
+      "ruta": "/api/auth/login",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "email duplicado",
+      "metodo": "POST",
+      "ruta": "/api/auth/registro",
+      "esperado": 409,
+      "obtenido": 409
+    },
+    {
+      "caso": "registro inválido",
+      "metodo": "POST",
+      "ruta": "/api/auth/registro",
+      "esperado": 400,
+      "obtenido": 400
+    },
+    {
+      "caso": "login incorrecto",
+      "metodo": "POST",
+      "ruta": "/api/auth/login",
+      "esperado": 401,
+      "obtenido": 401
+    },
+    {
+      "caso": "crear lista propia sin aceptar dueño del body",
+      "metodo": "POST",
+      "ruta": "/api/listas",
+      "esperado": 201,
+      "obtenido": 201
+    },
+    {
+      "caso": "crear lista de B",
+      "metodo": "POST",
+      "ruta": "/api/listas",
+      "esperado": 201,
+      "obtenido": 201
+    },
+    {
+      "caso": "crear destino propio de A",
+      "metodo": "POST",
+      "ruta": "/api/listas",
+      "esperado": 201,
+      "obtenido": 201
+    },
+    {
+      "caso": "lista propia",
+      "metodo": "GET",
+      "ruta": "/api/listas/9",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "listado filtrado por dueño",
+      "metodo": "GET",
+      "ruta": "/api/listas",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "lectura ajena denegada",
+      "metodo": "GET",
+      "ruta": "/api/listas/9",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "borrado ajeno denegado",
+      "metodo": "DELETE",
+      "ruta": "/api/listas/9",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "favoritos de lista ajena denegados",
+      "metodo": "GET",
+      "ruta": "/api/listas/9/favoritos",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "lista inexistente",
+      "metodo": "GET",
+      "ruta": "/api/listas/9223372036854775807",
+      "esperado": 404,
+      "obtenido": 404
+    },
+    {
+      "caso": "crear favorito propio",
+      "metodo": "POST",
+      "ruta": "/api/favoritos",
+      "esperado": 201,
+      "obtenido": 201
+    },
+    {
+      "caso": "crear favorito de B",
+      "metodo": "POST",
+      "ruta": "/api/favoritos",
+      "esperado": 201,
+      "obtenido": 201
+    },
+    {
+      "caso": "listado de favoritos filtrado",
+      "metodo": "GET",
+      "ruta": "/api/favoritos",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "favorito ajeno GET",
+      "metodo": "GET",
+      "ruta": "/api/favoritos/8",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "favorito ajeno DELETE",
+      "metodo": "DELETE",
+      "ruta": "/api/favoritos/8",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "favorito ajeno PUT",
+      "metodo": "PUT",
+      "ruta": "/api/favoritos/8",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "alta en lista ajena denegada",
+      "metodo": "POST",
+      "ruta": "/api/favoritos",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "PUT a lista destino ajena denegado",
+      "metodo": "PUT",
+      "ruta": "/api/favoritos/7",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "borrar lista con favoritos",
+      "metodo": "DELETE",
+      "ruta": "/api/listas/9",
+      "esperado": 409,
+      "obtenido": 409
+    },
+    {
+      "caso": "movimiento a destino ajeno",
+      "metodo": "POST",
+      "ruta": "/api/listas/9/mover-favoritos",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "movimiento desde origen ajeno",
+      "metodo": "POST",
+      "ruta": "/api/listas/10/mover-favoritos",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "movimiento misma lista",
+      "metodo": "POST",
+      "ruta": "/api/listas/9/mover-favoritos",
+      "esperado": 400,
+      "obtenido": 400
+    },
+    {
+      "caso": "movimiento a lista inexistente",
+      "metodo": "POST",
+      "ruta": "/api/listas/9/mover-favoritos",
+      "esperado": 404,
+      "obtenido": 404
+    },
+    {
+      "caso": "nombre de lista inválido",
+      "metodo": "POST",
+      "ruta": "/api/listas",
+      "esperado": 400,
+      "obtenido": 400
+    },
+    {
+      "caso": "movimiento permitido",
+      "metodo": "POST",
+      "ruta": "/api/listas/9/mover-favoritos",
+      "esperado": 204,
+      "obtenido": 204
+    },
+    {
+      "caso": "origen eliminado tras movimiento",
+      "metodo": "GET",
+      "ruta": "/api/listas/9",
+      "esperado": 404,
+      "obtenido": 404
+    },
+    {
+      "caso": "favorito conservado en destino",
+      "metodo": "GET",
+      "ruta": "/api/favoritos/7",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "PUT favorito propio",
+      "metodo": "PUT",
+      "ruta": "/api/favoritos/7",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "login ADMIN de prueba",
+      "metodo": "POST",
+      "ruta": "/api/auth/login",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "ADMIN lee lista ajena",
+      "metodo": "GET",
+      "ruta": "/api/listas/11",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "ADMIN lista recursos de ambos dueños",
+      "metodo": "GET",
+      "ruta": "/api/listas",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "login tras restaurar USER",
+      "metodo": "POST",
+      "ruta": "/api/auth/login",
+      "esperado": 200,
+      "obtenido": 200
+    },
+    {
+      "caso": "USER restaurado vuelve a recibir 403",
+      "metodo": "GET",
+      "ruta": "/api/listas/11",
+      "esperado": 403,
+      "obtenido": 403
+    },
+    {
+      "caso": "limpieza favorito de prueba",
+      "metodo": "DELETE",
+      "ruta": "/api/favoritos/7",
+      "esperado": 204,
+      "obtenido": 204
+    },
+    {
+      "caso": "limpieza favorito de prueba",
+      "metodo": "DELETE",
+      "ruta": "/api/favoritos/8",
+      "esperado": 204,
+      "obtenido": 204
+    },
+    {
+      "caso": "limpieza lista de prueba",
+      "metodo": "DELETE",
+      "ruta": "/api/listas/10",
+      "esperado": 204,
+      "obtenido": 204
+    },
+    {
+      "caso": "limpieza lista de prueba",
+      "metodo": "DELETE",
+      "ruta": "/api/listas/11",
+      "esperado": 204,
+      "obtenido": 204
+    }
+  ],
+  "limpieza": {
+    "usuarios": 2,
+    "errores": []
+  },
+  "fallo": null,
+  "secretos": "No se guardaron contraseñas, JWT ni hashes",
+  "admin": "Cuenta descartable promovida, verificada y restaurada a USER antes de limpiarla"
+}

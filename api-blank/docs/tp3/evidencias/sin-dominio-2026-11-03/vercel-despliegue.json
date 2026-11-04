@@ -1,0 +1,14 @@
+{
+  "fechaUtc": "2026-11-04T01:29:10.0080754Z",
+  "id": "dpl_24GQBeTvXnVgQ5yusz4KmPuwgm8W",
+  "url": "https://web2-practica-tp3.vercel.app",
+  "readyState": "READY",
+  "gitSource": {
+    "type": "github",
+    "sha": "229c8ce45c46e5699917efcc89c6e88e9e095f08",
+    "ref": "TP3",
+    "repoId": 1347826231
+  },
+  "ramaProduccion": "TP3",
+  "secrets": "Omitidos"
+}

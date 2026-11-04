@@ -1,0 +1,10 @@
+{
+  "fechaUtc": "2026-11-04T01:18:27.4503253Z",
+  "hostname": "web2-tp3-postgres.nicotrib699.workers.dev",
+  "anonimo": 401,
+  "postgres": "webii_tp3|18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)|6",
+  "respuestaUnicodeCaracteres": 100000,
+  "consultaBytes": 200000,
+  "consultaResultado": "200000",
+  "lecturaSolamente": true
+}

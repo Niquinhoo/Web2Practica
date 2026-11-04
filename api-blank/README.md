@@ -28,7 +28,7 @@ En Linux/macOS: `./mvnw spring-boot:run`. `scripts/run-local.ps1` conserva la al
 | `JWT_VIGENCIA_MINUTOS` | Vida del JWT; 30 minutos por defecto, debe ser positiva |
 | `PORT` | Puerto HTTP; 8080 por defecto |
 | `SPRING_PROFILES_ACTIVE` | `prod` en el contenedor de despliegue |
-| `PG_TUNNEL_HOSTNAME`, `TUNNEL_SERVICE_TOKEN_ID`, `TUNNEL_SERVICE_TOKEN_SECRET` | Activa el cliente TCP autenticado de Cloudflare Access dentro del contenedor |
+| `PG_TUNNEL_HOSTNAME`, `TUNNEL_SERVICE_TOKEN_ID`, `TUNNEL_SERVICE_TOKEN_SECRET` | Activa cloudflared contra el puente autenticado `web2-tp3-postgres.nicotrib699.workers.dev`; el Worker conecta a PostgreSQL mediante VPC/Tunnel sin dominio propio |
 
 `.env` es configuración de Compose, no del proceso Maven. Los secretos no se guardan en Git. El valor JWT de desarrollo permite ejecutar localmente; el perfil `prod` exige un secreto explícito.
 
