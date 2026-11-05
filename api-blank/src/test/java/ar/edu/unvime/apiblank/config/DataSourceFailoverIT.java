@@ -12,13 +12,14 @@ class DataSourceFailoverIT {
 
     private DataSource elegir(String principal, String respaldo) {
         return config.dataSource(principal, PostgresTestDatabase.USER, PostgresTestDatabase.PASSWORD,
-                respaldo, PostgresTestDatabase.USER, PostgresTestDatabase.PASSWORD, 2);
+                respaldo, PostgresTestDatabase.USER, PostgresTestDatabase.PASSWORD, 2, 1);
     }
 
     @Test
     void elegir_principalDisponible_usaPrincipal() throws Exception {
         try (var ds = (HikariDataSource) elegir(PostgresTestDatabase.URL, URL_CAIDA)) {
             assertThat(ds.getJdbcUrl()).isEqualTo(PostgresTestDatabase.URL);
+            assertThat(ds.getMinimumIdle()).isEqualTo(1);
             try (var c = ds.getConnection()) { assertThat(c.isValid(2)).isTrue(); }
         }
     }
@@ -27,6 +28,7 @@ class DataSourceFailoverIT {
     void elegir_principalCaida_usaRespaldo() throws Exception {
         try (var ds = (HikariDataSource) elegir(URL_CAIDA, PostgresTestDatabase.URL)) {
             assertThat(ds.getJdbcUrl()).isEqualTo(PostgresTestDatabase.URL);
+            assertThat(ds.getMinimumIdle()).isEqualTo(1);
             try (var c = ds.getConnection()) { assertThat(c.isValid(2)).isTrue(); }
         }
     }
