@@ -54,7 +54,8 @@ export class ApiContainer extends DurableObject<Env> {
         enableInternet: true,
         env: {
           SPRING_PROFILES_ACTIVE: "prod",
-          JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=65 -Duser.timezone=UTC",
+          // Con solo C1 el JIT gasta menos CPU al iniciar, a cambio de menos rendimiento máximo.
+          JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=65 -XX:TieredStopAtLevel=1 -Duser.timezone=UTC",
           DATABASE_URL: this.env.DATABASE_URL,
           POSTGRES_USER: this.env.POSTGRES_USER,
           POSTGRES_PASSWORD: this.env.POSTGRES_PASSWORD,
