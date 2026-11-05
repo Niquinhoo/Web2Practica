@@ -54,6 +54,24 @@ El primer comando lee `.secrets/database-proxy.json`, con solo identificador y s
 - Si hay errores de conexión, revisar PC, PostgreSQL y `web2-tp3-tunnel.service`, el binding VPC, la coincidencia del secreto del puente en sus clientes y finalmente el usuario/contraseña de DB. El puente sin credenciales debe devolver `401`.
 - Un arranque en frío tarda más que una petición con la JVM activa. La base persiste en el equipo remoto aunque el contenedor duerma o se reemplace.
 
+## Arranque en frío
+
+Antes de optimizar, el 4 de noviembre de 2026, `GET /health` tardó entre 52 y 59 s en cinco arranques en frío de la URL pública, y cerca de 0,6 s con la JVM activa. La instancia siguió activa tras 40 s sin tráfico y ya estaba apagada a los 50 s (una sola muestra).
+
+Comparación en un banco local con la misma imagen, 0,5 CPU, 1 GB y PostgreSQL 17 ya migrado. Sirve para comparar variantes entre sí: no incluye el túnel y no equivale al tiempo de Cloudflare.
+
+| Variante | Hasta `/health` 200 | Consultas SQL |
+|---|---|---|
+| Base | 88 s | 62 |
+| `-XX:TieredStopAtLevel=1` | 48 s | 62 |
+| AOT Cache | 40 s | 62 |
+| AOT Cache y `TieredStopAtLevel=1` | 22 s | 61 |
+| Lo anterior y `minimum-idle=1` (versión aplicada) | 22 s | 53 |
+
+Con 0,5 CPU, la mediana del login (BCrypt) fue de 300 ms en la base y 305 ms en la versión aplicada. El recorrido de registro, login, listas y favoritos pasó en ambas. El AOT Cache agrega 130 MB a la imagen.
+
+No se aplicó `hibernate.boot.allow_jdbc_metadata_access=false`: junto con `ddl-auto=validate` subió a 84 consultas, y bajarlas a 43 exigía apagar la validación del esquema.
+
 Los resultados y enlaces de CI/despliegue se registran en [EVIDENCIA-TP3](../../api-blank/docs/EVIDENCIA-TP3.md).
 
 Referencias: [Cloudflare Containers](https://developers.cloudflare.com/containers/), [precios](https://developers.cloudflare.com/containers/platform/pricing/), [Workers VPC Networks](https://developers.cloudflare.com/workers-vpc/configuration/vpc-networks/) y [API TCP de VPC](https://developers.cloudflare.com/workers-vpc/api/).
