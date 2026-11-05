@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 if [[ -z "${PG_TUNNEL_HOSTNAME:-}" ]]; then
-    exec java -jar /app/app.jar
+    exec java -XX:AOTCache=/app/app.aot -jar /app/app.jar
 fi
 : "${TUNNEL_SERVICE_TOKEN_ID:?Falta el token de Cloudflare Access}"
 : "${TUNNEL_SERVICE_TOKEN_SECRET:?Falta el secreto de Cloudflare Access}"
@@ -18,7 +18,7 @@ for attempt in {1..100}; do
     kill -0 "$tunnel_pid"
     sleep 0.1
 done
-java -jar /app/app.jar &
+java -XX:AOTCache=/app/app.aot -jar /app/app.jar &
 java_pid=$!
 wait -n "$tunnel_pid" "$java_pid"
 # Si alguno termina, se detiene el otro para que el contenedor pueda reiniciarse.

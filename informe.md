@@ -289,7 +289,7 @@ La contrapartida de esta decisión es operativa: si se apaga la PC, PostgreSQL o
 **Archivos:** [Dockerfile](api-blank/Dockerfile) y [container-entrypoint.sh](api-blank/scripts/container-entrypoint.sh).
 
 1. Una etapa con JDK 25 copia Maven Wrapper y fuentes, y construye el JAR.
-2. La imagen de ejecución usa JRE 25, recibe el JAR y el binario cloudflared, y ejecuta como usuario sin privilegios `10001:10001`.
+2. La imagen de ejecución usa JRE 25, recibe el JAR y el binario cloudflared, genera un AOT Cache para acortar el arranque en frío y ejecuta como usuario sin privilegios `10001:10001`.
 3. Se activa el perfil `prod` y se declara el puerto 8080.
 4. Si no se configura `PG_TUNNEL_HOSTNAME`, el entrypoint inicia Java directamente.
 5. Si se configura, exige las credenciales del transporte, inicia el listener TCP del túnel y luego Java. Supervisa ambos procesos y detiene el restante si alguno termina. Los nombres heredados de Access se conservan por compatibilidad con cloudflared; el Worker es quien autentica el transporte vigente.
