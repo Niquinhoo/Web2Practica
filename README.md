@@ -1,6 +1,6 @@
-# Web II · TP3 · Defensa de la API
+# Web II · TP3 
 
-**Entrega en `TP3`.** API REST de listas y favoritos con Java 25, Spring Boot y PostgreSQL. Para la defensa, abrí el **[Laboratorio público](https://web2-practica-front.nicotrib699.workers.dev/#/laboratorio)**. Vercel está seleccionado como API por defecto.
+**Entrega en `TP3`.** API REST de listas y favoritos con Java 25, Spring Boot y PostgreSQL. **[Laboratorio público](https://web2-practica-front.nicotrib699.workers.dev/#/laboratorio)**. Vercel está seleccionado como API por defecto.
 
 [Consigna oficial](https://unvime-web-2.matiendres.workers.dev/practicos/tp3/) · [Código del front publicado](https://github.com/Niquinhoo/Web2PracticaFront/tree/a41ce5759e4c551501c8eeec2f50a14455d19c84) · [Swagger de Vercel](https://web2-practica-tp3.vercel.app/swagger-ui/index.html) · [Ejecutar la API en local](api-blank/README.md#ejecutar)
 
