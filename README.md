@@ -128,7 +128,7 @@ Si esa apertura falla, el `catch` retorna `crear(respaldoUrl, respaldoUsuario, r
 Los commits registran la coautoría y el motivo de cada ajuste. El banco local usó 0,5 CPU, 1 GB y una base ya migrada. Sus tiempos sirven para comparar variantes. Los tiempos públicos están en la tabla anterior. [Registro de las mediciones y alternativa descartada](https://github.com/Niquinhoo/Web2Practica/commit/2c1fd01)
 
 
-## 8. Swagger y guion para exponer
+## 8. Swagger y Guia probar la tool
 
 1. Abrí el [front público](https://web2-practica-front.nicotrib699.workers.dev/#/laboratorio) y elegí **Registrarme**. Mostrá `201` y el login `200` en **Laboratorio → Autenticación**. Abrí los cuerpos en **Registro de peticiones** para mostrar que la contraseña y el token están ocultos.
 2. Prepará el escenario. Mostrá `200` para la propia, `403` para la ajena y `401` sin token. Repetí la consulta ajena con un ADMIN firmado y compará con el JWT alterado.
