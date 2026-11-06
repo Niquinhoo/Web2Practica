@@ -1,0 +1,788 @@
+{
+  "at": "2026-11-06T04:41:38.599Z",
+  "front": "http://localhost:5173",
+  "api": "https://web2-practica-tp3.vercel.app",
+  "observed": {
+    "Registro válido": 201,
+    "Login válido": 200,
+    "Login con contraseña incorrecta": 401,
+    "Listas sin token": 401,
+    "USER lista solo sus listas": 200,
+    "Lista propia": 200,
+    "Lista ajena": 403,
+    "Mover favoritos desde una lista ajena": 403,
+    "Mover favoritos hacia una lista ajena": 403,
+    "ADMIN sobre lista ajena": 200,
+    "Token con rol ADMIN falsificado": 401
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": {
+          "status": "ok",
+          "service": "api-blank"
+        }
+      },
+      "ms": 9902
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/registro",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": {
+          "email": "lab-defensa-a-b542b308-0@example.com",
+          "password": "[oculta]"
+        }
+      },
+      "response": {
+        "status": 201,
+        "contentType": "application/json",
+        "body": {
+          "id": 22,
+          "email": "lab-defensa-a-b542b308-0@example.com",
+          "rol": "USER"
+        }
+      },
+      "ms": 9058
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": {
+          "email": "lab-defensa-a-b542b308-0@example.com",
+          "password": "[oculta]"
+        }
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": {
+          "token": "[oculto]",
+          "tokenType": "Bearer",
+          "expiresIn": 1800
+        }
+      },
+      "ms": 547
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/registro",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": {
+          "email": "lab-b-d1d313d8-788@example.com",
+          "password": "[oculta]"
+        }
+      },
+      "response": {
+        "status": 201,
+        "contentType": "application/json",
+        "body": {
+          "id": 23,
+          "email": "lab-b-d1d313d8-788@example.com",
+          "rol": "USER"
+        }
+      },
+      "ms": 840
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": {
+          "email": "lab-b-d1d313d8-788@example.com",
+          "password": "[oculta]"
+        }
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": {
+          "token": "[oculto]",
+          "tokenType": "Bearer",
+          "expiresIn": 1800
+        }
+      },
+      "ms": 361
+    },
+    {
+      "method": "POST",
+      "path": "/api/listas",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": {
+          "nombre": "Lab · lista propia"
+        }
+      },
+      "response": {
+        "status": 201,
+        "contentType": "application/json",
+        "body": {
+          "id": 17,
+          "nombre": "Lab · lista propia",
+          "usuarioId": 22
+        }
+      },
+      "ms": 363
+    },
+    {
+      "method": "POST",
+      "path": "/api/favoritos",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": {
+          "productoId": 1,
+          "nota": "Laboratorio",
+          "listaId": 17
+        }
+      },
+      "response": {
+        "status": 201,
+        "contentType": "application/json",
+        "body": {
+          "id": 12,
+          "productoId": 1,
+          "nota": "Laboratorio",
+          "fechaAgregado": "2026-11-06T04:41:29.142827Z",
+          "listaId": 17
+        }
+      },
+      "ms": 399
+    },
+    {
+      "method": "POST",
+      "path": "/api/listas",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "23",
+          "rol": "USER"
+        },
+        "body": {
+          "nombre": "Lab · lista ajena"
+        }
+      },
+      "response": {
+        "status": 201,
+        "contentType": "application/json",
+        "body": {
+          "id": 18,
+          "nombre": "Lab · lista ajena",
+          "usuarioId": 23
+        }
+      },
+      "ms": 291
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/registro",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": {
+          "email": "lab-defensa-admin-b542b308-0@example.com",
+          "password": "[oculta]"
+        }
+      },
+      "response": {
+        "status": 201,
+        "contentType": "application/json",
+        "body": {
+          "id": 24,
+          "email": "lab-defensa-admin-b542b308-0@example.com",
+          "rol": "USER"
+        }
+      },
+      "ms": 470
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": {
+          "email": "lab-defensa-admin-b542b308-0@example.com",
+          "password": "[oculta]"
+        }
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": {
+          "token": "[oculto]",
+          "tokenType": "Bearer",
+          "expiresIn": 1800
+        }
+      },
+      "ms": 308
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": {
+          "email": "lab-defensa-admin-b542b308-0@example.com",
+          "password": "[oculta]"
+        }
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": {
+          "token": "[oculto]",
+          "tokenType": "Bearer",
+          "expiresIn": 1800
+        }
+      },
+      "ms": 327
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": {
+          "status": "ok",
+          "service": "api-blank"
+        }
+      },
+      "ms": 193
+    },
+    {
+      "method": "GET",
+      "path": "/api/productos/1",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": {
+          "id": 1,
+          "nombre": "Essence Mascara Lash Princess",
+          "descripcion": "The Essence Mascara Lash Princess is a popular mascara known for its volumizing and lengthening effects. Achieve dramatic lashes with this long-lasting and cruelty-free formula.",
+          "precio": 9.99,
+          "categoria": "beauty"
+        }
+      },
+      "ms": 804
+    },
+    {
+      "method": "GET",
+      "path": "/api/listas",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": null
+      },
+      "response": {
+        "status": 401,
+        "contentType": "application/json;charset=UTF-8",
+        "wwwAuthenticate": "Bearer",
+        "body": {
+          "status": 401,
+          "mensaje": "Se requiere un token válido",
+          "campos": {}
+        }
+      },
+      "ms": 114
+    },
+    {
+      "method": "GET",
+      "path": "/api/favoritos",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": null
+      },
+      "response": {
+        "status": 401,
+        "contentType": "application/json;charset=UTF-8",
+        "wwwAuthenticate": "Bearer",
+        "body": {
+          "status": 401,
+          "mensaje": "Se requiere un token válido",
+          "campos": {}
+        }
+      },
+      "ms": 113
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": {
+          "email": "lab-defensa-a-b542b308-0@example.com",
+          "password": "[oculta]"
+        }
+      },
+      "response": {
+        "status": 401,
+        "contentType": "application/json",
+        "wwwAuthenticate": "Bearer",
+        "body": {
+          "status": 401,
+          "mensaje": "Credenciales inválidas",
+          "campos": {}
+        }
+      },
+      "ms": 419
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/registro",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": null,
+        "body": {
+          "email": "lab-defensa-a-b542b308-0@example.com",
+          "password": "[oculta]"
+        }
+      },
+      "response": {
+        "status": 409,
+        "contentType": "application/json",
+        "body": {
+          "status": 409,
+          "mensaje": "El email ya está registrado",
+          "campos": {}
+        }
+      },
+      "ms": 283
+    },
+    {
+      "method": "GET",
+      "path": "/api/listas",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": [
+          {
+            "id": 17,
+            "nombre": "Lab · lista propia",
+            "usuarioId": 22
+          }
+        ]
+      },
+      "ms": 231
+    },
+    {
+      "method": "GET",
+      "path": "/api/listas/17",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": {
+          "id": 17,
+          "nombre": "Lab · lista propia",
+          "usuarioId": 22
+        }
+      },
+      "ms": 324
+    },
+    {
+      "method": "GET",
+      "path": "/api/listas/18",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 403,
+        "contentType": "application/json",
+        "body": {
+          "status": 403,
+          "mensaje": "Acceso denegado",
+          "campos": {}
+        }
+      },
+      "ms": 406
+    },
+    {
+      "method": "GET",
+      "path": "/api/listas/18/favoritos",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 403,
+        "contentType": "application/json",
+        "body": {
+          "status": 403,
+          "mensaje": "Acceso denegado",
+          "campos": {}
+        }
+      },
+      "ms": 391
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/listas/18",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 403,
+        "contentType": "application/json",
+        "body": {
+          "status": 403,
+          "mensaje": "Acceso denegado",
+          "campos": {}
+        }
+      },
+      "ms": 307
+    },
+    {
+      "method": "POST",
+      "path": "/api/listas/17/mover-favoritos",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": {
+          "destinoId": 18
+        }
+      },
+      "response": {
+        "status": 403,
+        "contentType": "application/json",
+        "body": {
+          "status": 403,
+          "mensaje": "Acceso denegado",
+          "campos": {}
+        }
+      },
+      "ms": 383
+    },
+    {
+      "method": "POST",
+      "path": "/api/listas/18/mover-favoritos",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": {
+          "destinoId": 17
+        }
+      },
+      "response": {
+        "status": 403,
+        "contentType": "application/json",
+        "body": {
+          "status": 403,
+          "mensaje": "Acceso denegado",
+          "campos": {}
+        }
+      },
+      "ms": 323
+    },
+    {
+      "method": "POST",
+      "path": "/api/listas",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": {
+          "nombre": "Lab · dueño en body",
+          "usuarioId": 23
+        }
+      },
+      "response": {
+        "status": 201,
+        "contentType": "application/json",
+        "body": {
+          "id": 19,
+          "nombre": "Lab · dueño en body",
+          "usuarioId": 22
+        }
+      },
+      "ms": 291
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/listas/19",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 204,
+        "body": null
+      },
+      "ms": 449
+    },
+    {
+      "method": "GET",
+      "path": "/api/listas/18",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "24",
+          "rol": "ADMIN"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": {
+          "id": 18,
+          "nombre": "Lab · lista ajena",
+          "usuarioId": 23
+        }
+      },
+      "ms": 211
+    },
+    {
+      "method": "GET",
+      "path": "/api/listas",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "24",
+          "rol": "ADMIN"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "contentType": "application/json",
+        "body": [
+          {
+            "id": 1,
+            "nombre": "Sin clasificar",
+            "usuarioId": null
+          },
+          {
+            "id": 17,
+            "nombre": "Lab · lista propia",
+            "usuarioId": 22
+          },
+          {
+            "id": 18,
+            "nombre": "Lab · lista ajena",
+            "usuarioId": 23
+          }
+        ]
+      },
+      "ms": 233
+    },
+    {
+      "method": "GET",
+      "path": "/api/listas",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "ADMIN",
+          "encabezadoIgualAlDeA": true,
+          "payloadDistintoAlDeA": true,
+          "firmaIgualALaDeA": true
+        },
+        "body": null
+      },
+      "response": {
+        "status": 401,
+        "contentType": "application/json;charset=UTF-8",
+        "wwwAuthenticate": "Bearer",
+        "body": {
+          "status": 401,
+          "mensaje": "Se requiere un token válido",
+          "campos": {}
+        }
+      },
+      "ms": 294
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/favoritos/12",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 204,
+        "body": null
+      },
+      "ms": 532
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/listas/17",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "22",
+          "rol": "USER"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 204,
+        "body": null
+      },
+      "ms": null
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/listas/18",
+      "request": {
+        "origin": "http://localhost:5173",
+        "accept": "application/json",
+        "authorization": {
+          "scheme": "Bearer",
+          "sub": "23",
+          "rol": "USER"
+        },
+        "body": null
+      },
+      "response": {
+        "status": 204,
+        "body": null
+      },
+      "ms": null
+    }
+  ],
+  "cleanup": {
+    "deletedHttp": [
+      "/api/listas/19",
+      "/api/favoritos/12",
+      "/api/listas/17",
+      "/api/listas/18"
+    ],
+    "demotedAdmin": true,
+    "deletedUsers": 3,
+    "createdUsers": 3
+  }
+}

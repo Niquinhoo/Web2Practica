@@ -1,5 +1,7 @@
 # TP3 · Cobertura y evidencia
 
+El [informe de defensa](../../informe.md) incluye el Laboratorio contra Vercel y las mediciones del 6 de noviembre. Las secciones siguientes conservan la evidencia de las entregas anteriores.
+
 Implementación iniciada en `tp3`, desde `TP2`; rama de entrega `TP3`. Evidencia original del 29 de octubre y verificación de cierre del 3 de noviembre de 2026.
 
 ## Corrección vigente: sin dominios propios ni de clientes
@@ -43,7 +45,7 @@ Validación local ejecutada con JDK 25 y Docker:
 
 Resultado: **BUILD SUCCESS, 58 unitarias y 25 integraciones**, cero fallos, errores u omisiones. PostgreSQL fue temporal, iniciado por Testcontainers; `clean` evitó conservar la clase del paquete anterior. También pasó `npm run check` del Worker y sus **cinco pruebas** con Node **24.22.1**, la versión de CI: **88 ejecuciones en total**. El Node 22.17 de la terminal no podía cargar `.ts`; el intento inicial falló y se repitió con la versión requerida, sin cambiar el código del Worker.
 
-[Resumen de resultados por suite](tp3/evidencias/entrega-2026-11-03.json). En esa primera preparación se verificó código sin publicar una imagen; la publicación posterior y sus comprobaciones están en el apartado anterior. **Cloudflare sigue siendo el proveedor elegido expresamente por el usuario**, exceptuando para esta entrega la exigencia original de gratuidad. Workers Paid no se presenta como un plan gratuito; la evidencia Hobby se conserva como experiencia adicional histórica.
+[Resumen de resultados por suite](tp3/evidencias/entrega-2026-11-03.json). En esa primera preparación se verificó código antes de publicar la imagen. En ese cierre se eligió Cloudflare en Workers Paid, como excepción a la exigencia original de gratuidad. Vercel Hobby también quedó disponible para la práctica.
 
 La [corrida de entrega en GitHub Actions](https://github.com/Niquinhoo/Web2Practica/actions/runs/41730538085), rama `TP3`, commit `82a32c6`, terminó en **success** con ambos jobs exitosos: Java/PostgreSQL y Worker. Incluye las nuevas comprobaciones; los enlaces rojos y verdes anteriores siguen acreditando la prueba deliberada exigida por el punto 6.
 

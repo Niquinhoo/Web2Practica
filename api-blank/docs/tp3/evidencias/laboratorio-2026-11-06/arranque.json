@@ -1,0 +1,45 @@
+{
+  "fecha": "2026-11-06",
+  "metodo": "curl GET /health, Cache-Control: no-cache, desde la misma máquina; primera petición seguida de tres inmediatas por proveedor; status 200 en las 16.",
+  "observacion": "Las dos primeras solicitudes de Vercel coinciden con arranques de Spring en los logs. Para Cloudflare se observa la primera respuesta lenta tras inactividad local y la diferencia con las siguientes.",
+  "rondas": [
+    {
+      "inicioUtc": "2026-11-06T04:34:12Z",
+      "vercelSegundos": [
+        15.143476,
+        0.283215,
+        0.32946,
+        0.269364
+      ],
+      "cloudflareSegundos": [
+        49.796822,
+        0.259312,
+        0.249197,
+        0.256088
+      ],
+      "springVercel": {
+        "atUtc": "2026-11-06T04:34:28.295Z",
+        "startupSegundos": 11.383
+      }
+    },
+    {
+      "inicioUtc": "2026-11-06T04:36:15Z",
+      "vercelSegundos": [
+        9.796514,
+        0.240526,
+        0.241524,
+        0.253153
+      ],
+      "cloudflareSegundos": [
+        50.621257,
+        0.264874,
+        0.258323,
+        0.251694
+      ],
+      "springVercel": {
+        "atUtc": "2026-11-06T04:36:25.514Z",
+        "startupSegundos": 6.267
+      }
+    }
+  ]
+}
