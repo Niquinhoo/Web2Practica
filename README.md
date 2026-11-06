@@ -2,7 +2,15 @@
 
 **Entrega en `TP3`.** API REST de listas y favoritos con Java 25, Spring Boot y PostgreSQL. **[Laboratorio público](https://web2-practica-front.nicotrib699.workers.dev/#/laboratorio)**. Vercel está seleccionado como API por defecto.
 
-[Consigna oficial](https://unvime-web-2.matiendres.workers.dev/practicos/tp3/) · [Código del front publicado](https://github.com/Niquinhoo/Web2PracticaFront/tree/a41ce5759e4c551501c8eeec2f50a14455d19c84) · [Swagger de Vercel](https://web2-practica-tp3.vercel.app/swagger-ui/index.html) · [Ejecutar la API en local](api-blank/README.md#ejecutar)
+## Enlaces de despliegue
+
+| Componente | Despliegues |
+| --- | --- |
+| API | [Cloudflare · Swagger](https://web2-practica-tp3.nicotrib699.workers.dev/swagger-ui/index.html) · [Vercel · Swagger](https://web2-practica-tp3.vercel.app/swagger-ui/index.html) |
+| Front | [Cloudflare](https://web2-practica-front.nicotrib699.workers.dev/) · Vercel sin despliegue |
+| Base de datos | [VPS · conexión por túnel privado](deployment/cloudflare/README.md#recorrido) · [Render · panel de PostgreSQL de respaldo](https://dashboard.render.com/d/dpg-dblq6st9el5s73ef0l4g-a) |
+
+[Consigna oficial](https://unvime-web-2.matiendres.workers.dev/practicos/tp3/) · [Código del front publicado](https://github.com/Niquinhoo/Web2PracticaFront/tree/a41ce5759e4c551501c8eeec2f50a14455d19c84) · [Ejecutar la API en local](api-blank/README.md#ejecutar)
 
 ## 1. Dependencias y configuración
 
