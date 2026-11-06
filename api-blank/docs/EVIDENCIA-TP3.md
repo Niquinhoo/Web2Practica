@@ -1,6 +1,6 @@
 # TP3 · Cobertura y evidencia
 
-El [informe de defensa](../../informe.md) incluye el Laboratorio contra Vercel y las mediciones del 6 de noviembre. Las secciones siguientes conservan la evidencia de las entregas anteriores.
+El [informe de defensa](../../README.md) incluye el Laboratorio público contra Vercel, las mediciones del 6 de noviembre y el recorrido de GitHub Actions. Las secciones siguientes conservan la evidencia de las entregas anteriores.
 
 Implementación iniciada en `tp3`, desde `TP2`; rama de entrega `TP3`. Evidencia original del 29 de octubre y verificación de cierre del 3 de noviembre de 2026.
 

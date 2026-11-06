@@ -1,0 +1,18 @@
+{
+  "commit": "a41ce5759e4c551501c8eeec2f50a14455d19c84",
+  "rama": "TP3",
+  "worker": "web2-practica-front",
+  "url": "https://web2-practica-front.nicotrib699.workers.dev",
+  "apiPorDefecto": "https://web2-practica-tp3.vercel.app",
+  "version": "95ed0e3c-23e9-42cb-a28b-580499b0b1aa",
+  "despliegue": "33df8789-72bc-4f7c-a4ff-154d05ce79f4",
+  "fechaUtc": "2026-11-06T04:53:35.211519Z",
+  "traficoPorcentaje": 100,
+  "bundle": "/assets/index-5Q9DZ_2s.js",
+  "metodo": "Publicación manual desde TP3 con Wrangler 4.157.0; el CI de GitHub Actions había validado el mismo commit.",
+  "ci": "https://github.com/Niquinhoo/Web2PracticaFront/actions/runs/42164198656",
+  "verificacion": {
+    "chrome": "Vercel por defecto, alta, login y Laboratorio",
+    "smoke": "OK; SPA, health, CORS, preflight y 401 en ambas API"
+  }
+}

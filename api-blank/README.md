@@ -71,7 +71,7 @@ La autorización por propiedad vive en `ListaServiceImpl.buscarAutorizada`, comp
 
 Swagger incluye el esquema `bearerAuth`, el botón Authorize, endpoints auth y respuestas 401/403. Pegá el JWT sin el prefijo Bearer en Authorize.
 
-[Informe detallado del TP3](../informe.md): cumplimiento de cada requisito, qué se hizo, cómo y por qué, contenedores de PostgreSQL y demostración en Swagger. Incluye los ajustes de entrega del 3 de noviembre y Cloudflare como proveedor elegido expresamente por el usuario.
+[Informe de defensa del TP3](../README.md) con la demostración del front público contra Vercel, las decisiones de infraestructura y las corridas de GitHub Actions.
 
 ## Migraciones y datos previos
 
