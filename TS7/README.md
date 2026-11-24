@@ -73,3 +73,7 @@ Los motivos de propuesta son `repeated_id`, `already_listed`, `not_found` (404 d
 3. Votá el mismo producto desde dos pestañas. Retirá un voto y cerrá una pestaña para observar los cambios de ranking y presencia.
 4. Desde la consola de un participante, ejecutá `window.ts7Socket.send("esto no es JSON")`. El error aparece en esa pestaña y podés seguir votando.
 5. Usá la configuración de catálogo lento y repetí las acciones desde dos pestañas mientras la propuesta está pendiente.
+
+## Evidencias
+
+El video y las capturas muestran las cuatro vistas sincronizadas, los fallos parciales, la espera del catálogo y el rechazo de JSON inválido. [Ver el registro de la demostración](docs/evidencias/README.md)
