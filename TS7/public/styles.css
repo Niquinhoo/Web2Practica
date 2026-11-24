@@ -1,0 +1,86 @@
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+:root {
+  font: 16px/1.45 system-ui, sans-serif;
+  color: #172d27;
+  background: #f6f6ee;
+  --line: #dce2d6;
+  --green: #21483a;
+}
+
+body { margin: 0; }
+a { color: inherit; text-underline-offset: .18em; }
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .8rem max(1rem, calc((100% - 52rem) / 2));
+  background: #e6ecdf;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand { font-weight: 750; text-decoration: none; }
+
+main { width: min(calc(100% - 2rem), 52rem); margin: 1.25rem auto 3rem; }
+h1, h2 { margin: 0 0 .6rem; line-height: 1.1; }
+h1 { font-size: clamp(1.85rem, 6vw, 3.2rem); letter-spacing: -.045em; }
+h2 { font-size: 1.25rem; }
+p { margin: 0 0 .65rem; }
+
+.panel, .notice {
+  padding: .75rem;
+  margin: 0 0 .85rem;
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  background: #fff;
+}
+
+.notice { background: #f5edd7; border-color: #eadcba; }
+.notice p { margin: 0; }
+.notice ul { margin: .35rem 0 0; padding-left: 1.15rem; }
+
+.presence { color: #345b4d; overflow-wrap: anywhere; }
+label { display: block; margin-bottom: .28rem; font-weight: 650; }
+.form-row { display: flex; gap: .45rem; align-items: stretch; }
+input, button { font: inherit; }
+input { min-width: 0; flex: 1; padding: .4rem .55rem; border: 1px solid #8d9e93; border-radius: .3rem; }
+button {
+  padding: .38rem .62rem;
+  border: 1px solid var(--green);
+  border-radius: .3rem;
+  background: var(--green);
+  color: #fff;
+  cursor: pointer;
+}
+
+:focus-visible { outline: 3px solid #987018; outline-offset: 2px; }
+button.secondary { color: var(--green); background: #fff; }
+button:disabled { opacity: .55; cursor: default; }
+small { display: block; color: #4d6258; }
+form small { margin-top: .35rem; }
+
+.products { display: grid; gap: .45rem; margin: 0; padding: 0; list-style: none; }
+.product {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: .5rem;
+  align-items: center;
+  padding: .45rem;
+  border: 1px solid var(--line);
+  border-radius: .45rem;
+  background: #fff;
+}
+
+.product div { overflow-wrap: anywhere; }
+.product img { object-fit: contain; border-radius: .24rem; background: #f2f4ee; }
+.votes { color: #345b4d; white-space: nowrap; font-weight: 650; }
+.controls { display: flex; gap: .3rem; font-size: .875rem; }
+.screen .product { grid-template-columns: auto minmax(0, 1fr) auto; }
+
+@media (max-width: 560px) {
+  .product { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .controls { grid-column: 2 / -1; }
+}

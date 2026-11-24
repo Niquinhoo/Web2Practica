@@ -17,8 +17,8 @@ function readProduct(value: unknown, id: number): CatalogProduct | undefined {
     return;
   }
 
-  const imageUrl = URL.parse(value.thumbnail);
-  if (!imageUrl || !["http:", "https:"].includes(imageUrl.protocol)) {
+  const imageUrl = new URL(value.thumbnail);
+  if (!["http:", "https:"].includes(imageUrl.protocol)) {
     return;
   }
 

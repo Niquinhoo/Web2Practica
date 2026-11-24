@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pantalla · Regalo grupal</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/screen.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <a href="/" class="brand">Regalo grupal</a>
+    <a href="/">Participar</a>
+  </header>
+  <main class="screen">
+    <h1>Ranking en vivo</h1>
+    <p id="presence" class="presence" aria-live="polite">Conectando con la lista…</p>
+    <p id="connection" class="notice" role="status" hidden></p>
+    <p id="empty" hidden>Todavía no hay productos.</p>
+    <ol id="products" class="products" aria-label="Ranking"></ol>
+  </main>
+</body>
+</html>

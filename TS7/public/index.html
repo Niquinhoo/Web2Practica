@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Participar · Regalo grupal</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/participant.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <a href="/" class="brand">Regalo grupal</a>
+    <a href="/pantalla" target="_blank" rel="noopener">Abrir pantalla</a>
+  </header>
+  <main>
+    <h1>Lista compartida</h1>
+    <form id="join" class="panel">
+      <label for="name">Tu nombre</label>
+      <div class="form-row">
+        <input id="name" name="name" autocomplete="nickname" required>
+        <button type="submit">Entrar</button>
+      </div>
+    </form>
+    <p id="notice" class="notice" role="status" hidden></p>
+    <div id="room" hidden>
+      <p id="presence" class="presence" aria-live="polite"></p>
+      <form id="proposal" class="panel">
+        <label for="ids">IDs de DummyJSON</label>
+        <div class="form-row">
+          <input id="ids" name="ids" aria-describedby="ids-help" placeholder="1, 2, 3" required>
+          <button type="submit">Proponer</button>
+        </div>
+        <small id="ids-help">Ingresá hasta 10 IDs separados por comas o espacios.</small>
+      </form>
+      <section id="proposal-result" class="notice" aria-live="polite" hidden>
+        <p id="proposal-summary"></p>
+        <ul id="proposal-failures"></ul>
+      </section>
+      <section aria-labelledby="ranking-title">
+        <h2 id="ranking-title">Ranking</h2>
+        <p id="empty">Todavía no hay productos.</p>
+        <ol id="products" class="products"></ol>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

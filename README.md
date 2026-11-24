@@ -1,16 +1,17 @@
 # Web2Practica
 
-Repositorio para almacenar los proyectos prácticos Maven de la materia **Web II**.
+Repositorio para los proyectos prácticos de la materia **Web II**.
 
 ## Proyectos
 
 | Proyecto | Descripción |
 |---|---|
 | [`api-blank`](./api-blank) | Proyecto base con Java 25, Spring Boot 4.1.1, Maven Wrapper y Spring Web. |
+| [`TS7`](./TS7) | TP4 con Node.js, TypeScript, WebSocket y Server-Sent Events. |
 
-Cada proyecto Maven se guarda en su propia carpeta para mantener separada la práctica del repositorio de teoría.
+Los proyectos tienen instrucciones propias para ejecutarlos.
 
-## Requisitos generales
+## Requisitos de `api-blank`
 
 - JDK 25.
 - Git.
